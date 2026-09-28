@@ -418,10 +418,10 @@
       .form-wrap{width:100%;margin:36px 0 28px}
       .form-wrap h2{font-size:31px}
       .panel-foot{padding:0}
-      .sidebar{position:sticky;top:0;padding-top:calc(12px + env(safe-area-inset-top))}
+      .sidebar{position:static;padding-top:calc(12px + env(safe-area-inset-top))}
       .side-menu{min-width:0}
-      .side-menu ul{scrollbar-width:none;-webkit-overflow-scrolling:touch}
-      .side-menu ul::-webkit-scrollbar{display:none}
+      .side-menu ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:7px;padding:0 0 11px}
+      .nav-item{width:100%;min-height:46px;height:auto;justify-content:flex-start;white-space:normal;padding:8px 11px;font-size:13px;line-height:1.25}
       .dashboard{padding:24px 14px calc(84px + env(safe-area-inset-bottom))}
       .dashboard-toast{right:14px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px)}
       .floating-support{bottom:calc(14px + env(safe-area-inset-bottom))}
