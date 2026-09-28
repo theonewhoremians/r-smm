@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f7f7f4">
   <title>R-SMM — Social, in sync</title>
   <style>
@@ -400,6 +400,44 @@
     @media(max-width:1050px){.deposit-form{grid-template-columns:repeat(2,minmax(0,1fr))}.deposit-form .place-order{width:100%}}
     @media(max-width:760px){.nav-item:not(.current){display:flex}.nav-item{flex:none}.overview-grid{grid-template-columns:1fr;gap:9px}.overview-card{padding:16px}.overview-card strong{font-size:23px}.quick-start{align-items:flex-start;flex-direction:column}.quick-start .place-order{width:100%}.wallet-overview{padding:20px}.wallet-overview strong{font-size:30px}.wallet-emblem{width:48px;height:48px}.deposit-form{grid-template-columns:1fr}.deposit-form .place-order{width:100%}.admin-topbar{align-items:flex-start;flex-wrap:wrap}.admin-account{width:100%;justify-content:space-between}.admin-main{padding-top:24px}.admin-main .overview-grid{grid-template-columns:1fr}.record-card{padding:14px}.record-top{font-size:12px}}
     @media(max-width:430px){.wallet-overview{padding:16px}.wallet-overview strong{font-size:26px}.deposit-address-card{grid-template-columns:86px minmax(0,1fr);gap:11px;padding:11px}.deposit-qr{min-height:82px}.deposit-qr img{width:76px;height:76px}.deposit-address-content code{font-size:10px}.admin-account{gap:7px;flex-wrap:wrap}.admin-logout{margin-left:auto}.record-top{align-items:flex-start}}
+
+    /* Phone layout */
+    @media(max-width:760px){
+      body{overflow-x:hidden}
+      .shell{display:block;min-height:100dvh;padding:0;gap:0}
+      .story{min-height:0;padding:calc(24px + env(safe-area-inset-top)) 22px 27px;border-radius:0 0 24px 24px}
+      .story-copy{margin:0;padding:46px 0 0}
+      .story-copy h1{font-size:clamp(40px,12vw,56px);margin:16px 0 13px}
+      .story-copy p{max-width:340px;font-size:14px}
+      .social-card{display:none}
+      .story-foot{margin-top:35px}
+      .panel{min-height:0;padding:22px 22px calc(28px + env(safe-area-inset-bottom))}
+      .panel-top{justify-content:space-between;gap:12px}
+      .form-wrap{width:100%;margin:36px 0 28px}
+      .form-wrap h2{font-size:31px}
+      .panel-foot{padding:0}
+      .sidebar{position:sticky;top:0;padding-top:calc(12px + env(safe-area-inset-top))}
+      .side-menu{min-width:0}
+      .side-menu ul{scrollbar-width:none;-webkit-overflow-scrolling:touch}
+      .side-menu ul::-webkit-scrollbar{display:none}
+      .dashboard{padding:24px 14px calc(84px + env(safe-area-inset-bottom))}
+      .dashboard-toast{right:14px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px)}
+      .floating-support{bottom:calc(14px + env(safe-area-inset-bottom))}
+      .wallet-overview{gap:12px;min-width:0}
+      .wallet-overview strong,.record-top>strong:last-child{overflow-wrap:anywhere}
+      .record-top>div{min-width:0}
+      .growth-heading,.curve-actions{flex-wrap:wrap}
+      .curve-presets{flex:1 1 200px;min-width:0}
+      input,.auth-select,.deposit-form select{font-size:16px}
+    }
+    @media(max-width:430px){
+      .metric-top{grid-template-columns:minmax(0,1fr) auto;align-items:start}
+      .metric-name-wrap{grid-column:1/-1}
+      .metric-amount{grid-column:1;width:100%;text-align:left}
+      .metric-top .switch{grid-column:2;grid-row:2;justify-self:end}
+      .delivery-fields{grid-template-columns:1fr}
+      .curve-reset{margin-left:auto}
+    }
   </style>
 </head>
 <body>
