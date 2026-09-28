@@ -1,0 +1,1290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <title>R-SMM — Social, in sync</title>
+  <style>
+    :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#20231f;background:#f7f7f4;font-synthesis:none;text-rendering:optimizeLegibility}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .shell{min-height:100vh;display:grid;grid-template-columns:minmax(380px,1fr) minmax(480px,1fr);padding:18px;gap:18px}
+    .story{position:relative;overflow:hidden;min-height:calc(100vh - 36px);border-radius:24px;background:#173b36;color:#f5f5ec;padding:38px 42px;display:flex;flex-direction:column;justify-content:space-between}
+    .story:before,.story:after{content:"";position:absolute;border:1px solid #ffffff18;border-radius:50%;pointer-events:none}
+    .story:before{width:640px;height:640px;left:-275px;bottom:-300px}
+    .story:after{width:460px;height:460px;left:-185px;bottom:-210px}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:650;letter-spacing:-.04em}
+    .brand-mark{height:34px;width:34px;border:1px solid #f5f5ec70;border-radius:11px;display:grid;place-items:center;font-size:15px}
+    .brand span:last-child{font-size:17px}
+    .story-copy{position:relative;z-index:1;margin:auto 0;padding:56px 0 34px;max-width:465px}
+    .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.19em;color:#b8d2bc;font-weight:700}
+    h1{font-size:clamp(42px,5vw,68px);line-height:1.02;letter-spacing:-.065em;font-weight:550;margin:20px 0 17px}
+    .story-copy p{max-width:365px;margin:0;color:#d1ded4;line-height:1.65;font-size:15px}
+    .social-card{position:absolute;right:8%;top:24%;width:224px;padding:15px;border:1px solid #ffffff35;background:#f5f4ec;color:#20231f;border-radius:17px;box-shadow:0 28px 70px #081c19a6;transform:rotate(5deg)}
+    .social-head{display:flex;align-items:center;gap:8px;font-size:10px;color:#626962}
+    .avatar{width:25px;height:25px;border-radius:50%;background:#eab88f;display:grid;place-items:center;color:#583922;font-size:10px;font-weight:700}
+    .social-visual{height:132px;margin:12px 0;border-radius:10px;background:linear-gradient(145deg,#edb89c 0 35%,#dc785c 35% 59%,#768b67 59%);position:relative;overflow:hidden}
+    .social-visual:after{content:"SLOW\A MORNINGS";white-space:pre;position:absolute;left:13px;bottom:12px;color:#fff8e9;font-size:18px;line-height:.95;letter-spacing:-.06em;font-weight:750}
+    .social-meta{display:flex;justify-content:space-between;font-size:10px;color:#6e726b}
+    .story-foot{position:relative;z-index:1;color:#bfd0c4;font-size:12px;display:flex;align-items:center;gap:8px}
+    .story-foot i{display:block;width:6px;height:6px;background:#a7d6ae;border-radius:50%}
+    .panel{min-height:calc(100vh - 36px);display:flex;flex-direction:column;padding:26px 7.5%}
+    .panel-top{display:flex;justify-content:flex-end;color:#767b74;font-size:13px}
+    .panel-top a{color:#24594f;text-decoration:none;font-weight:650;margin-left:5px}
+    .form-wrap{width:min(100%,390px);margin:auto}
+    .form-wrap h2{margin:0 0 9px;font-size:34px;letter-spacing:-.055em;font-weight:600}
+    .intro{color:#777d76;font-size:14px;line-height:1.55;margin:0 0 30px}
+    .form-label{display:block;margin:18px 0 8px;font-size:12px;font-weight:650;color:#424740}
+    .field{position:relative}
+    .auth-select{width:100%;height:49px;border:1px solid #dedfd8;border-radius:10px;background:#fff;padding:0 14px;color:#252922}
+    .auth-helper{display:block;color:#81877f;font-size:11px;line-height:1.5;margin-top:7px}
+    input{width:100%;height:49px;border:1px solid #dedfd8;border-radius:10px;background:#fff;padding:0 14px;color:#252922;outline:none;transition:border-color .15s,box-shadow .15s}
+    input::placeholder{color:#a4a8a0}
+    input:focus{border-color:#527b6b;box-shadow:0 0 0 3px #54806b20}
+    .password-input{padding-right:72px}
+    .show-pass{position:absolute;right:11px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#607068;font-size:11px;font-weight:700;padding:8px}
+    .forgot-row{display:flex;justify-content:flex-end;margin-top:10px}
+    .text-button{border:0;background:transparent;color:#356356;font-size:12px;font-weight:650;padding:0}
+    .submit{width:100%;height:49px;margin-top:23px;border:0;border-radius:10px;background:#214e43;color:white;font-size:13px;font-weight:700;transition:background .15s,transform .15s}
+    .submit:hover{background:#173d34;transform:translateY(-1px)}
+    .submit:disabled{opacity:.65;cursor:wait;transform:none}
+    .divider{display:flex;align-items:center;gap:13px;margin:23px 0;color:#9a9e96;font-size:11px}
+    .divider:before,.divider:after{content:"";height:1px;background:#e5e5df;flex:1}
+    .terms{font-size:11px;line-height:1.6;color:#92968f;text-align:center;margin:0}
+    .terms a{color:#526f62}
+    .notice{display:none;padding:11px 13px;border-radius:9px;margin-top:17px;font-size:12px;line-height:1.45}
+    .notice.show{display:block}
+    .notice.error{background:#fceceb;color:#923b35}
+    .notice.success{background:#eaf3ea;color:#315a3b}
+    .panel-foot{text-align:center;color:#a0a39d;font-size:11px;padding-top:16px}
+    .workspace{min-height:100vh;background:#e7faee;padding:0;display:block}
+    .app-shell{min-height:100vh;display:grid;grid-template-columns:324px minmax(0,1fr)}
+    .sidebar{height:100vh;position:sticky;top:0;display:flex;flex-direction:column;padding:20px 16px 12px;background:#fff;border-right:1px solid #e9ece8;z-index:2}
+    .side-brand{display:flex;align-items:center;gap:12px;padding:0 9px 15px}
+    .logo-badge{width:46px;height:46px;flex:none;border-radius:15px;background:#101113;color:#e8bb39;display:grid;place-items:center;font-weight:800;font-size:21px;box-shadow:inset 0 0 0 1px #ffffff20}
+    .logo-badge span{border:1px solid #c39124;border-radius:50%;width:29px;height:29px;display:grid;place-items:center}
+    .side-brand-copy strong{display:block;font-size:18px;letter-spacing:-.045em;color:#111827}
+    .side-brand-copy small{display:block;color:#39984a;font-size:10px;letter-spacing:.15em;font-weight:750;margin-top:2px}
+    .account-card{display:flex;align-items:center;gap:12px;background:#effbf3;border:1px solid #d6f4df;border-radius:16px;padding:12px 14px;margin:0 4px 15px;min-width:0}
+    .account-avatar{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;background:#16a34a;color:#fff;font-weight:750}
+    .account-copy{min-width:0}
+    .account-copy strong,.account-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .account-copy strong{font-size:14px;color:#161d21}
+    .account-copy small{font-size:12px;color:#718096;margin-top:3px}
+    .wallet-card{background:linear-gradient(145deg,#e6fbec,#d5f8e1);border-radius:17px;padding:19px 20px 17px;margin:0 4px 21px}
+    .wallet-label{display:flex;align-items:center;gap:8px;color:#099447;font-size:11px;font-weight:750;letter-spacing:.08em}
+    .wallet-balance{display:block;font-size:28px;letter-spacing:-.05em;color:#14233b;margin:12px 0 17px}
+    .funds-button{width:100%;height:40px;border:0;border-radius:24px;color:#fff;background:#16a34a;font-size:13px;font-weight:700}
+    .funds-button:hover{background:#12833d}
+    .side-menu{min-height:0}
+    .menu-caption{margin:0 14px 12px;color:#8491a5;font-size:10px;letter-spacing:.1em;font-weight:750}
+    .side-menu ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+    .side-menu li{min-width:0}
+    .nav-item{width:100%;min-height:46px;padding:0 13px;display:flex;align-items:center;gap:13px;border-radius:13px;color:#253448;font-size:14px;font-weight:500;text-decoration:none}
+    .nav-item.current{background:#edfbf1;border:1px solid #d8f4df;color:#087d3e;font-weight:650}
+    .nav-icon{width:22px;flex:none;text-align:center;color:#677d9b;font-size:18px;line-height:1}
+    .nav-item.current .nav-icon{color:#0aaf51}
+    .side-bottom{margin-top:auto}
+    .currency-pill{height:51px;border:1px solid #eee8ed;border-radius:15px;background:#fcfbfc;display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#536174;font-size:14px;margin-bottom:10px}
+    .currency-pill span:last-child{color:#9099a5}
+    .telegram-card{width:100%;border:1px solid #d9eefe;border-radius:15px;background:#eff8ff;padding:12px 13px;display:flex;align-items:center;gap:11px;text-align:left;color:#087ac1;margin-bottom:7px}
+    .telegram-icon{width:22px;height:22px;border-radius:50%;background:#12a5e5;color:white;display:grid;place-items:center;font-size:12px}
+    .telegram-copy strong,.telegram-copy small{display:block}
+    .telegram-copy strong{font-size:12px;font-weight:700}
+    .telegram-copy small{font-size:11px;margin-top:2px}
+    .logout-button{width:calc(100% + 32px);margin:0 -16px;padding:0 30px;height:59px;border:0;border-top:1px solid #eef0ed;background:#fff;display:flex;align-items:center;gap:12px;color:#42536a;font-size:14px;text-align:left}
+    .logout-button span{color:#ef4444;font-size:18px}
+    .dashboard{min-width:0;min-height:100vh;padding:36px clamp(24px,5vw,80px) 58px;background:linear-gradient(135deg,#eafcf0 0%,#d9f9e7 54%,#e5fff0 100%)}
+    .dashboard-inner{max-width:1200px;margin:0 auto}
+    .page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:0 4px 24px}
+    .page-heading .eyebrow{color:#26965b;font-size:10px;letter-spacing:.16em}
+    .page-heading h1{font-size:34px;line-height:1.1;color:#151922;letter-spacing:-.055em;margin:9px 0 7px;font-weight:700}
+    .page-heading p{font-size:14px;color:#68746e;margin:0}
+    .draft-pill{white-space:nowrap;border:1px solid #c9e9d4;border-radius:99px;background:#f5fff8;color:#54806b;padding:9px 13px;font-size:11px;font-weight:650}
+    .form-card{background:#fff;border:1px solid #dedbd8;border-radius:19px;padding:23px 30px 25px;margin-bottom:30px;box-shadow:0 9px 15px #17352612,0 2px 4px #18332608}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+    .section-title{display:flex;align-items:center;gap:14px}
+    .section-icon{width:50px;height:50px;border-radius:15px;background:#f0f0f1;display:grid;place-items:center;color:#1e2230;font-size:22px;flex:none}
+    .section-title h2{font-size:21px;letter-spacing:-.04em;margin:0;color:#181a24}
+    .pick-label{color:#777983;font-size:10px;letter-spacing:.15em;font-weight:750}
+    .platform-options{display:flex;gap:10px;flex-wrap:wrap}
+    .platform-button{border:1px solid #e6e2e0;border-radius:25px;background:#f7f6f5;color:#636775;display:flex;align-items:center;gap:9px;padding:9px 14px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:750;box-shadow:0 2px 4px #1515150a}
+    .platform-button .platform-icon{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#ebe9ed}
+    .platform-button .platform-icon svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .platform-button.selected[data-platform="instagram"]{border-color:transparent;color:#fff;background:linear-gradient(105deg,#d529c6,#fa4c67 55%,#ff9f21);box-shadow:0 5px 10px #e8409b38}
+    .platform-button.selected[data-platform="tiktok"]{border-color:#15151a;color:#fff;background:#15151a}
+    .platform-button.selected .platform-icon{background:#ffffff35;color:inherit}
+    .link-input{height:70px;background:#f6f4f2;border:2px solid #dedbd8;border-radius:15px;padding:0 20px;font-size:16px;font-weight:550}
+    .link-input:focus,.custom-quantity:focus,.metric-amount:focus{border-color:#26b875;box-shadow:0 0 0 3px #20b26a1a}
+    .quantity-options{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 28px}
+    .quantity-preset{min-width:88px;height:59px;border:2px solid #dedbd8;border-radius:15px;background:#f6f4f2;color:#171923;font-size:17px;font-weight:750}
+    .quantity-preset.active{border-color:#15151e;background:#15151e;color:#fff}
+    .custom-row{display:flex;align-items:center;gap:10px;color:#646776;font-size:14px}
+    .custom-quantity{width:180px;height:55px;background:#f6f4f2;border:2px solid #dedbd8;border-radius:15px;padding:0 18px;font-size:16px;font-weight:750;font-variant-numeric:tabular-nums}
+    .engagement-head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:4px 4px 20px}
+    .engagement-head h2{font-size:22px;letter-spacing:-.05em;margin:0 0 6px;color:#141923}
+    .engagement-head p{font-size:14px;color:#566371;margin:0}
+    .engagement-actions{display:flex;align-items:center;gap:10px}
+    .how-details{position:relative}
+    .how-details summary{list-style:none;cursor:pointer;border:1px solid #8bdfbd;background:#d7f6e8;border-radius:15px;color:#179b70;padding:11px 14px;font-size:13px;font-weight:650;white-space:nowrap}
+    .how-details summary::-webkit-details-marker,.delivery summary::-webkit-details-marker{display:none}
+    .how-popover{position:absolute;z-index:3;right:0;top:calc(100% + 8px);width:280px;padding:15px;border:1px solid #cfe9d8;border-radius:13px;background:#fff;box-shadow:0 12px 30px #16281c20;color:#647168;font-size:12px;line-height:1.55}
+    .how-popover strong{color:#1d3528}
+    .active-count{background:#15151e;color:#fff;border-radius:15px;padding:12px 18px;font-size:13px;font-weight:700;white-space:nowrap}
+    .metric-list{display:grid;gap:20px}
+    .metric-card{background:#fff;border:1px solid #a9e8d2;border-radius:20px;padding:19px 16px 15px;box-shadow:0 9px 16px #17352612,0 2px 4px #18332608}
+    .metric-top{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:18px}
+    .metric-name-wrap{display:flex;align-items:flex-start;gap:12px;min-width:0}
+    .metric-symbol{width:26px;flex:none;text-align:center;color:#08b77e;font-size:20px;padding-top:2px}
+    .metric-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:750;letter-spacing:-.02em}
+    .metric-title.views{color:#0099bc}.metric-title.likes{color:#17a148}.metric-title.saves{color:#ce970e}.metric-title.shares{color:#7233d8}.metric-title.reposts{color:#138342}
+    .base-badge{border-radius:99px;padding:2px 8px;background:#0cb876;color:#062d20;font-size:9px;letter-spacing:.04em}
+    .metric-range{color:#747985;font-size:11px;margin-top:10px}
+    .metric-amount{width:100px;height:40px;border:2px solid #dedbd8;border-radius:14px;background:#f6f4f2;padding:0 11px;text-align:right;font-size:15px;font-weight:750;color:#171923;font-variant-numeric:tabular-nums}
+    .switch{position:relative;width:57px;height:31px;display:inline-flex;align-items:center;cursor:pointer}
+    .switch input{position:absolute;opacity:0;width:1px;height:1px}
+    .switch-track{width:57px;height:29px;border-radius:99px;background:#c9d0ce;transition:background .15s}
+    .switch-track:after{content:"";position:absolute;width:23px;height:23px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0002;transition:transform .15s}
+    .switch input:checked + .switch-track{background:#0cba80}
+    .switch input:checked + .switch-track:after{transform:translateX(28px)}
+    .switch input:focus-visible + .switch-track{outline:3px solid #057a51;outline-offset:3px}
+    .delivery{margin-top:16px;border:1px solid #a9e8d2;border-radius:15px;background:#f3fbf7}
+    .delivery summary{list-style:none;cursor:pointer;min-height:67px;padding:10px 16px;display:flex;align-items:center;gap:12px}
+    .delivery-icon{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;background:#d9f5eb;color:#02ae7a;font-size:20px;position:relative}
+    .delivery-icon:after{content:"";position:absolute;right:-2px;top:-2px;width:12px;height:12px;border-radius:50%;background:#08b97d}
+    .delivery-copy{min-width:0;flex:1;color:#1d2227;font-size:13px;font-weight:700}
+    .delivery-copy small{display:block;color:#707781;font-size:12px;font-weight:400;margin-top:4px}
+    .delivery-open{color:#06a976;font-size:10px;font-weight:750;letter-spacing:.06em;white-space:nowrap}
+    .delivery[open] .delivery-open:after{content:"  ↑"}
+    .delivery-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:2px 14px 14px 68px}
+    .delivery-fields label{font-size:10px;font-weight:700;color:#607067}
+    .delivery-fields select{display:block;width:100%;height:38px;margin-top:6px;border:1px solid #d9e6de;border-radius:9px;background:#fff;padding:0 8px;color:#27342d;font-size:12px}
+    .growth-card{padding-bottom:20px}
+    .growth-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+    .growth-heading{display:flex;align-items:center;gap:12px}
+    .growth-heading h2,.preview-heading h2{font-size:21px;letter-spacing:-.04em;color:#171923;margin:0}
+    .draw-badge{border:0;border-radius:99px;background:#0cba80;color:white;padding:6px 12px;font-size:11px;font-weight:750}
+    .draw-control{display:flex;align-items:center;gap:12px;color:#626775;font-size:14px}
+    .draw-control .switch{transform:scale(.96);transform-origin:right center}
+    .growth-instructions{color:#636775;font-size:14px;margin:10px 0 22px}
+    .series-tabs{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:17px}
+    .series-tab{display:flex;align-items:center;gap:9px;border:1px solid #ddd9d6;border-radius:99px;background:#fff;padding:10px 15px;color:#5f6571;font-size:13px;font-weight:700}
+    .series-tab small{min-width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#f0eff2;color:#56606c;font-size:10px}
+    .series-tab.active{outline:2px solid #5ca5ff;outline-offset:2px;background:#5f9ff1;color:#111827}
+    .series-tab[data-series="likes"].active{outline-color:#4dcc8b;background:#e9fff2;color:#22ae68}
+    .series-tab[data-series="saves"].active{outline-color:#f5b82e;background:#fff8e4;color:#cd9100}
+    .series-tab[data-series="shares"].active{outline-color:#aa91ff;background:#f5f0ff;color:#8a70e9}
+    .growth-chart{height:360px;position:relative;overflow:hidden;border:1px solid #73dcb8;border-radius:17px;background-color:#f0f7f3;background-image:linear-gradient(#dce9e31f 1px,transparent 1px),linear-gradient(90deg,#dce9e31f 1px,transparent 1px);background-size:14px 14px;touch-action:none}
+    .growth-chart svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;cursor:crosshair}
+    .growth-chart.drawing-off svg{cursor:default}
+    .graph-baseline{fill:none;stroke:#ba9dbc;stroke-width:7;stroke-linecap:round;opacity:.72;pointer-events:none}
+    .graph-line{fill:none;stroke:#5ba1f7;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;filter:drop-shadow(0 3px 4px #4a92dc24)}
+    .graph-point{fill:#fff;stroke:#5ba1f7;stroke-width:4;cursor:grab;touch-action:none}
+    .graph-point:focus-visible{stroke-width:7;outline:none}
+    .growth-chart.drawing-off .graph-point{cursor:default}
+    .graph-point:active{cursor:grabbing}
+    .graph-label{position:absolute;z-index:1;color:#69717b;font-size:9px;pointer-events:none}
+    .graph-label.y-top{left:5px;top:6px}.graph-label.y-middle{left:5px;top:49%}.graph-label.x-middle{left:49%;bottom:5px}.graph-label.x-end{right:5px;bottom:5px}
+    .curve-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:17px}
+    .curve-presets{display:flex;flex-wrap:wrap;gap:8px}
+    .curve-preset,.curve-reset{border:1px solid #dedbd8;border-radius:99px;background:white;padding:10px 14px;color:#292d37;font-size:12px;font-weight:650}
+    .curve-preset.active{border-color:#0cba80;box-shadow:0 0 0 2px #0cba8020}
+    .curve-reset{white-space:nowrap}
+    .curve-legend{display:flex;flex-wrap:wrap;gap:18px;border-top:1px solid #e5e1df;margin-top:15px;padding-top:14px;color:#30333d;font-size:13px}
+    .legend-item{display:flex;align-items:center;gap:7px}
+    .legend-dot{width:10px;height:10px;border-radius:50%}
+    .legend-dot.views{background:#5ba1f7}.legend-dot.likes{background:#42d780}.legend-dot.saves{background:#ffbd29}.legend-dot.shares{background:#a385ff}
+    .preview-card{margin-top:26px}
+    .preview-heading{display:flex;align-items:center;gap:12px}
+    .preview-subtitle{color:#626775;font-size:14px;margin:10px 0}
+    .preview-pills{display:flex;gap:8px;flex-wrap:wrap}
+    .preview-pill{border:1px solid #ddd9d6;border-radius:99px;background:#fff;padding:6px 11px;font-size:11px;color:#424651}
+    .preview-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:27px 0 18px}
+    .preview-metric{min-height:94px;border:1px solid #dedbd8;border-radius:17px;background:#f7f5f3;display:grid;place-content:center;text-align:center;gap:4px}
+    .preview-metric-icon{font-size:20px}
+    .preview-metric strong{font-size:14px;color:#252a32}
+    .preview-metric small{font-size:11px;color:#727985}
+    .preview-metric.muted{opacity:.48}
+    .per-type-box{background:#f7f5f3;border:1px solid #dedbd8;border-radius:17px;padding:15px}
+    .per-type-box strong{font-size:13px;color:#252a32}
+    .per-type-help{margin:6px 0 0;color:#6e675b;font-size:12px}
+    .per-type-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px;color:#545b67;font-size:12px}
+    .per-type-row{display:grid;gap:7px;padding:11px 12px;border:1px solid #e2d9ca;border-radius:12px;background:#fffdf8}
+    .per-type-row-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .per-type-name{display:flex;align-items:center;gap:7px;color:#332b1f;font-weight:700}
+    .per-type-name .metric-svg{width:16px;height:16px}
+    .per-type-rate{display:flex;align-items:center;gap:5px;color:#6c604b;font-size:11px}
+    .per-type-rate input{width:68px;height:32px;padding:0 7px;border:1px solid #d8cbb5;border-radius:9px;background:#fff;color:#211e18;text-align:right;font-weight:700}
+    .per-type-rate input:focus{outline:2px solid #9c8358;outline-offset:1px}
+    .per-type-rate input:disabled{opacity:.55}
+    .per-type-row small{color:#756e61;font-size:11px}
+    .order-summary{position:sticky;bottom:12px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:27px;padding:20px 26px;border:1px solid #79dfbd;border-radius:19px;background:#ffffffed;box-shadow:0 9px 20px #17352618;backdrop-filter:blur(10px)}
+    .order-price{font-size:38px;line-height:1;color:#0bb884;font-weight:750;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+    .order-price small{font-size:13px;color:#59616c;font-weight:500;letter-spacing:0}
+    .order-rate,.order-count{display:block;color:#626975;font-size:12px;margin-top:7px}
+    .order-actions{display:flex;align-items:center;gap:12px}
+    .balance-pill{background:#f5f4f2;border-radius:13px;padding:13px 15px;color:#4d535e;font-size:12px;white-space:nowrap}
+    .balance-pill strong{color:#20242e}
+    .place-order{min-height:54px;border:0;border-radius:14px;background:#0cba80;color:#fff;padding:0 23px;font-size:14px;font-weight:750;box-shadow:0 7px 12px #0cba8025}
+    .place-order:disabled{background:#a9cbbd;box-shadow:none;cursor:not-allowed}
+    .dashboard-toast{position:fixed;right:22px;bottom:100px;z-index:5;padding:13px 17px;border-radius:13px;background:#14231e;color:#fff;box-shadow:0 9px 25px #152c2240;font-size:13px}
+    .floating-support{position:fixed;right:24px;bottom:22px;z-index:4;width:66px;height:66px;border:2px solid #fff;border-radius:50%;background:#159fda;color:#fff;box-shadow:0 6px 18px #247ea759;font-size:28px}
+    .floating-support:hover{background:#087fb5}
+    [hidden]{display:none!important}
+    @media(max-width:1050px){.app-shell{grid-template-columns:270px minmax(0,1fr)}.sidebar{padding-left:12px;padding-right:12px}.dashboard{padding-left:28px;padding-right:28px}.form-card{padding-left:22px;padding-right:22px}.order-summary{padding:18px}.order-actions{gap:8px}.place-order{padding:0 15px}}
+    @media(max-width:760px){.app-shell{display:block}.sidebar{height:auto;position:static;padding:12px 14px 0;border-right:0;border-bottom:1px solid #e9ece8}.side-brand{padding-bottom:10px}.logo-badge{width:38px;height:38px;border-radius:12px}.logo-badge span{width:25px;height:25px}.account-card{margin:0 0 10px;padding:8px 10px}.account-avatar{width:32px;height:32px}.wallet-card,.menu-caption,.side-bottom .currency-pill,.telegram-card{display:none}.side-menu ul{display:flex;overflow:auto;padding:0 0 9px;gap:5px}.nav-item{width:auto;min-height:38px;white-space:nowrap;padding:0 11px;font-size:12px}.nav-item:not(.current){display:none}.side-bottom{position:absolute;right:14px;top:13px;margin:0}.logout-button{width:auto;height:37px;margin:0;border:0;padding:0 10px;border-radius:10px;font-size:12px}.dashboard{padding:24px 16px 48px}.page-heading{align-items:flex-start}.page-heading h1{font-size:28px}.draft-pill{font-size:10px;padding:8px}.form-card{padding:18px 16px 20px;margin-bottom:20px}.section-icon{width:42px;height:42px;border-radius:13px}.section-title h2{font-size:18px}.pick-label{font-size:9px}.link-input{height:58px;font-size:14px}.quantity-preset{min-width:70px;height:49px;font-size:15px}.custom-quantity{width:140px;height:48px}.engagement-head{align-items:flex-start}.engagement-head h2{font-size:19px}.engagement-head p{font-size:12px}.engagement-actions{gap:6px}.how-details summary{font-size:11px;padding:10px}.active-count{padding:11px 12px;font-size:11px}.metric-list{gap:13px}.metric-card{padding:15px 12px 12px}.metric-top{grid-template-columns:minmax(0,1fr) auto auto;gap:9px}.metric-name-wrap{gap:6px}.metric-title{font-size:14px}.metric-range{font-size:10px}.metric-amount{width:75px;height:36px;font-size:13px}.switch,.switch-track{width:48px}.switch-track:after{width:20px;height:20px;top:4px;left:3px}.switch input:checked + .switch-track:after{transform:translateX(22px)}.delivery summary{padding:9px;gap:8px}.delivery-icon{width:34px;height:34px}.delivery-copy{font-size:11px}.delivery-copy small{font-size:10px}.delivery-fields{grid-template-columns:repeat(2,minmax(0,1fr));padding:2px 10px 12px}.floating-support{width:52px;height:52px;right:14px;bottom:14px;font-size:23px}.growth-chart{height:260px}.growth-heading h2,.preview-heading h2{font-size:17px}.growth-top{gap:10px}.growth-instructions{font-size:12px}.series-tabs{gap:6px}.series-tab{padding:8px 10px;font-size:11px}.curve-presets{gap:5px}.curve-preset,.curve-reset{font-size:10px;padding:9px}.curve-actions{align-items:flex-start}.curve-legend{gap:9px;font-size:11px}.preview-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:18px 0 12px}.preview-metric{min-height:78px}.per-type-rows{grid-template-columns:repeat(2,minmax(0,1fr))}.order-summary{position:static;display:block;padding:16px;margin-top:18px}.order-price{font-size:32px}.order-actions{margin-top:14px;justify-content:space-between}.balance-pill{padding:11px;font-size:11px}.place-order{flex:1;min-height:48px;font-size:12px}.draw-control{font-size:12px}.draw-badge{padding:5px 8px;font-size:9px}}
+    @media(max-width:760px){.per-type-rows{grid-template-columns:1fr}}
+    @media(max-width:430px){.page-heading{display:block}.draft-pill{display:inline-block;margin-top:12px}.section-head{align-items:flex-start}.pick-label{padding-top:8px}.platform-button{padding:8px 11px}.quantity-preset{min-width:calc(33.3% - 7px);flex:1}.custom-row{gap:7px;font-size:12px}.custom-quantity{width:120px}.engagement-head{display:block}.engagement-actions{margin-top:12px}.metric-amount{width:67px}.delivery-copy small{max-width:200px}.growth-top{display:block}.draw-control{margin-top:13px;justify-content:flex-end}.growth-heading{gap:8px}.growth-heading h2{font-size:16px}.curve-preset{padding:8px 7px;font-size:9px}.curve-reset{padding:8px 9px}.curve-actions{gap:6px}.order-actions{display:grid;grid-template-columns:1fr 1.4fr}.balance-pill{white-space:normal}}
+
+    /* R-SMM black and beige palette */
+    :root{color:#191713;background:#f5f0e6;font-synthesis:none}
+    body{background:#f5f0e6;color:#191713}
+    .shell{background:#f5f0e6}
+    .story{background:#171613;color:#f5f0e6}
+    .story:before,.story:after{border-color:#d0bd9a25}
+    .brand-mark{border-color:#d7c5a780;color:#d7c5a7}
+    .eyebrow{color:#9c8661}
+    .story-copy p{color:#d4cbb9}
+    .story-foot{color:#c5b89f}
+    .story-foot i{background:#c8b28b}
+    .panel-top a,.text-button{color:#755f3e}
+    .auth-select,input{border-color:#d9d0c1;background:#fffdf8;color:#211e18}
+    input:focus{border-color:#9c8358;box-shadow:0 0 0 3px #9c83581c}
+    .submit{background:#191713;color:#f4ecdc}
+    .submit:hover{background:#332d23}
+    .notice.error{background:#f4e8df;color:#793d2d}
+    .notice.success{background:#eee6d5;color:#4c3e28}
+    .terms a{color:#806a47}
+    .workspace{background:#f2ecdf}
+    .sidebar{background:#fffdf8;border-color:#e5ddcf}
+    .logo-badge{background:#171613;color:#d5bd8d;box-shadow:inset 0 0 0 1px #d8c7a533}
+    .logo-badge span{border-color:#c5aa75}
+    .side-brand-copy strong{color:#201d17}
+    .side-brand-copy small{color:#92784f}
+    .account-card{background:#f7f2e8;border-color:#e8decb}
+    .account-avatar{background:#211e18;color:#f5f0e6}
+    .wallet-card{background:linear-gradient(145deg,#f3ecde,#e8dcc5)}
+    .wallet-label{color:#735f3f}
+    .wallet-balance{color:#191713}
+    .funds-button{background:#191713;color:#f5f0e6}
+    .funds-button:hover{background:#363026}
+    .nav-item{border:0;background:transparent;color:#39352e}
+    .nav-item.current{background:#eee5d4;border-color:#dfd1b7;color:#292318}
+    .nav-icon{color:#82745d}
+    .nav-item.current .nav-icon{color:#77603a}
+    .currency-pill{background:#fbf8f1;border-color:#e7dece;color:#655b4b}
+    .telegram-card{background:#f5f0e6;border-color:#e2d7c4;color:#66563c}
+    .telegram-icon{background:#312a1e;color:#e9dec8}
+    .dashboard{background:linear-gradient(135deg,#f3eee4 0%,#ece3d2 55%,#f4eee2 100%)}
+    .page-heading .eyebrow{color:#806b49}
+    .page-heading h1,.section-title h2,.engagement-head h2,.growth-heading h2,.preview-heading h2{color:#191713}
+    .page-heading p,.engagement-head p,.preview-subtitle,.growth-instructions{color:#71695d}
+    .draft-pill{background:#fbf8f1;border-color:#e2d7c4;color:#706148}
+    .form-card{background:#fffdf8;border-color:#ded5c6;box-shadow:0 9px 15px #30271812,0 2px 4px #30271808}
+    .section-icon{background:#f0eadf;color:#302a20}
+    .platform-button{border-color:#e1d9cd;background:#f8f5ef;color:#5c554a}
+    .platform-button .platform-icon{background:#eae3d6}
+    .platform-button.selected[data-platform="instagram"],.platform-button.selected[data-platform="tiktok"]{border-color:#191713;background:#191713;color:#f4ecdc;box-shadow:0 5px 10px #19171322}
+    .link-input,.custom-quantity,.metric-amount{background:#f7f4ed;border-color:#ddd4c6;color:#211e18}
+    .link-input:focus,.custom-quantity:focus,.metric-amount:focus{border-color:#9c8358;box-shadow:0 0 0 3px #9c83581c}
+    .quantity-preset{background:#f7f4ed;border-color:#ddd4c6;color:#211e18}
+    .quantity-preset.active{border-color:#191713;background:#191713;color:#f4ecdc}
+    .how-details summary{border-color:#d5c5a6;background:#f2eadb;color:#6f5a38}
+    .how-popover{border-color:#ded3bf;color:#6e675b}
+    .how-popover strong{color:#211e18}
+    .active-count{background:#191713;color:#f4ecdc}
+    .metric-card{background:#fffdf8;border-color:#d5c8b1;box-shadow:0 8px 14px #34281710}
+    .metric-symbol{color:#776344}
+    .metric-svg{display:block;width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .metric-title,.metric-title.views,.metric-title.likes,.metric-title.saves,.metric-title.shares,.metric-title.reposts{color:#332b1f}
+    .base-badge{background:#d6c29a;color:#2c2418}
+    .switch-track{background:#cfc7b9}
+    .switch input:checked + .switch-track{background:#8e7957}
+    .delivery{border-color:#ded1bc;background:#f8f4eb}
+    .delivery-icon{background:#eee4d2;color:#806941}
+    .delivery-icon:after{background:#9b8257}
+    .delivery-open{color:#77603e}
+    .draw-badge{background:#191713;color:#f4ecdc}
+    .series-tab{border-color:#ded5c6;background:#fbf8f2;color:#5f584d}
+    .series-tab.active,.series-tab[data-series="likes"].active,.series-tab[data-series="saves"].active,.series-tab[data-series="shares"].active{outline-color:#b8a17a;border-color:#191713;background:#191713;color:#f4ecdc}
+    .series-tab.active small{background:#d9c8a7;color:#242016}
+    .growth-chart{border-color:#c7b48f;background-color:#f7f4ec;background-image:linear-gradient(#d4c8b51f 1px,transparent 1px),linear-gradient(90deg,#d4c8b51f 1px,transparent 1px)}
+    .graph-baseline{stroke:#b9a47f}
+    .graph-point{fill:#fffdf8}
+    .curve-preset,.curve-reset{border-color:#ddd4c6;background:#fffdf8;color:#342e24}
+    .curve-preset.active{border-color:#9c8358;box-shadow:0 0 0 2px #9c83581c}
+    .legend-dot.views{background:#191713}.legend-dot.likes{background:#a58c63}.legend-dot.saves{background:#d2c2a5}.legend-dot.shares{background:#776344}
+    .preview-metric,.per-type-box{border-color:#ded5c6;background:#f7f4ed}
+    .preview-metric strong,.per-type-box strong,.per-type-rows b{color:#211e18}
+    .order-summary{border-color:#c8b58f;background:#fffdf2ed;box-shadow:0 9px 20px #30271818}
+    .order-price{color:#242016}
+    .balance-pill{background:#f0eadf;color:#51493c}
+    .balance-pill strong{color:#211e18}
+    .place-order{background:#191713;color:#f4ecdc;box-shadow:0 7px 12px #19171320}
+    .place-order:hover{background:#393225}
+    .place-order:disabled{background:#c9c0b1;color:#fffdf8}
+    .dashboard-toast{background:#191713;color:#f4ecdc;box-shadow:0 9px 25px #19171330}
+    .floating-support{border-color:#fffdf8;background:#191713;color:#e6d8bd;box-shadow:0 6px 18px #19171338}
+    .floating-support:hover{background:#3b3325}
+    .customer-content{min-width:0}
+    .overview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 4px 26px}
+    .overview-card{min-width:0;padding:21px;border:1px solid #ded5c6;border-radius:18px;background:#fffdf8;box-shadow:0 7px 14px #3027180c}
+    .overview-card span,.wallet-overview span{display:block;color:#71695d;font-size:12px}
+    .overview-card strong{display:block;margin:10px 0 5px;color:#191713;font-size:27px;letter-spacing:-.04em}
+    .overview-card small,.wallet-overview small{color:#827969;font-size:11px}
+    .quick-start{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .quick-start h2,.support-card h2{margin:0 0 6px;color:#211e18;font-size:18px}
+    .quick-start p,.support-card p{margin:0;color:#71695d;font-size:13px;line-height:1.55}
+    .wallet-overview{display:flex;align-items:center;justify-content:space-between;margin:0 4px 22px;padding:28px;border:1px solid #cdbc9a;border-radius:20px;background:linear-gradient(120deg,#eee5d4,#f7f2e8)}
+    .wallet-overview strong{display:block;margin:9px 0 8px;color:#191713;font-size:38px;letter-spacing:-.05em}
+    .wallet-overview small b{color:#4d402c}
+    .wallet-emblem{display:grid;place-items:center;width:62px;height:62px;border-radius:18px;background:#191713;color:#e6d8bd;font-size:30px}
+    .wallet-emblem svg{display:block;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+    .deposit-note{max-width:760px;margin:-2px 0 18px;color:#71695d;font-size:13px;line-height:1.6}
+    .deposit-form{display:grid;grid-template-columns:160px minmax(150px,220px) minmax(240px,1fr) auto;align-items:end;gap:12px}
+    .deposit-form label{display:block;color:#4d463b;font-size:11px;font-weight:700}
+    .deposit-form input,.deposit-form select{display:block;width:100%;height:46px;margin-top:7px;border:1px solid #ddd4c6;border-radius:10px;background:#fffdf8;padding:0 12px;color:#211e18;font:inherit;font-size:13px}
+    .deposit-form .place-order{min-height:46px;font-size:12px;padding:0 15px;white-space:nowrap}
+    .deposit-address-card{display:grid;grid-template-columns:116px minmax(0,1fr);align-items:center;gap:16px;margin-top:18px;padding:14px;border:1px solid #ded5c6;border-radius:15px;background:#f7f4ed}
+    .deposit-qr{display:grid;place-items:center;min-height:116px;border-radius:12px;background:#fff;padding:6px}
+    .deposit-qr img{display:block;width:104px;height:104px;image-rendering:pixelated}
+    .deposit-qr span{color:#71695d;font-size:10px;text-align:center}
+    .deposit-address-content{min-width:0}
+    .deposit-address-content strong{display:block;margin:4px 0 8px;color:#211e18;font-size:14px}
+    .deposit-address-content code{display:block;overflow-wrap:anywhere;color:#4d463b;font-size:12px;line-height:1.5}
+    .copy-address{margin-top:10px;min-height:36px;padding:0 12px;border:1px solid #cbb996;border-radius:9px;background:#fffdf8;color:#4d402c;font-size:12px;font-weight:700}
+    .deposit-address-content small{display:block;margin-top:8px;color:#71695d;font-size:11px;line-height:1.5}
+    .record-list{display:grid;gap:12px}
+    .record-card{padding:17px 18px;border:1px solid #ded5c6;border-radius:16px;background:#fffdf8}
+    .record-card p{margin:10px 0;color:#71695d;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+    .record-card a{display:inline-block;color:#755f3e;font-size:12px;font-weight:700;text-decoration:none}
+    .record-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;color:#211e18;font-size:13px}
+    .record-top>div{display:grid;gap:5px}
+    .record-top>div>span:not(.status-badge),.record-top>span{color:#817969;font-size:11px}
+    .record-top>strong:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+    .record-card code{padding:2px 5px;border-radius:5px;background:#f2ecdf;color:#51442e;overflow-wrap:anywhere}
+    .order-plan{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+    .order-chip{padding:5px 8px;border:1px solid #e1d6c2;border-radius:8px;background:#f5efe3;color:#4f4431;font-size:10px;font-weight:700;text-transform:capitalize}
+    .order-details{margin:9px 0 13px;color:#70685c;font-size:11px}
+    .order-details summary{cursor:pointer;color:#725f40;font-weight:700}
+    .order-details p{margin:7px 0 0}
+    .status-badge{display:inline-block;width:max-content;border-radius:99px;padding:4px 8px;background:#eee5d4;color:#51442e;font-size:10px;font-weight:750;text-transform:capitalize}
+    .status-badge.credited,.status-badge.completed{background:#e9e2d4;color:#4c5a3a}
+    .status-badge.rejected{background:#f1e1d8;color:#844b37}
+    .empty-state{padding:27px;border:1px dashed #d8cdbb;border-radius:14px;color:#817969;font-size:13px;text-align:center;background:#faf7f0}
+    .credit{color:#5c6942}.debit{color:#54432b}
+    .settings-card{display:grid;gap:0}
+    .settings-card>div{display:flex;justify-content:space-between;gap:15px;padding:15px 2px;border-bottom:1px solid #ece4d7;color:#726a5e;font-size:13px}
+    .settings-card>div:last-child{border:0}
+    .settings-card strong{color:#211e18}
+    .support-card{display:flex;align-items:center;gap:16px}
+    .support-mark{display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:13px;background:#191713;color:#e6d8bd;font-weight:800}
+    .admin-panel{min-height:100vh;background:linear-gradient(140deg,#f3eee4,#ece3d2);color:#191713}
+    .admin-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px clamp(18px,4vw,50px);border-bottom:1px solid #ded5c6;background:#fffdf8}
+    .admin-topbar .side-brand{padding:0}
+    .admin-account{display:flex;align-items:center;gap:12px;color:#51493c;font-size:12px}
+    .admin-logout{width:auto;height:38px;margin:0;padding:0 12px;border:1px solid #e5ddcf;border-radius:10px;background:#fffdf8;font-size:12px}
+    .admin-main{max-width:1380px;margin:0 auto;padding:34px clamp(18px,4vw,50px) 60px}
+    .admin-main .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:600px}
+    .admin-section{margin:28px 4px}
+    .admin-section-heading{margin-bottom:13px}
+    .admin-section-heading h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}
+    .admin-section-heading p{margin:0;color:#71695d;font-size:12px}
+    .admin-actions{display:flex;gap:8px;margin-top:14px}
+    .admin-action{min-height:38px;padding:0 13px;border:1px solid #191713;border-radius:10px;background:#191713;color:#f4ecdc;font-size:12px;font-weight:700}
+    .admin-action.secondary{background:#fffdf8;color:#51493c;border-color:#ded5c6}
+    #admin-toast{bottom:24px;right:24px}
+    @media(max-width:1050px){.deposit-form{grid-template-columns:repeat(2,minmax(0,1fr))}.deposit-form .place-order{width:100%}}
+    @media(max-width:760px){.nav-item:not(.current){display:flex}.nav-item{flex:none}.overview-grid{grid-template-columns:1fr;gap:9px}.overview-card{padding:16px}.overview-card strong{font-size:23px}.quick-start{align-items:flex-start;flex-direction:column}.quick-start .place-order{width:100%}.wallet-overview{padding:20px}.wallet-overview strong{font-size:30px}.wallet-emblem{width:48px;height:48px}.deposit-form{grid-template-columns:1fr}.deposit-form .place-order{width:100%}.admin-topbar{align-items:flex-start;flex-wrap:wrap}.admin-account{width:100%;justify-content:space-between}.admin-main{padding-top:24px}.admin-main .overview-grid{grid-template-columns:1fr}.record-card{padding:14px}.record-top{font-size:12px}}
+    @media(max-width:430px){.wallet-overview{padding:16px}.wallet-overview strong{font-size:26px}.deposit-address-card{grid-template-columns:86px minmax(0,1fr);gap:11px;padding:11px}.deposit-qr{min-height:82px}.deposit-qr img{width:76px;height:76px}.deposit-address-content code{font-size:10px}.admin-account{gap:7px;flex-wrap:wrap}.admin-logout{margin-left:auto}.record-top{align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <main class="shell" id="auth-screen">
+    <section class="story" aria-label="Welcome to R-SMM">
+      <div class="brand"><span class="brand-mark">R</span><span>R-SMM</span></div>
+      <article class="story-copy">
+        <div class="eyebrow">Your social studio</div>
+        <h1>Good ideas<br>deserve good<br>company.</h1>
+        <p>A calmer place to bring your social work together. Make room for the ideas you’re excited to share.</p>
+      </article>
+      <aside class="social-card" aria-hidden="true">
+        <div class="social-head"><span class="avatar">R</span><span>riverandrow · Instagram</span></div>
+        <div class="social-visual"></div>
+        <div class="social-meta"><span>Draft post · Today</span><span>♡ &nbsp;↗</span></div>
+      </aside>
+      <div class="story-foot"><i></i> A little more in sync, every day</div>
+    </section>
+    <section class="panel">
+      <div class="panel-top"><span id="switch-prompt">New to R-SMM?</span><a href="#" id="mode-link">Create an account</a></div>
+      <div class="form-wrap">
+        <h2 id="form-title">Welcome back</h2>
+        <p class="intro" id="form-intro">Sign in to pick up where your best ideas left off.</p>
+        <form id="auth-form">
+          <div id="name-row" hidden>
+            <label class="form-label" for="name">Your name</label>
+            <input id="name" name="name" autocomplete="name" placeholder="e.g. Riley Morgan" maxlength="60">
+            <label class="form-label" for="signup-currency">Wallet deposit token</label>
+            <select class="auth-select" id="signup-currency" name="currency">
+              <option value="USDT">USDT</option>
+              <option value="USDC">USDC</option>
+            </select>
+            <small class="auth-helper">Choose the token you plan to deposit. Your wallet and orders will use this token.</small>
+          </div>
+          <label class="form-label" for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required>
+          <label class="form-label" for="password">Password</label>
+          <div class="field">
+            <input class="password-input" id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="10" maxlength="128" required>
+            <button type="button" class="show-pass" id="show-password" aria-label="Show password">Show</button>
+          </div>
+          <div class="forgot-row" id="forgot-row"><button class="text-button" type="button" id="forgot">Forgot password?</button></div>
+          <button class="submit" id="submit" type="submit">Sign in</button>
+          <div class="notice" id="notice" role="alert" aria-live="polite"></div>
+        </form>
+        <div class="divider" id="divider">A thoughtful space for your work</div>
+        <p class="terms" id="terms">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+      </div>
+      <div class="panel-foot">Made for the work you put into the world.</div>
+    </section>
+  </main>
+  <main class="workspace" id="workspace" hidden>
+    <div class="app-shell" id="customer-shell">
+      <aside class="sidebar">
+        <div class="side-brand">
+          <div class="logo-badge" aria-hidden="true"><span>R</span></div>
+          <div class="side-brand-copy"><strong>R-SMM</strong><small>✦ UPDATED VERSION</small></div>
+        </div>
+        <div class="account-card">
+          <span class="account-avatar" id="account-avatar">A</span>
+          <div class="account-copy"><strong id="account-name">Your account</strong><small id="account-email">you@example.com</small></div>
+        </div>
+        <section class="wallet-card" aria-label="Wallet balance">
+          <div class="wallet-label"><span aria-hidden="true">▱</span> WALLET BALANCE</div>
+          <strong class="wallet-balance" id="wallet-balance">0.00 USDT</strong>
+          <button class="funds-button" id="add-funds" type="button">▱ &nbsp; Add Funds</button>
+        </section>
+        <nav class="side-menu" aria-label="Main menu">
+          <p class="menu-caption">MENU</p>
+          <ul>
+            <li><button class="nav-item" type="button" data-view="dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</button></li>
+            <li><button class="nav-item current" type="button" data-view="full-engagement" aria-current="page"><span class="nav-icon" aria-hidden="true">♧</span>Full Engagement</button></li>
+            <li><button class="nav-item" type="button" data-view="orders"><span class="nav-icon" aria-hidden="true">✧</span>Engagement Orders</button></li>
+            <li><button class="nav-item" type="button" data-view="wallet"><span class="nav-icon" aria-hidden="true">▱</span>Wallet</button></li>
+            <li><button class="nav-item" type="button" data-view="support"><span class="nav-icon" aria-hidden="true">◎</span>Support</button></li>
+            <li><button class="nav-item" type="button" data-view="settings"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</button></li>
+          </ul>
+        </nav>
+        <div class="side-bottom">
+          <div class="currency-pill"><span>WALLET TOKEN</span><strong id="side-currency">USDT</strong></div>
+          <div class="telegram-card"><span class="telegram-icon" aria-hidden="true">➤</span><span class="telegram-copy"><strong>Join our Telegram</strong><small>Updates &amp; support</small></span></div>
+          <button class="logout-button" id="logout" type="button"><span aria-hidden="true">⇥</span>Sign out</button>
+        </div>
+      </aside>
+      <div class="customer-content">
+      <section class="dashboard" id="engagement-page" data-page="full-engagement">
+        <div class="dashboard-inner">
+          <header class="page-heading">
+            <div><div class="eyebrow">R-SMM SOCIAL GROWTH</div><h1>Full Engagement</h1><p>Build a natural engagement plan for your next post.</p></div>
+            <span class="draft-pill">● &nbsp; New order</span>
+          </header>
+          <section class="form-card" aria-labelledby="platform-heading">
+            <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↗</span><h2 id="platform-heading">Select Platform</h2></div><span class="pick-label">PICK ONE</span></div>
+            <div class="platform-options" role="group" aria-label="Choose a platform">
+              <button class="platform-button selected" data-platform="instagram" type="button" aria-pressed="true"><span class="platform-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.7" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg></span>Instagram</button>
+              <button class="platform-button" data-platform="tiktok" type="button" aria-pressed="false"><span class="platform-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4v11.5a4 4 0 1 1-3.2-3.9"/><path d="M14 4c.5 2.4 2.2 4.1 4.5 4.6"/></svg></span>TikTok</button>
+            </div>
+          </section>
+          <section class="form-card" aria-labelledby="link-heading">
+            <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↗</span><h2 id="link-heading">Video/Post Link</h2></div></div>
+            <input class="link-input" id="post-link" type="url" placeholder="https://instagram.com/..." aria-label="Video or post link" required>
+          </section>
+          <section class="form-card" aria-labelledby="quantity-heading">
+            <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">◉</span><h2 id="quantity-heading">Base Views Quantity</h2></div></div>
+            <div class="quantity-options" role="group" aria-label="Choose a base views quantity">
+              <button class="quantity-preset active" type="button" data-quantity="10000" aria-pressed="true">10K</button>
+              <button class="quantity-preset" type="button" data-quantity="50000" aria-pressed="false">50K</button>
+              <button class="quantity-preset" type="button" data-quantity="100000" aria-pressed="false">100K</button>
+              <button class="quantity-preset" type="button" data-quantity="250000" aria-pressed="false">250K</button>
+              <button class="quantity-preset" type="button" data-quantity="500000" aria-pressed="false">500K</button>
+              <button class="quantity-preset" type="button" data-quantity="600000" aria-pressed="false">600K</button>
+            </div>
+            <label class="custom-row" for="custom-quantity">or custom: <input class="custom-quantity" id="custom-quantity" type="number" min="100" max="10000000" step="1" value="10000"> views</label>
+          </section>
+          <section class="engagement" id="full-engagement">
+            <header class="engagement-head">
+              <div><h2>Engagement Breakdown</h2><p>Customize organic settings per type</p></div>
+              <div class="engagement-actions">
+                <details class="how-details">
+                  <summary>● &nbsp;ⓘ &nbsp;How it works &nbsp;⌄</summary>
+                  <div class="how-popover"><strong>A balanced engagement plan</strong><br>Choose a base view quantity, then turn each engagement type on or off and set its amount. Delivery options let you spread activity over time.</div>
+                </details>
+                <span class="active-count"><span id="active-count">5</span> active</span>
+              </div>
+            </header>
+            <div class="metric-list" id="metric-list"></div>
+            <section class="form-card growth-card" aria-labelledby="growth-heading">
+              <div class="growth-top">
+                <div>
+                  <div class="growth-heading"><span aria-hidden="true">✎</span><h2 id="growth-heading">Draw Your Growth Curve</h2><span class="draw-badge" id="draw-badge">Draw Mode ON</span></div>
+                  <p class="growth-instructions">Click to add points • Drag to adjust • Double-click to remove</p>
+                </div>
+                <label class="draw-control">Drawing
+                  <span class="switch"><input id="drawing-toggle" type="checkbox" checked aria-label="Enable curve drawing"><span class="switch-track"></span></span>
+                </label>
+              </div>
+              <div class="series-tabs" role="group" aria-label="Choose a curve">
+                <button class="series-tab active" type="button" data-series="views" aria-pressed="true"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg> Views <small>5</small></button>
+                <button class="series-tab" type="button" data-series="likes" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg> Likes <small>2</small></button>
+                <button class="series-tab" type="button" data-series="saves" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12v17l-6-4-6 4v-17Z"/></svg> Saves <small>2</small></button>
+                <button class="series-tab" type="button" data-series="shares" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/></svg> Shares <small>2</small></button>
+              </div>
+              <div class="growth-chart" id="growth-chart">
+                <span class="graph-label y-top">100%</span><span class="graph-label y-middle">50%</span>
+                <span class="graph-label x-middle">50%</span><span class="graph-label x-end">100%</span>
+                <svg id="growth-svg" viewBox="0 0 1000 320" preserveAspectRatio="none" role="application" aria-label="Editable growth curve">
+                  <path class="graph-baseline" d="M0 320 L1000 0"></path>
+                  <path class="graph-line" id="graph-line" d=""></path>
+                  <g id="graph-points"></g>
+                </svg>
+              </div>
+              <div class="curve-actions">
+                <div class="curve-presets" role="group" aria-label="Growth curve presets">
+                  <button class="curve-preset" type="button" data-preset="viral">🚀 Viral Spike</button>
+                  <button class="curve-preset" type="button" data-preset="steady">📈 Steady Growth</button>
+                  <button class="curve-preset" type="button" data-preset="s-curve">🌊 S-Curve</button>
+                  <button class="curve-preset active" type="button" data-preset="double-peak">🏔 Double Peak</button>
+                </div>
+                <button class="curve-reset" id="reset-curve" type="button">↶ &nbsp;Reset</button>
+              </div>
+              <div class="curve-legend" id="curve-legend"></div>
+            </section>
+            <section class="form-card preview-card" aria-labelledby="preview-heading">
+              <div class="preview-heading"><span aria-hidden="true">↗</span><h2 id="preview-heading">Per-Type Organic Delivery Preview</h2></div>
+              <p class="preview-subtitle">Each type has its own organic settings</p>
+              <div class="preview-pills"><span class="preview-pill" id="preview-total">⚡ 10,680</span><span class="preview-pill">◴ &nbsp;3 runs</span><span class="preview-pill">◷ &nbsp;~23h 25m</span></div>
+              <div class="preview-metrics" id="preview-metrics"></div>
+              <div class="per-type-box"><strong>▦ &nbsp;Per-Type Settings</strong><p class="per-type-help">Set each engagement as a percentage of views. Counts update automatically and fixed USDT/USDC rates price each enabled service.</p><div class="per-type-rows" id="per-type-rows"></div></div>
+            </section>
+          </section>
+          <section class="order-summary" aria-label="Order price and balance">
+            <div>
+              <div class="order-price"><span id="order-total">0.850000</span> <small id="order-currency">USDT</small></div>
+              <span class="order-rate">Fixed rates apply to each enabled service; see the rate on each card.</span>
+              <span class="order-count" id="order-count">10,680 engagements • 5 types</span>
+            </div>
+            <div class="order-actions">
+              <span class="balance-pill">Wallet: <strong id="summary-balance">0.00 USDT</strong></span>
+              <button class="place-order" id="place-order" type="button">Place Order — 0.850000 USDT</button>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section class="dashboard secondary-page" id="dashboard-page" data-page="dashboard" hidden>
+        <div class="dashboard-inner">
+          <header class="page-heading"><div><div class="eyebrow">YOUR WORKSPACE</div><h1>Dashboard</h1><p>Your balance and recent social growth activity.</p></div></header>
+          <div class="overview-grid">
+            <article class="overview-card"><span>Wallet balance</span><strong id="overview-balance">0.00 USDT</strong><small>Available for your next order</small></article>
+            <article class="overview-card"><span>Orders placed</span><strong id="overview-orders">0</strong><small>View your order history</small></article>
+            <article class="overview-card"><span>Pending deposits</span><strong id="overview-deposits">0</strong><small>Waiting for admin verification</small></article>
+          </div>
+          <article class="form-card quick-start"><div><h2>Ready for your next post?</h2><p>Build a plan for views and engagement on Instagram or TikTok.</p></div><button class="place-order" type="button" data-go="full-engagement">Create an order</button></article>
+        </div>
+      </section>
+      <section class="dashboard secondary-page" id="orders-page" data-page="orders" hidden>
+        <div class="dashboard-inner">
+          <header class="page-heading"><div><div class="eyebrow">YOUR ACTIVITY</div><h1>Engagement Orders</h1><p>Track orders placed from your R-SMM wallet.</p></div><button class="draft-pill refresh-button" type="button" id="refresh-orders">↻ &nbsp; Refresh</button></header>
+          <div class="record-list" id="customer-orders"><div class="empty-state">Your orders will appear here.</div></div>
+        </div>
+      </section>
+      <section class="dashboard secondary-page" id="wallet-page" data-page="wallet" hidden>
+        <div class="dashboard-inner">
+          <header class="page-heading"><div><div class="eyebrow">WALLET</div><h1>Your balance</h1><p>Deposit USDT or USDC and use your balance for orders.</p></div><button class="draft-pill refresh-button" type="button" id="refresh-wallet">↻ &nbsp; Refresh</button></header>
+          <div class="wallet-overview"><div><span>Available balance</span><strong id="wallet-page-balance">0.00 USDT</strong><small>Wallet token: <b id="wallet-page-token">USDT</b></small></div><span class="wallet-emblem" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h13.5v14H6a2.5 2.5 0 0 1-2.5-2.5v-9Z"/><path d="M3.5 8h13M15 12.5h4.5M6.5 5V4.5A1.5 1.5 0 0 1 8 3h10"/><circle cx="16.75" cy="12.5" r=".5"/></svg></span></div>
+          <section class="form-card deposit-card">
+            <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">＋</span><h2>Request a deposit</h2></div><span class="pick-label">MANUAL REVIEW</span></div>
+            <p class="deposit-note">Minimum deposit is 2 USDT or USDC. Send only USDT on TRC20 or USDC on Base to the matching address below, then submit your transaction reference for manual verification.</p>
+            <form id="deposit-form" class="deposit-form">
+              <label>Token &amp; network<select id="deposit-currency" required><option value="USDT">USDT · TRC20</option><option value="USDC">USDC · Base</option></select></label>
+              <label>Amount<input id="deposit-amount" type="number" min="2" max="1000000" step="0.000001" placeholder="2.00" required></label>
+              <label class="deposit-reference">Transfer reference / transaction hash<input id="deposit-reference" type="text" minlength="8" maxlength="256" placeholder="Paste your transaction reference" required></label>
+              <button class="place-order" type="submit">Submit for verification</button>
+            </form>
+            <div class="deposit-address-card" aria-live="polite">
+              <div class="deposit-qr"><img id="deposit-qr" alt="QR code for USDT on TRC20" loading="lazy"><span id="deposit-qr-error" hidden>QR unavailable</span></div>
+              <div class="deposit-address-content"><span class="eyebrow">SEND ONLY ON THIS NETWORK</span><strong id="deposit-address-title">USDT · TRC20</strong><code id="deposit-address"></code><button class="copy-address" id="copy-deposit-address" type="button">Copy address</button><small>Minimum 2. Double-check the selected token and network before sending.</small></div>
+            </div>
+          </section>
+          <section class="form-card"><div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">◷</span><h2>Deposit requests</h2></div></div><div class="record-list compact" id="customer-deposits"><div class="empty-state">No deposit requests yet.</div></div></section>
+          <section class="form-card"><div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↕</span><h2>Wallet activity</h2></div></div><div class="record-list compact" id="wallet-transactions"><div class="empty-state">No wallet activity yet.</div></div></section>
+        </div>
+      </section>
+      <section class="dashboard secondary-page" id="support-page" data-page="support" hidden>
+        <div class="dashboard-inner"><header class="page-heading"><div><div class="eyebrow">WE’RE HERE TO HELP</div><h1>Support</h1><p>For a deposit or order question, include its reference when you contact your administrator.</p></div></header><article class="form-card support-card"><span class="support-mark">R</span><div><h2>R-SMM support</h2><p>Use the support channel shared by your administrator. Include your account email and the order or transfer reference so they can find it quickly.</p></div></article></div>
+      </section>
+      <section class="dashboard secondary-page" id="settings-page" data-page="settings" hidden>
+        <div class="dashboard-inner"><header class="page-heading"><div><div class="eyebrow">ACCOUNT</div><h1>Settings</h1><p>Your account details and wallet token.</p></div></header><article class="form-card settings-card"><div><span>Name</span><strong id="settings-name">—</strong></div><div><span>Email</span><strong id="settings-email">—</strong></div><div><span>Wallet token</span><strong id="settings-currency">USDT</strong></div></article></div>
+      </section>
+      </div>
+      <div class="dashboard-toast" id="dashboard-toast" role="status" hidden></div>
+      <button class="floating-support" id="support-button" type="button" aria-label="Support">➤</button>
+    </div>
+    <section id="admin-panel" class="admin-panel" hidden>
+      <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>ADMIN CONSOLE</small></div></div><div class="admin-account"><span id="admin-email">aryan793gupta@gmail.com</span><button class="draft-pill refresh-button" id="refresh-admin" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="admin-logout" type="button">Sign out</button></div></header>
+      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>Admin panel</h1><p>Review customer orders and verify deposits before crediting wallets.</p></div></header>
+        <div class="overview-grid"><article class="overview-card"><span>Pending orders</span><strong id="admin-order-count">0</strong><small>Awaiting completion</small></article><article class="overview-card"><span>Pending payments</span><strong id="admin-deposit-count">0</strong><small>Awaiting manual verification</small></article></div>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending orders</h2><p>Open the social post, then mark the order complete after fulfillment.</p></div></div><div class="record-list" id="admin-orders"><div class="empty-state">No pending orders.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer reference externally before crediting its wallet.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
+      </div>
+      <div class="dashboard-toast" id="admin-toast" role="status" hidden></div>
+    </section>
+  </main>
+  <script>
+    const form = document.querySelector("#auth-form");
+    const notice = document.querySelector("#notice");
+    const metricList = document.querySelector("#metric-list");
+    const metrics = [
+      {key:"views", name:"Views", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg>', amount:10000, rateMicros:85, rateLabel:"0.085 / 1,000", min:100, max:10000000, range:"Min: 100 • Max: 10,000,000", base:true},
+      {key:"likes", name:"Likes", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>', amount:310, rateMicros:5210, rateLabel:"5.21 / 1,000", min:10, max:500000, range:"Min: 10 • Max: 500,000"},
+      {key:"comments", name:"Comments", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v12H9l-5 4v-16Z"/><path d="M8 9h8M8 12.5h5"/></svg>', amount:50, rateMicros:52000, rateLabel:"0.052 each", min:1, max:100000, range:"Min: 1 • Max: 100,000"},
+      {key:"saves", name:"Saves", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12v17l-6-4-6 4v-17Z"/></svg>', amount:110, rateMicros:312, rateLabel:"0.312 / 1,000", min:10, max:500000, range:"Min: 10 • Max: 500,000"},
+      {key:"shares", name:"Shares", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/></svg>', amount:130, rateMicros:520, rateLabel:"0.52 / 1,000", min:10, max:100000, range:"Min: 10 • Max: 100,000"},
+      {key:"reposts", name:"Reposts", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4m14-1v2a3 3 0 0 1-3 3H3"/></svg>', amount:130, rateMicros:2080, rateLabel:"2.08 / 1,000", min:10, max:1000000, range:"Min: 10 • Max: 1,000,000"}
+    ];
+    const engagementMetrics = metrics.filter(metric => !metric.base);
+    const engagementRates = {};
+    engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
+    const curveDefaults = {
+      views:[[0,0],[.27,.52],[.43,.31],[.68,.78],[1,1]],
+      likes:[[0,0],[1,1]],
+      saves:[[0,0],[1,1]],
+      shares:[[0,0],[1,1]]
+    };
+    const curves = JSON.parse(JSON.stringify(curveDefaults));
+    const curveColors = {views:"#211e18",likes:"#a58c63",saves:"#d2c2a5",shares:"#776344"};
+    const graphSvg = document.querySelector("#growth-svg");
+    const graphLine = document.querySelector("#graph-line");
+    const graphPoints = document.querySelector("#graph-points");
+    let mode = "login";
+    let toastTimer;
+    let walletCurrency = "USDT";
+    let walletBalanceMicros = 0;
+    const depositAddresses = {
+      USDC:{network:"Base", address:"0x98e56Af262E9FDbe77616e9fF8638E65ceed5f01"},
+      USDT:{network:"TRC20", address:"TSi3EAdmxqw1NsDHRpDJYJBK2gkntjGUzE"}
+    };
+    let activeSeries = "views";
+    let draggingPoint = null;
+    const activePreset = {views:"double-peak",likes:"steady",saves:"steady",shares:"steady"};
+    metricList.innerHTML = metrics.map(function(metric) {
+      return '<article class="metric-card" data-metric="' + metric.key + '">' +
+        '<div class="metric-top"><div class="metric-name-wrap"><span class="metric-symbol" aria-hidden="true">' + metric.symbol + '</span><div>' +
+        '<div class="metric-title ' + metric.key + '">' + metric.name + (metric.base ? '<span class="base-badge">BASE</span>' : "") + '</div>' +
+        '<div class="metric-range">' + metric.range + ' · Rate: ' + metric.rateLabel + ' USDT/USDC</div></div></div>' +
+        '<input class="metric-amount" data-metric-input="' + metric.key + '" type="number" min="' + metric.min + '" max="' + metric.max + '" value="' + metric.amount + '" required aria-label="' + metric.name + ' quantity">' +
+        '<label class="switch" aria-label="Enable ' + metric.name + '"><input class="metric-toggle" type="checkbox" checked><span class="switch-track"></span></label></div>' +
+        '<details class="delivery"><summary><span class="delivery-icon" aria-hidden="true">◷</span><span class="delivery-copy">Tap to customise delivery<small>Set delivery time, number of runs, variance &amp; peak hours</small></span><span class="delivery-open">OPEN⌄</span></summary>' +
+        '<div class="delivery-fields"><label>Start delivery<select><option>As soon as possible</option><option>In 30 minutes</option><option>In 1 hour</option></select></label>' +
+        '<label>Number of runs<select><option>1 run</option><option>3 runs</option><option>5 runs</option><option>10 runs</option></select></label>' +
+        '<label>Delivery variance<select><option>0%</option><option selected>10%</option><option>20%</option></select></label>' +
+      '<label>Peak hours<select><option>No preference</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></label></div></details></article>';
+    }).join("");
+    const perTypeRows = document.querySelector("#per-type-rows");
+    perTypeRows.innerHTML = engagementMetrics.map(metric =>
+      '<div class="per-type-row"><span class="per-type-row-heading"><span class="per-type-name">' + metric.symbol + metric.name +
+      '</span><label class="per-type-rate">Rate <input data-rate-input="' + metric.key + '" type="number" min="0" step="0.01" value="' +
+      engagementRates[metric.key].toFixed(2) + '" aria-label="' + metric.name + ' percentage of views">%</label></span>' +
+      '<small><b data-rate-count="' + metric.key + '"></b> of <span data-rate-views></span> views</small></div>'
+    ).join("");
+    renderCurve();
+    function setMode(next) {
+      mode = next;
+      const signingUp = mode === "signup";
+      document.querySelector("#name-row").hidden = !signingUp;
+      document.querySelector("#name").required = signingUp;
+      document.querySelector("#signup-currency").required = signingUp;
+      document.querySelector("#forgot-row").hidden = signingUp;
+      document.querySelector("#terms").hidden = signingUp;
+      document.querySelector("#divider").hidden = signingUp;
+      document.querySelector("#switch-prompt").textContent = signingUp ? "Already have an account?" : "New to R-SMM?";
+      document.querySelector("#mode-link").textContent = signingUp ? "Sign in" : "Create an account";
+      document.querySelector("#form-title").textContent = signingUp ? "Make yourself at home" : "Welcome back";
+      document.querySelector("#form-intro").textContent = signingUp ? "Create an account to get your social work in sync." : "Sign in to pick up where your best ideas left off.";
+      document.querySelector("#submit").textContent = signingUp ? "Create account" : "Sign in";
+      document.querySelector("#password").autocomplete = signingUp ? "new-password" : "current-password";
+      document.querySelector("#password").placeholder = signingUp ? "At least 10 characters" : "Enter your password";
+      clearNotice();
+    }
+    function showNotice(message, kind = "error") {
+      notice.textContent = message;
+      notice.className = "notice show " + kind;
+    }
+    function clearNotice() {
+      notice.textContent = "";
+      notice.className = "notice";
+    }
+    function enterWorkspace(name, email, currency, balanceMicros, role = "customer") {
+      document.querySelector("#auth-screen").hidden = true;
+      document.querySelector("#workspace").hidden = false;
+      const isAdmin = role === "admin";
+      document.querySelector("#customer-shell").hidden = isAdmin;
+      document.querySelector("#admin-panel").hidden = !isAdmin;
+      if (isAdmin) {
+        document.querySelector("#admin-email").textContent = email;
+        loadAdmin();
+        return;
+      }
+      const displayName = name || "Your account";
+      document.querySelector("#account-name").textContent = displayName;
+      document.querySelector("#account-email").textContent = email || "";
+      document.querySelector("#account-avatar").textContent = displayName.trim().charAt(0).toUpperCase() || "A";
+      document.querySelector("#settings-name").textContent = displayName;
+      document.querySelector("#settings-email").textContent = email || "";
+      updateWallet(currency, balanceMicros);
+      showCustomerPage("full-engagement");
+      loadCustomerOrders();
+      loadCustomerWallet();
+    }
+    function formatPrice(micros) {
+      return (micros / 1000000).toFixed(6);
+    }
+    function formatBalance(micros) {
+      const value = formatPrice(micros).replace(/0+$/, "").replace(/\.$/, "");
+      return value.includes(".") ? value.padEnd(value.indexOf(".") + 3, "0") : value + ".00";
+    }
+    function updateDepositAddress() {
+      const currency = document.querySelector("#deposit-currency").value;
+      const deposit = depositAddresses[currency];
+      const image = document.querySelector("#deposit-qr");
+      const unavailable = document.querySelector("#deposit-qr-error");
+      document.querySelector("#copy-deposit-address").textContent = "Copy address";
+      document.querySelector("#deposit-address-title").textContent = currency + " · " + deposit.network;
+      document.querySelector("#deposit-address").textContent = deposit.address;
+      image.alt = "QR code for " + currency + " on " + deposit.network;
+      image.hidden = false;
+      unavailable.hidden = true;
+      image.onload = () => { image.hidden = false; unavailable.hidden = true; };
+      image.onerror = () => { image.hidden = true; unavailable.hidden = false; };
+      const qrUrl = new URL("https://api.qrserver.com/v1/create-qr-code/");
+      qrUrl.searchParams.set("size", "220x220");
+      qrUrl.searchParams.set("data", deposit.address);
+      image.src = qrUrl.toString();
+    }
+    updateDepositAddress();
+    function updateWallet(currency, balanceMicros) {
+      walletCurrency = currency === "USDC" ? "USDC" : "USDT";
+      walletBalanceMicros = Math.max(0, Number(balanceMicros) || 0);
+      const balance = formatBalance(walletBalanceMicros) + " " + walletCurrency;
+      document.querySelector("#wallet-balance").textContent = balance;
+      document.querySelector("#summary-balance").textContent = balance;
+      document.querySelector("#wallet-page-balance").textContent = balance;
+      document.querySelector("#wallet-page-token").textContent = walletCurrency;
+      document.querySelector("#overview-balance").textContent = balance;
+      document.querySelector("#settings-currency").textContent = walletCurrency;
+      document.querySelector("#side-currency").textContent = walletCurrency;
+      document.querySelector("#deposit-currency").value = walletCurrency;
+      updateDepositAddress();
+      document.querySelectorAll(".quote-currency").forEach(node => { node.textContent = walletCurrency; });
+      document.querySelector("#order-currency").textContent = walletCurrency;
+      renderSummary();
+    }
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[char]));
+    }
+    function formatDate(seconds) {
+      return new Date(Number(seconds) * 1000).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+    }
+    function orderSettingsHtml(raw) {
+      try {
+        const settings = JSON.parse(raw || "{}");
+        const items = Array.isArray(settings.metrics) ? settings.metrics : [];
+        const active = items.filter(item => item.enabled);
+        const metricsHtml = active.map(item => '<span class="order-chip">' + escapeHtml(item.type) + ' ' + Number(item.quantity).toLocaleString() + '</span>').join("");
+        const deliveryHtml = active.map(item => '<p><strong>' + escapeHtml(item.type) + ':</strong> ' + (Array.isArray(item.delivery) ? item.delivery.map(escapeHtml).join(" · ") : "Default") + '</p>').join("");
+        const curves = settings.curves && typeof settings.curves === "object" ? Object.entries(settings.curves) : [];
+        const curveHtml = curves.length ? '<p>Growth curves: ' + curves.map(([type, points]) => escapeHtml(type) + ' (' + (Array.isArray(points) ? points.length : 0) + ' points)').join(" · ") + '</p>' : "";
+        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div><details class="order-details"><summary>Delivery and curve settings</summary>' + deliveryHtml + curveHtml + '<p>Curve drawing: ' + (settings.drawing_enabled ? "on" : "off") + '</p></details>';
+      } catch (_) { return '<p>Order settings are unavailable.</p>'; }
+    }
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, options);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not complete this request.");
+      return result;
+    }
+    function showCustomerPage(page) {
+      document.querySelectorAll(".customer-content [data-page]").forEach(section => {
+        section.hidden = section.dataset.page !== page;
+      });
+      document.querySelectorAll(".nav-item[data-view]").forEach(button => {
+        const active = button.dataset.view === page;
+        button.classList.toggle("current", active);
+        if (active) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      });
+      if (page === "wallet") loadCustomerWallet();
+      if (page === "orders") loadCustomerOrders();
+      if (page === "dashboard") loadOverview();
+    }
+    async function loadOverview() {
+      try {
+        const [orders, wallet] = await Promise.all([requestJson("/api/orders"), requestJson("/api/wallet")]);
+        document.querySelector("#overview-orders").textContent = orders.orders.length;
+        document.querySelector("#overview-deposits").textContent = wallet.deposits.filter(item => item.status === "pending").length;
+      } catch (_) {}
+    }
+    async function loadCustomerOrders() {
+      try {
+        const {orders} = await requestJson("/api/orders");
+        const list = document.querySelector("#customer-orders");
+        document.querySelector("#overview-orders").textContent = orders.length;
+        list.innerHTML = orders.length ? orders.map(order =>
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + '</strong><span class="status-badge ' + escapeHtml(order.status) + '">' + escapeHtml(order.status) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
+          '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' views · ' + formatDate(order.created_at) + '</p><a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open post ↗</a></article>'
+        ).join("") : '<div class="empty-state">No orders yet. Start with a Full Engagement order.</div>';
+      } catch (error) { showToast(error.message); }
+    }
+    async function loadCustomerWallet() {
+      try {
+        const {transactions, deposits} = await requestJson("/api/wallet");
+        const depositList = document.querySelector("#customer-deposits");
+        depositList.innerHTML = deposits.length ? deposits.map(item =>
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatPrice(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + '</strong><span class="status-badge ' + escapeHtml(item.status) + '">' + escapeHtml(item.status) + '</span></div><span>' + formatDate(item.created_at) + '</span></div><p>Reference: <code>' + escapeHtml(item.reference) + '</code></p></article>'
+        ).join("") : '<div class="empty-state">No deposit requests yet.</div>';
+        const transactionList = document.querySelector("#wallet-transactions");
+        transactionList.innerHTML = transactions.length ? transactions.map(item =>
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + formatPrice(Math.abs(item.amount_micros)) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
+        ).join("") : '<div class="empty-state">No wallet activity yet.</div>';
+        document.querySelector("#overview-deposits").textContent = deposits.filter(item => item.status === "pending").length;
+      } catch (error) { showToast(error.message); }
+    }
+    async function loadAdmin() {
+      try {
+        const summary = await requestJson("/api/admin/summary");
+        document.querySelector("#admin-order-count").textContent = summary.pending_orders.length;
+        document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
+        const balances = document.querySelector("#admin-balances");
+        balances.innerHTML = summary.accounts.length ? summary.accounts.map(account =>
+          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + formatBalance(account.balance_micros) + ' ' + escapeHtml(account.currency) + '</strong></div><p>Account type: ' + escapeHtml(account.role) + ' · balance saved to this sign-in email</p></article>'
+        ).join("") : '<div class="empty-state">No accounts yet.</div>';
+        const orderList = document.querySelector("#admin-orders");
+        orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
+          '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' base views · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></article>'
+        ).join("") : '<div class="empty-state">No pending orders.</div>';
+        const depositList = document.querySelector("#admin-deposits");
+        depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
+          '<article class="record-card"><div class="record-top"><div><strong>' + formatPrice(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge pending">pending</span></div>' +
+          '<p>Submitted ' + formatDate(item.created_at) + '</p><p class="reference-line">Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p><div class="admin-actions"><button class="admin-action" type="button" data-credit-deposit="' + item.id + '">Verify &amp; credit</button><button class="admin-action secondary" type="button" data-reject-deposit="' + item.id + '">Reject</button></div></article>'
+        ).join("") : '<div class="empty-state">No pending payments.</div>';
+        orderList.querySelectorAll("[data-complete-order]").forEach(button => button.addEventListener("click", () => completeOrder(button.dataset.completeOrder)));
+        depositList.querySelectorAll("[data-credit-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.creditDeposit, "credit")));
+        depositList.querySelectorAll("[data-reject-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.rejectDeposit, "reject")));
+      } catch (error) { showToast(error.message); }
+    }
+    async function completeOrder(orderId) {
+      try {
+        await requestJson("/api/admin/orders/" + encodeURIComponent(orderId) + "/complete", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+        showToast("Order marked complete.");
+        loadAdmin();
+      } catch (error) { showToast(error.message); }
+    }
+    async function reviewDeposit(depositId, action) {
+      if (action === "reject" && !window.confirm("Reject this deposit request? The customer wallet will not be credited.")) return;
+      try {
+        await requestJson("/api/admin/deposits/" + encodeURIComponent(depositId) + "/" + action, {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+        showToast(action === "credit" ? "Deposit verified and wallet credited." : "Deposit request rejected.");
+        loadAdmin();
+      } catch (error) { showToast(error.message); }
+    }
+    function metricQuantity(key) {
+      return Math.max(0, Math.floor(Number(metricList.querySelector('[data-metric-input="' + key + '"]').value) || 0));
+    }
+    function metricEnabled(key) {
+      return metricList.querySelector('[data-metric="' + key + '"] .metric-toggle').checked;
+    }
+    function renderSummary() {
+      if (!metricList.querySelector(".metric-card")) return;
+      const views = metricQuantity("views");
+      const cost = metrics.reduce((sum, metric) => sum + (metricEnabled(metric.key) ? metricQuantity(metric.key) * metric.rateMicros : 0), 0);
+      const active = metrics.filter(metric => metricEnabled(metric.key));
+      const total = active.reduce((sum, metric) => sum + metricQuantity(metric.key), 0);
+      const validMetrics = metrics.every(metric => metricList.querySelector('[data-metric-input="' + metric.key + '"]').checkValidity());
+      const orderTotal = formatPrice(cost);
+      document.querySelector("#order-total").textContent = orderTotal;
+      document.querySelector("#place-order").textContent = "Place Order — " + orderTotal + " " + walletCurrency;
+      document.querySelector("#place-order").disabled = views < 100 || views > 10000000 || !validMetrics || walletBalanceMicros < cost;
+      document.querySelector("#order-count").textContent = total.toLocaleString() + " engagements • " + active.length + " types";
+      document.querySelector("#preview-total").textContent = "⚡ " + total.toLocaleString();
+      document.querySelector("#active-count").textContent = active.length;
+      document.querySelectorAll(".series-tab").forEach(button => {
+        const count = curves[button.dataset.series].length;
+        button.querySelector("small").textContent = count;
+      });
+      const preview = document.querySelector("#preview-metrics");
+      preview.innerHTML = metrics.map(metric => {
+        const enabled = metricEnabled(metric.key);
+        return '<div class="preview-metric' + (enabled ? "" : " muted") + '"><span class="preview-metric-icon">' + metric.symbol +
+          '</span><strong>' + metricQuantity(metric.key).toLocaleString() + '</strong><small>' + (enabled ? "Auto" : "Off") + '</small></div>';
+      }).join("");
+      engagementMetrics.forEach(metric => {
+        const row = perTypeRows.querySelector('[data-rate-count="' + metric.key + '"]').closest(".per-type-row");
+        const rateInput = row.querySelector("[data-rate-input]");
+        const rateBase = Math.max(1, views);
+        rateInput.min = (metric.min / rateBase * 100).toFixed(4);
+        rateInput.max = (metric.max / rateBase * 100).toFixed(4);
+        rateInput.disabled = !metricEnabled(metric.key);
+        if (document.activeElement !== rateInput) rateInput.value = engagementRates[metric.key].toFixed(2);
+        row.querySelector('[data-rate-count="' + metric.key + '"]').textContent = metricQuantity(metric.key).toLocaleString();
+        row.querySelector("[data-rate-views]").textContent = views.toLocaleString();
+      });
+      document.querySelector("#curve-legend").innerHTML = ["views","likes","saves","shares"].map(key => {
+        const metric = metrics.find(item => item.key === key);
+        return '<span class="legend-item"><i class="legend-dot ' + key + '"></i>' + metric.symbol + ' ' +
+          metricQuantity(key).toLocaleString() + '</span>';
+      }).join("");
+    }
+    function setQuantity(value) {
+      const quantity = Math.min(10000000, Math.max(100, Number(value) || 100));
+      previewQuantity(quantity);
+    }
+    function previewQuantity(value) {
+      document.querySelector("#custom-quantity").value = value;
+      document.querySelector('[data-metric-input="views"]').value = value;
+      document.querySelectorAll(".quantity-preset").forEach(button => {
+        const active = Number(button.dataset.quantity) === Number(value);
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      syncEngagementAmounts();
+      renderSummary();
+    }
+    function syncEngagementAmounts() {
+      const views = metricQuantity("views");
+      if (views < 100) return;
+      engagementMetrics.forEach(metric => {
+        const amount = Math.max(metric.min, Math.min(metric.max, Math.round(views * engagementRates[metric.key] / 100)));
+        metricList.querySelector('[data-metric-input="' + metric.key + '"]').value = amount;
+        if (amount === metric.min || amount === metric.max) engagementRates[metric.key] = amount / views * 100;
+      });
+    }
+    function showToast(message) {
+      const toast = document.querySelector(document.querySelector("#admin-panel").hidden ? "#dashboard-toast" : "#admin-toast");
+      toast.textContent = message;
+      toast.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.hidden = true; }, 3200);
+    }
+    function renderCurve() {
+      const points = curves[activeSeries];
+      const svgPoints = points.map(point => [point[0] * 1000, (1 - point[1]) * 320]);
+      let path = "M " + svgPoints[0][0] + " " + svgPoints[0][1];
+      for (let i = 0; i < svgPoints.length - 1; i++) {
+        const before = svgPoints[Math.max(0, i - 1)];
+        const start = svgPoints[i];
+        const end = svgPoints[i + 1];
+        const after = svgPoints[Math.min(svgPoints.length - 1, i + 2)];
+        const c1x = start[0] + (end[0] - before[0]) / 6;
+        const c1y = start[1] + (end[1] - before[1]) / 6;
+        const c2x = end[0] - (after[0] - start[0]) / 6;
+        const c2y = end[1] - (after[1] - start[1]) / 6;
+        path += " C " + c1x + " " + c1y + ", " + c2x + " " + c2y + ", " + end[0] + " " + end[1];
+      }
+      graphLine.setAttribute("d", path);
+      graphLine.style.stroke = curveColors[activeSeries];
+      graphPoints.innerHTML = svgPoints.map((point, index) =>
+        '<circle class="graph-point" data-index="' + index + '" cx="' + point[0] + '" cy="' + point[1] +
+        '" r="8" style="stroke:' + curveColors[activeSeries] + '" tabindex="0" role="slider" aria-orientation="vertical" aria-label="Curve point ' +
+        (index + 1) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(curves[activeSeries][index][1] * 100) + '"></circle>'
+      ).join("");
+      document.querySelectorAll(".series-tab").forEach(button => {
+        const selected = button.dataset.series === activeSeries;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      document.querySelectorAll(".curve-preset").forEach(button => {
+        button.classList.toggle("active", button.dataset.preset === activePreset[activeSeries]);
+      });
+      document.querySelector("#growth-chart").classList.toggle("drawing-off", !document.querySelector("#drawing-toggle").checked);
+      document.querySelector("#draw-badge").textContent = document.querySelector("#drawing-toggle").checked ? "Draw Mode ON" : "Draw Mode OFF";
+      renderSummary();
+    }
+    function graphPosition(event) {
+      const rect = graphSvg.getBoundingClientRect();
+      return [Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)),
+              Math.min(1, Math.max(0, 1 - (event.clientY - rect.top) / rect.height))];
+    }
+    function changePoint(index, position, focus = false) {
+      const points = curves[activeSeries];
+      if (index === 0) position[0] = 0;
+      else if (index === points.length - 1) position[0] = 1;
+      else position[0] = Math.min(points[index + 1][0] - .01, Math.max(points[index - 1][0] + .01, position[0]));
+      points[index] = [position[0], position[1]];
+      activePreset[activeSeries] = "";
+      renderCurve();
+      if (focus) graphPoints.querySelector('[data-index="' + index + '"]')?.focus();
+    }
+    function applyPreset(preset) {
+      const presets = {
+        viral:[[0,0],[.08,.35],[.2,.82],[.42,.94],[1,1]],
+        steady:[[0,0],[1,1]],
+        "s-curve":[[0,0],[.22,.08],[.5,.5],[.78,.92],[1,1]],
+        "double-peak":[[0,0],[.27,.52],[.43,.31],[.68,.78],[1,1]]
+      };
+      curves[activeSeries] = presets[preset].map(point => point.slice());
+      activePreset[activeSeries] = preset;
+      renderCurve();
+    }
+    graphSvg.addEventListener("pointerdown", event => {
+      if (!document.querySelector("#drawing-toggle").checked) return;
+      const handle = event.target.closest(".graph-point");
+      if (handle) {
+        draggingPoint = Number(handle.dataset.index);
+        graphSvg.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      } else if (event.target === graphSvg && curves[activeSeries].length < 20) {
+        const point = graphPosition(event);
+        point[0] = Math.min(.99, Math.max(.01, point[0]));
+        if (curves[activeSeries].some(existing => Math.abs(existing[0] - point[0]) < .02)) return;
+        curves[activeSeries].push(point);
+        curves[activeSeries].sort((a, b) => a[0] - b[0]);
+        activePreset[activeSeries] = "";
+        renderCurve();
+      }
+    });
+    graphSvg.addEventListener("pointermove", event => {
+      if (draggingPoint !== null) changePoint(draggingPoint, graphPosition(event));
+    });
+    graphSvg.addEventListener("pointerup", () => { draggingPoint = null; });
+    graphSvg.addEventListener("pointercancel", () => { draggingPoint = null; });
+    graphSvg.addEventListener("dblclick", event => {
+      const index = Number(event.target.closest(".graph-point")?.dataset.index);
+      if (Number.isInteger(index) && index > 0 && index < curves[activeSeries].length - 1) {
+        curves[activeSeries].splice(index, 1);
+        activePreset[activeSeries] = "";
+        renderCurve();
+      }
+    });
+    graphSvg.addEventListener("keydown", event => {
+      if (!document.querySelector("#drawing-toggle").checked) return;
+      const index = Number(event.target.closest(".graph-point")?.dataset.index);
+      if (!Number.isInteger(index) || !["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key)) return;
+      const point = curves[activeSeries][index].slice();
+      if (event.key === "ArrowUp") point[1] = Math.min(1, point[1] + .02);
+      if (event.key === "ArrowDown") point[1] = Math.max(0, point[1] - .02);
+      if (event.key === "ArrowLeft" && index > 0 && index < curves[activeSeries].length - 1) point[0] -= .02;
+      if (event.key === "ArrowRight" && index > 0 && index < curves[activeSeries].length - 1) point[0] += .02;
+      changePoint(index, point, true);
+      event.preventDefault();
+    });
+    document.querySelectorAll(".series-tab").forEach(button => button.addEventListener("click", () => {
+      activeSeries = button.dataset.series;
+      renderCurve();
+    }));
+    document.querySelectorAll(".curve-preset").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
+    document.querySelector("#reset-curve").addEventListener("click", () => {
+      curves[activeSeries] = curveDefaults[activeSeries].map(point => point.slice());
+      activePreset[activeSeries] = activeSeries === "views" ? "double-peak" : "steady";
+      renderCurve();
+    });
+    document.querySelector("#drawing-toggle").addEventListener("change", renderCurve);
+    document.querySelector("#mode-link").addEventListener("click", event => {
+      event.preventDefault();
+      setMode(mode === "login" ? "signup" : "login");
+    });
+    document.querySelector("#show-password").addEventListener("click", event => {
+      const field = document.querySelector("#password");
+      const showing = field.type === "text";
+      field.type = showing ? "password" : "text";
+      event.currentTarget.textContent = showing ? "Show" : "Hide";
+      event.currentTarget.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    });
+    document.querySelector("#forgot").addEventListener("click", () => showNotice("Password reset isn’t set up yet. Contact your workspace administrator."));
+    document.querySelectorAll(".platform-button").forEach(button => button.addEventListener("click", () => {
+      document.querySelectorAll(".platform-button").forEach(option => {
+        const selected = option === button;
+        option.classList.toggle("selected", selected);
+        option.setAttribute("aria-pressed", String(selected));
+      });
+      const label = button.dataset.platform === "instagram" ? "instagram.com" : "tiktok.com";
+      document.querySelector("#post-link").placeholder = "https://www." + label + "/...";
+    }));
+    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => setQuantity(button.dataset.quantity)));
+    document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));
+    document.querySelector("#custom-quantity").addEventListener("change", event => setQuantity(event.currentTarget.value));
+    perTypeRows.addEventListener("input", event => {
+      const rateInput = event.target.closest("[data-rate-input]");
+      if (!rateInput || rateInput.value === "") return;
+      const metric = engagementMetrics.find(item => item.key === rateInput.dataset.rateInput);
+      const views = Math.max(1, metricQuantity("views"));
+      const rate = Math.max(Number(rateInput.min), Math.min(Number(rateInput.max), Number(rateInput.value)));
+      const amount = Math.max(metric.min, Math.min(metric.max, Math.round(views * rate / 100)));
+      metricList.querySelector('[data-metric-input="' + metric.key + '"]').value = amount;
+      engagementRates[metric.key] = amount / views * 100;
+      renderSummary();
+    });
+    perTypeRows.addEventListener("change", event => {
+      const rateInput = event.target.closest("[data-rate-input]");
+      if (rateInput) rateInput.value = engagementRates[rateInput.dataset.rateInput].toFixed(2);
+    });
+    metricList.addEventListener("input", event => {
+      if (event.target.matches(".metric-amount")) {
+        if (event.target.matches('[data-metric-input="views"]')) previewQuantity(event.target.value);
+        else {
+          const metric = engagementMetrics.find(item => item.key === event.target.dataset.metricInput);
+          const views = metricQuantity("views");
+          if (metric && views > 0 && event.target.checkValidity()) engagementRates[metric.key] = metricQuantity(metric.key) / views * 100;
+          renderSummary();
+        }
+      }
+    });
+    metricList.addEventListener("change", event => {
+      if (event.target.matches(".metric-toggle")) renderSummary();
+      if (event.target.matches('[data-metric-input="views"]')) setQuantity(event.target.value);
+    });
+    document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
+    document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.go)));
+    document.querySelector("#add-funds").addEventListener("click", () => showCustomerPage("wallet"));
+    document.querySelector("#support-button").addEventListener("click", () => showCustomerPage("support"));
+    document.querySelector("#refresh-orders").addEventListener("click", loadCustomerOrders);
+    document.querySelector("#refresh-wallet").addEventListener("click", () => { refreshWallet(); loadCustomerWallet(); });
+    document.querySelector("#refresh-admin").addEventListener("click", loadAdmin);
+    document.querySelector("#deposit-currency").addEventListener("change", updateDepositAddress);
+    document.querySelector("#copy-deposit-address").addEventListener("click", async event => {
+      const address = depositAddresses[document.querySelector("#deposit-currency").value].address;
+      const button = event.currentTarget;
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(address);
+        else throw new Error("Clipboard API unavailable");
+      } catch (_) {
+        const field = document.createElement("textarea");
+        field.value = address;
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        const copied = document.execCommand("copy");
+        field.remove();
+        if (!copied) { showToast("Copy failed. Select the address and copy it manually."); return; }
+      }
+      button.textContent = "Copied!";
+      showToast("Deposit address copied.");
+      setTimeout(() => { button.textContent = "Copy address"; }, 1400);
+    });
+    document.querySelector("#deposit-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const button = event.currentTarget.querySelector('[type="submit"]');
+      button.disabled = true;
+      try {
+        await requestJson("/api/deposits", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({
+          currency:document.querySelector("#deposit-currency").value,
+          amount:document.querySelector("#deposit-amount").value,
+          reference:document.querySelector("#deposit-reference").value
+        })});
+        event.currentTarget.reset();
+        document.querySelector("#deposit-currency").value = walletCurrency;
+        showToast("Deposit request submitted. Your balance will update after admin verification.");
+        loadCustomerWallet();
+        loadOverview();
+      } catch (error) { showToast(error.message); }
+      finally { button.disabled = false; }
+    });
+    document.querySelector("#place-order").addEventListener("click", async event => {
+      const link = document.querySelector("#post-link");
+      if (!link.reportValidity()) return;
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        const response = await fetch("/api/order", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            platform:document.querySelector(".platform-button.selected").dataset.platform,
+            post_url:link.value,
+            views:metricQuantity("views"),
+            settings:{
+              metrics:metrics.map(metric => {
+                const card = metricList.querySelector('[data-metric="' + metric.key + '"]');
+                return {
+                  type:metric.key,
+                  quantity:metricQuantity(metric.key),
+                  enabled:card.querySelector(".metric-toggle").checked,
+                  delivery:Array.from(card.querySelectorAll(".delivery-fields select"), select => select.value)
+                };
+              }),
+              curves:curves,
+              drawing_enabled:document.querySelector("#drawing-toggle").checked
+            }
+          })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          if (result.balance_micros !== undefined) updateWallet(result.currency, result.balance_micros);
+          throw new Error(result.error || "Could not place this order.");
+        }
+        updateWallet(result.currency, result.balance_micros);
+        showToast("Order #" + result.order_id + " recorded. " + formatPrice(result.amount_micros) + " " + result.currency + " charged.");
+        loadCustomerOrders();
+        loadCustomerWallet();
+        loadOverview();
+      } catch (error) {
+        showToast(error.message || "Could not connect. Please try again.");
+      } finally {
+        renderSummary();
+      }
+    });
+    async function refreshWallet() {
+      try {
+        const response = await fetch("/api/me");
+        const account = await response.json();
+        if (account.authenticated && account.role === "admin") loadAdmin();
+        else if (account.authenticated) updateWallet(account.currency, account.balance_micros);
+      } catch (_) {}
+    }
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshWallet();
+    });
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      clearNotice();
+      const submit = document.querySelector("#submit");
+      submit.disabled = true;
+      submit.textContent = mode === "signup" ? "Creating account…" : "Signing in…";
+      const payload = Object.fromEntries(new FormData(form));
+      try {
+        const response = await fetch("/api/" + mode, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Something went wrong. Please try again.");
+        await enterWorkspace(result.name || payload.name || "", result.email || payload.email || "",
+                             result.currency, result.balance_micros, result.role);
+      } catch (error) {
+        showNotice(error instanceof TypeError ? "Cannot reach R-SMM. Make sure app.py is running, then try again." : error.message || "Could not connect. Please try again.");
+        submit.disabled = false;
+        submit.textContent = mode === "signup" ? "Create account" : "Sign in";
+      }
+    });
+    async function signOut() {
+      await fetch("/api/logout", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"});
+      document.querySelector("#workspace").hidden = true;
+      document.querySelector("#admin-panel").hidden = true;
+      document.querySelector("#customer-shell").hidden = false;
+      document.querySelector("#auth-screen").hidden = false;
+      form.reset();
+      setMode("login");
+    }
+    document.querySelector("#logout").addEventListener("click", signOut);
+    document.querySelector("#admin-logout").addEventListener("click", signOut);
+    fetch("/api/me").then(response => response.json()).then(data => {
+      if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role);
+    }).catch(() => {});
+  </script>
+</body>
+</html>
