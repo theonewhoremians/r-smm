@@ -350,7 +350,7 @@
     .wallet-overview{display:flex;align-items:center;justify-content:space-between;margin:0 4px 22px;padding:28px;border:1px solid #cdbc9a;border-radius:20px;background:linear-gradient(120deg,#eee5d4,#f7f2e8)}
     .wallet-overview strong{display:block;margin:9px 0 8px;color:#191713;font-size:38px;letter-spacing:-.05em}
     .wallet-overview small b{color:#4d402c}
-    .wallet-emblem{display:grid;place-items:center;width:62px;height:62px;border-radius:18px;background:#191713;color:#e6d8bd;font-size:30px}
+    .wallet-overview .wallet-emblem{display:grid;place-items:center;flex:none;width:62px;height:62px;border-radius:18px;background:#191713;color:#e6d8bd;font-size:30px}
     .wallet-emblem svg{display:block;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
     .deposit-note{max-width:760px;margin:-2px 0 18px;color:#71695d;font-size:13px;line-height:1.6}
     .deposit-form{display:grid;grid-template-columns:160px minmax(150px,220px) minmax(240px,1fr) auto;align-items:end;gap:12px}
@@ -384,6 +384,9 @@
     .order-details{margin:9px 0 13px;color:#70685c;font-size:11px}
     .order-details summary{cursor:pointer;color:#725f40;font-weight:700}
     .order-details p{margin:7px 0 0}
+    .order-rejection{display:inline-block;margin-left:6px;color:#844b37;font-size:11px}
+    .order-rejection summary{cursor:pointer;font-weight:700}
+    .order-rejection p{max-width:440px;margin:6px 0 0}
     .status-badge{display:inline-block;width:max-content;border-radius:99px;padding:4px 8px;background:#eee5d4;color:#51442e;font-size:10px;font-weight:750;text-transform:capitalize}
     .status-badge.credited,.status-badge.completed{background:#e9e2d4;color:#4c5a3a}
     .status-badge.rejected{background:#f1e1d8;color:#844b37}
@@ -402,6 +405,10 @@
     .admin-logout{width:auto;height:38px;margin:0;padding:0 12px;border:1px solid #e5ddcf;border-radius:10px;background:#fffdf8;font-size:12px}
     .admin-main{max-width:1380px;margin:0 auto;padding:34px clamp(18px,4vw,50px) 60px}
     .admin-main .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:600px}
+    .admin-tabs{display:flex;gap:8px;margin:24px 4px 4px;padding:5px;border:1px solid #ded5c6;border-radius:14px;background:#f7f2e8}
+    .admin-tab{min-height:40px;padding:0 16px;border:0;border-radius:10px;background:transparent;color:#625743;font:inherit;font-size:13px;font-weight:700;white-space:nowrap}
+    .admin-tab[aria-pressed="true"]{background:#191713;color:#f4ecdc}
+    .admin-page[hidden]{display:none}
     .admin-section{margin:28px 4px}
     .admin-section-heading{margin-bottom:13px}
     .admin-section-heading h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}
@@ -433,7 +440,9 @@
       .side-menu{min-width:0}
       .side-menu ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:7px;padding:0 0 11px}
       .nav-item{width:100%;min-height:46px;height:auto;justify-content:flex-start;white-space:normal;padding:8px 11px;font-size:13px;line-height:1.25}
+      .admin-tabs{overflow:auto}.admin-tab{flex:none;padding:0 12px;font-size:12px}
       .side-menu [data-view="support"]{display:none}
+      .mobile-support-item{display:none}
       .mobile-telegram-item{display:block}
       .mobile-telegram-link{border:1px solid #e2d7c4;background:#f5f0e6;color:#66563c}
       .mobile-telegram-link .telegram-nav-icon{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#229ed9;color:#fff;flex:none}
@@ -568,8 +577,8 @@
             <li><button class="nav-item current" type="button" data-view="full-engagement" aria-current="page">Full Engagement</button></li>
             <li><button class="nav-item" type="button" data-view="orders">Engagement Orders</button></li>
             <li><button class="nav-item" type="button" data-view="wallet">Wallet</button></li>
-            <li><button class="nav-item" type="button" data-view="support"><span class="nav-icon" aria-hidden="true">◎</span>Support</button></li>
-            <li><button class="nav-item" type="button" data-view="settings"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</button></li>
+            <li class="mobile-support-item"><button class="nav-item" type="button" data-view="support"><span class="nav-icon" aria-hidden="true">◎</span>Support</button></li>
+            <li><button class="nav-item" type="button" data-view="settings">Settings</button></li>
             <li class="mobile-telegram-item"><a class="nav-item mobile-telegram-link" href="https://t.me/Cryusog" target="_blank" rel="noopener" aria-label="Open R-SMM on Telegram"><span class="telegram-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23.9 3.8 20.3 20.8c-.3 1.2-1 1.5-2 .9l-5.4-4-2.7 2.5c-.3.3-.5.5-1.1.5l.4-5.5 10.1-9.1c.4-.4-.1-.6-.7-.2L6.9 14 1.6 12.3c-1.2-.4-1.2-1.2.2-1.6l20.8-8c1-.4 1.8.2 1.3 1.1Z"/></svg></span>Telegram</a></li>
           </ul>
         </nav>
@@ -730,11 +739,24 @@
     </div>
     <section id="admin-panel" class="admin-panel" hidden>
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>ADMIN CONSOLE</small></div></div><div class="admin-account"><span id="admin-email">aryan793gupta@gmail.com</span><button class="draft-pill refresh-button" id="refresh-admin" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="admin-logout" type="button">Sign out</button></div></header>
-      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>Admin panel</h1><p>Review customer orders and verify deposits before crediting wallets.</p></div></header>
+      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>Admin panel</h1><p>Manage customer orders, balances, and payments.</p></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Pending orders</span><strong id="admin-order-count">0</strong><small>Awaiting completion</small></article><article class="overview-card"><span>Pending payments</span><strong id="admin-deposit-count">0</strong><small>Awaiting manual verification</small></article></div>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending orders</h2><p>Open the social post, then mark the order complete after fulfillment.</p></div></div><div class="record-list" id="admin-orders"><div class="empty-state">No pending orders.</div></div></section>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer reference externally before crediting its wallet.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
+        <nav class="admin-tabs" aria-label="Admin sections">
+          <button class="admin-tab" type="button" data-admin-view="orders" aria-pressed="true">Order</button>
+          <button class="admin-tab" type="button" data-admin-view="accounts" aria-pressed="false">Account and balances</button>
+          <button class="admin-tab" type="button" data-admin-view="payments" aria-pressed="false">Payment</button>
+        </nav>
+        <div class="admin-page" data-admin-page="orders">
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending orders</h2><p>Open the social post, then complete the order or reject it with a customer-visible reason.</p></div></div><div class="record-list" id="admin-orders"><div class="empty-state">No pending orders.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Fulfilled orders</h2><p>Completed order history.</p></div></div><div class="record-list" id="admin-completed-orders"><div class="empty-state">No fulfilled orders yet.</div></div></section>
+        </div>
+        <div class="admin-page" data-admin-page="accounts" hidden>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
+        </div>
+        <div class="admin-page" data-admin-page="payments" hidden>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer reference externally before crediting its wallet.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved deposits</h2><p>Payment requests already verified and credited to customer wallets.</p></div></div><div class="record-list" id="admin-approved-deposits"><div class="empty-state">No approved deposits yet.</div></div></section>
+        </div>
       </div>
       <div class="dashboard-toast" id="admin-toast" role="status" hidden></div>
     </section>
@@ -785,7 +807,7 @@
         '<input class="metric-amount" data-metric-input="' + metric.key + '" type="number" min="' + metric.min + '" max="' + metric.max + '" value="' + metric.amount + '" required aria-label="' + metric.name + ' quantity">' +
         '<label class="switch" aria-label="Enable ' + metric.name + '"><input class="metric-toggle" type="checkbox" checked><span class="switch-track"></span></label></div>' +
         '<details class="delivery"><summary><span class="delivery-icon" aria-hidden="true">◷</span><span class="delivery-copy">Tap to customise delivery<small>Choose the interval between delivery actions</small></span><span class="delivery-open">OPEN⌄</span></summary>' +
-        '<div class="delivery-fields"><label>Interval<input data-interval-input type="number" min="1" max="10080" step="1" value="30" required aria-label="' + metric.name + ' interval in minutes"><span class="interval-unit">Minutes</span></label></div></details></article>';
+        '<div class="delivery-fields"><label>Interval<input data-interval-input type="number" min="1" max="10080" step="1" placeholder="30" aria-label="' + metric.name + ' interval in minutes"><span class="interval-unit">Minutes</span></label></div></details></article>';
     }).join("");
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
@@ -905,18 +927,18 @@
         const active = items.filter(item => item.enabled);
         const metricsHtml = active.map(item => '<span class="order-chip">' + escapeHtml(item.type) + ' ' + Number(item.quantity).toLocaleString() + '</span>').join("");
         const deliveryHtml = active.map(item => {
-          if (Number.isInteger(item.interval_minutes)) return '<p><strong>' + escapeHtml(item.type) + ':</strong> Every ' + item.interval_minutes.toLocaleString() + ' minutes</p>';
+          if (Number.isInteger(item.interval_minutes) && item.interval_minutes > 0) return '<p><strong>' + escapeHtml(item.type) + ':</strong> Every ' + item.interval_minutes.toLocaleString() + ' minutes</p>';
           if (Array.isArray(item.delivery)) {
             const [start, runs, variance, peak] = item.delivery.map(escapeHtml);
             return '<p><strong>' + escapeHtml(item.type) + ':</strong> Start ' + start + ' · Runs ' + runs + ' · Variance ' + variance + ' · Peak ' + peak + '</p>';
           }
-          return '<p><strong>' + escapeHtml(item.type) + ':</strong> Interval not set</p>';
+          return "";
         }).join("");
         const selectedTypes = new Set(active.map(item => item.type));
         const curves = settings.curves && typeof settings.curves === "object" ? Object.entries(settings.curves).filter(([type]) => selectedTypes.has(type)) : [];
         const curveHtml = curves.length ? '<p>Growth curves: ' + curves.map(([type, points]) => escapeHtml(type) + ' (' + (Array.isArray(points) ? points.length : 0) + ' points)').join(" · ") + '</p>' : "";
         const curveDetails = curveHtml ? '<details class="order-details"><summary>Growth curve settings</summary>' + curveHtml + '<p>Curve drawing: ' + (settings.drawing_enabled ? "on" : "off") + '</p></details>' : "";
-        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div><div class="order-delivery">' + deliveryHtml + '</div>' + curveDetails;
+        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div>' + (deliveryHtml ? '<div class="order-delivery">' + deliveryHtml + '</div>' : "") + curveDetails;
       } catch (_) { return '<p>Order settings are unavailable.</p>'; }
     }
     async function requestJson(url, options = {}) {
@@ -936,7 +958,7 @@
         else button.removeAttribute("aria-current");
       });
       if (page === "wallet") loadCustomerWallet();
-      if (page === "orders") loadCustomerOrders();
+      if (page === "orders") { loadCustomerOrders(); refreshWallet(); }
       if (page === "dashboard") loadOverview();
     }
     async function loadOverview() {
@@ -952,7 +974,7 @@
         const list = document.querySelector("#customer-orders");
         document.querySelector("#overview-orders").textContent = orders.length;
         list.innerHTML = orders.length ? orders.map(order =>
-          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + '</strong><span class="status-badge ' + escapeHtml(order.status) + '">' + escapeHtml(order.status) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + '</strong><span class="status-badge ' + escapeHtml(order.status) + '">' + escapeHtml(order.status) + '</span>' + (order.status === "rejected" && order.rejection_reason ? '<details class="order-rejection"><summary>Reason</summary><p>' + escapeHtml(order.rejection_reason) + '</p></details>' : "") + '</div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
           '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' views · ' + formatDate(order.created_at) + '</p><a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open post ↗</a></article>'
         ).join("") : '<div class="empty-state">No orders yet. Start with a Full Engagement order.</div>';
       } catch (error) { showToast(error.message); }
@@ -966,7 +988,7 @@
         depositList.innerHTML = deposits.length ? deposits.map(customerDepositHtml).join("") : '<div class="empty-state">No deposit requests yet.</div>';
         const transactionList = document.querySelector("#wallet-transactions");
         transactionList.innerHTML = transactions.length ? transactions.map(item =>
-          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + (item.kind === "deposit" ? formatDepositAmount(Math.abs(item.amount_micros)) : formatPrice(Math.abs(item.amount_micros))) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : item.amount_micros > 0 ? "Order refund" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + (item.kind === "deposit" ? formatDepositAmount(Math.abs(item.amount_micros)) : formatPrice(Math.abs(item.amount_micros))) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
         ).join("") : '<div class="empty-state">No wallet activity yet.</div>';
         document.querySelector("#overview-deposits").textContent = deposits.filter(item => item.status === "pending").length;
       } catch (error) { showToast(error.message); }
@@ -983,14 +1005,23 @@
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></article>'
+          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a><div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '">Reject &amp; refund</button></div></article>'
         ).join("") : '<div class="empty-state">No pending orders.</div>';
+        const completedList = document.querySelector("#admin-completed-orders");
+        completedList.innerHTML = summary.completed_orders.length ? summary.completed_orders.map(order =>
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div><p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + ' · <span class="status-badge completed">completed</span></p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a></article>'
+        ).join("") : '<div class="empty-state">No fulfilled orders yet.</div>';
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
           '<article class="record-card"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge pending">pending</span></div>' +
           '<p>Submitted ' + formatDate(item.created_at) + '</p><p class="reference-line">Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p><div class="admin-actions"><button class="admin-action" type="button" data-credit-deposit="' + item.id + '">Verify &amp; credit</button><button class="admin-action secondary" type="button" data-reject-deposit="' + item.id + '">Reject</button></div></article>'
         ).join("") : '<div class="empty-state">No pending payments.</div>';
+        const approvedList = document.querySelector("#admin-approved-deposits");
+        approvedList.innerHTML = summary.approved_deposits.length ? summary.approved_deposits.map(item =>
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge credited">approved</span></div><p>Approved ' + formatDate(item.reviewed_at || item.created_at) + ' · Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p></article>'
+        ).join("") : '<div class="empty-state">No approved deposits yet.</div>';
         orderList.querySelectorAll("[data-complete-order]").forEach(button => button.addEventListener("click", () => completeOrder(button.dataset.completeOrder)));
+        orderList.querySelectorAll("[data-reject-order]").forEach(button => button.addEventListener("click", () => rejectOrder(button.dataset.rejectOrder)));
         depositList.querySelectorAll("[data-credit-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.creditDeposit, "credit")));
         depositList.querySelectorAll("[data-reject-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.rejectDeposit, "reject")));
       } catch (error) { showToast(error.message); }
@@ -999,6 +1030,16 @@
       try {
         await requestJson("/api/admin/orders/" + encodeURIComponent(orderId) + "/complete", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
         showToast("Order marked complete.");
+        loadAdmin();
+      } catch (error) { showToast(error.message); }
+    }
+    async function rejectOrder(orderId) {
+      const reason = window.prompt("Enter the reason the customer will see if they open this rejected order:");
+      if (reason === null) return;
+      if (!reason.trim()) { showToast("A rejection reason is required."); return; }
+      try {
+        const result = await requestJson("/api/admin/orders/" + encodeURIComponent(orderId) + "/reject", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({reason:reason.trim()})});
+        showToast("Order rejected and " + formatPrice(result.balance_micros) + " " + result.currency + " refunded to the customer.");
         loadAdmin();
       } catch (error) { showToast(error.message); }
     }
@@ -1023,7 +1064,10 @@
       const active = metrics.filter(metric => metricEnabled(metric.key));
       const total = active.reduce((sum, metric) => sum + metricQuantity(metric.key), 0);
       const validMetrics = metrics.every(metric => metricList.querySelector('[data-metric-input="' + metric.key + '"]').checkValidity());
-      const validIntervals = active.every(metric => metricList.querySelector('[data-metric="' + metric.key + '"] [data-interval-input]').checkValidity());
+      const validIntervals = active.every(metric => {
+        const field = metricList.querySelector('[data-metric="' + metric.key + '"] [data-interval-input]');
+        return !field.value || field.checkValidity();
+      });
       const orderTotal = formatPrice(cost);
       document.querySelector("#order-total").textContent = orderTotal;
       document.querySelector("#place-order").textContent = "Place Order — " + orderTotal + " " + walletCurrency;
@@ -1271,6 +1315,15 @@
     document.querySelector("#refresh-orders").addEventListener("click", loadCustomerOrders);
     document.querySelector("#refresh-wallet").addEventListener("click", () => { refreshWallet(); loadCustomerWallet(); });
     document.querySelector("#refresh-admin").addEventListener("click", loadAdmin);
+    document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-admin-view]").forEach(tab => {
+        const active = tab === button;
+        tab.setAttribute("aria-pressed", String(active));
+      });
+      document.querySelectorAll("[data-admin-page]").forEach(page => {
+        page.hidden = page.dataset.adminPage !== button.dataset.adminView;
+      });
+    }));
     document.querySelector("#deposit-currency").addEventListener("change", updateDepositAddress);
     document.querySelector("#copy-deposit-address").addEventListener("click", async event => {
       const address = depositAddresses[document.querySelector("#deposit-currency").value].address;
@@ -1335,7 +1388,7 @@
                   type:metric.key,
                   quantity:metricQuantity(metric.key),
                   enabled:card.querySelector(".metric-toggle").checked,
-                  interval_minutes:card.querySelector(".metric-toggle").checked ? Number(card.querySelector("[data-interval-input]").value) : 0
+                  interval_minutes:card.querySelector(".metric-toggle").checked && card.querySelector("[data-interval-input]").value ? Number(card.querySelector("[data-interval-input]").value) : 0
                 };
               }),
               curves:curves,

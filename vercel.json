@@ -10,6 +10,7 @@
     { "source": "/api/deposits", "destination": "/api/handler?route=deposits" },
     { "source": "/api/admin/summary", "destination": "/api/handler?route=admin/summary" },
     { "source": "/api/admin/orders/:id/complete", "destination": "/api/handler?route=admin/orders/:id/complete" },
+    { "source": "/api/admin/orders/:id/reject", "destination": "/api/handler?route=admin/orders/:id/reject" },
     { "source": "/api/admin/deposits/:id/:action", "destination": "/api/handler?route=admin/deposits/:id/:action" }
   ]
 }
