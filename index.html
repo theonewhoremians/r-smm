@@ -92,6 +92,7 @@
     .currency-pill span:last-child{color:#9099a5}
     .telegram-card{width:100%;border:1px solid #d9eefe;border-radius:15px;background:#eff8ff;padding:12px 13px;display:flex;align-items:center;gap:11px;text-align:left;color:#087ac1;margin-bottom:7px;text-decoration:none;cursor:pointer}
     .telegram-icon{width:22px;height:22px;border-radius:50%;background:#12a5e5;color:white;display:grid;place-items:center;font-size:12px}
+    .mobile-telegram-item{display:none}
     .telegram-copy strong,.telegram-copy small{display:block}
     .telegram-copy strong{font-size:12px;font-weight:700}
     .telegram-copy small{font-size:11px;margin-top:2px}
@@ -159,9 +160,10 @@
     .delivery-copy small{display:block;color:#707781;font-size:12px;font-weight:400;margin-top:4px}
     .delivery-open{color:#06a976;font-size:10px;font-weight:750;letter-spacing:.06em;white-space:nowrap}
     .delivery[open] .delivery-open:after{content:"  ↑"}
-    .delivery-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:2px 14px 14px 68px}
-    .delivery-fields label{font-size:10px;font-weight:700;color:#607067}
-    .delivery-fields select{display:block;width:100%;height:38px;margin-top:6px;border:1px solid #d9e6de;border-radius:9px;background:#fff;padding:0 8px;color:#27342d;font-size:12px}
+    .delivery-fields{display:flex;align-items:center;gap:12px;padding:2px 14px 14px 68px}
+    .delivery-fields label{display:flex;align-items:center;gap:10px;color:#607067;font-size:13px;font-weight:700}
+    .delivery-fields input{width:140px;height:42px;margin:0;border:1px solid #d9e6de;border-radius:10px;background:#fff;padding:0 12px;color:#27342d;font-size:14px}
+    .delivery-fields .interval-unit{color:#707781;font-size:12px;font-weight:600}
     .growth-card{padding-bottom:20px}
     .growth-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
     .growth-heading{display:flex;align-items:center;gap:12px}
@@ -194,6 +196,9 @@
     .curve-preset.active{border-color:#0cba80;box-shadow:0 0 0 2px #0cba8020}
     .curve-reset{white-space:nowrap}
     .curve-legend{display:flex;flex-wrap:wrap;gap:18px;border-top:1px solid #e5e1df;margin-top:15px;padding-top:14px;color:#30333d;font-size:13px}
+    .metric-list + .growth-card{margin-top:24px}
+    .growth-card.is-collapsed{padding-bottom:16px}
+    .growth-card.is-collapsed .growth-instructions,.growth-card.is-collapsed .series-tabs,.growth-card.is-collapsed .growth-chart,.growth-card.is-collapsed .curve-actions,.growth-card.is-collapsed .curve-legend{display:none}
     .legend-item{display:flex;align-items:center;gap:7px}
     .legend-dot{width:10px;height:10px;border-radius:50%}
     .legend-dot.views{background:#5ba1f7}.legend-dot.likes{background:#42d780}.legend-dot.saves{background:#ffbd29}.legend-dot.shares{background:#a385ff}
@@ -231,7 +236,8 @@
     .place-order{min-height:54px;border:0;border-radius:14px;background:#0cba80;color:#fff;padding:0 23px;font-size:14px;font-weight:750;box-shadow:0 7px 12px #0cba8025}
     .place-order:disabled{background:#a9cbbd;box-shadow:none;cursor:not-allowed}
     .dashboard-toast{position:fixed;right:22px;bottom:100px;z-index:5;padding:13px 17px;border-radius:13px;background:#14231e;color:#fff;box-shadow:0 9px 25px #152c2240;font-size:13px}
-    .floating-support{position:fixed;right:24px;bottom:22px;z-index:4;width:66px;height:66px;border:2px solid #fff;border-radius:50%;background:#159fda;color:#fff;box-shadow:0 6px 18px #247ea759;font-size:28px}
+    .floating-support{position:fixed;right:24px;bottom:22px;z-index:4;width:66px;height:66px;border:2px solid #fff;border-radius:50%;background:#159fda;color:#fff;box-shadow:0 6px 18px #247ea759;display:grid;place-items:center;text-decoration:none}
+    .floating-support svg{width:30px;height:30px;fill:currentColor}
     .floating-support:hover{background:#087fb5}
     [hidden]{display:none!important}
     @media(max-width:1050px){.app-shell{grid-template-columns:270px minmax(0,1fr)}.sidebar{padding-left:12px;padding-right:12px}.dashboard{padding-left:28px;padding-right:28px}.form-card{padding-left:22px;padding-right:22px}.order-summary{padding:18px}.order-actions{gap:8px}.place-order{padding:0 15px}}
@@ -307,6 +313,9 @@
     .delivery-icon{background:#eee4d2;color:#806941}
     .delivery-icon:after{background:#9b8257}
     .delivery-open{color:#77603e}
+    .delivery-fields label{color:#66563c}
+    .delivery-fields input{border-color:#ded1bc;background:#fffdf8;color:#211e18}
+    .delivery-fields .interval-unit{color:#71695d}
     .draw-badge{background:#191713;color:#f4ecdc}
     .series-tab{border-color:#ded5c6;background:#fbf8f2;color:#5f584d}
     .series-tab.active,.series-tab[data-series="likes"].active,.series-tab[data-series="saves"].active,.series-tab[data-series="shares"].active{outline-color:#b8a17a;border-color:#191713;background:#191713;color:#f4ecdc}
@@ -370,6 +379,8 @@
     .record-card code{padding:2px 5px;border-radius:5px;background:#f2ecdf;color:#51442e;overflow-wrap:anywhere}
     .order-plan{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
     .order-chip{padding:5px 8px;border:1px solid #e1d6c2;border-radius:8px;background:#f5efe3;color:#4f4431;font-size:10px;font-weight:700;text-transform:capitalize}
+    .order-delivery{margin:9px 0;padding:9px 11px;border:1px solid #e7dece;border-radius:10px;background:#fbf8f2;color:#625743;font-size:11px}
+    .order-delivery p{margin:0 0 5px}.order-delivery p:last-child{margin-bottom:0}
     .order-details{margin:9px 0 13px;color:#70685c;font-size:11px}
     .order-details summary{cursor:pointer;color:#725f40;font-weight:700}
     .order-details p{margin:7px 0 0}
@@ -422,6 +433,11 @@
       .side-menu{min-width:0}
       .side-menu ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:7px;padding:0 0 11px}
       .nav-item{width:100%;min-height:46px;height:auto;justify-content:flex-start;white-space:normal;padding:8px 11px;font-size:13px;line-height:1.25}
+      .side-menu [data-view="support"]{display:none}
+      .mobile-telegram-item{display:block}
+      .mobile-telegram-link{border:1px solid #e2d7c4;background:#f5f0e6;color:#66563c}
+      .mobile-telegram-link .telegram-nav-icon{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#229ed9;color:#fff;flex:none}
+      .mobile-telegram-link svg{display:block;width:14px;height:14px;fill:currentColor}
       .dashboard{padding:24px 14px calc(84px + env(safe-area-inset-bottom))}
       .dashboard-toast{right:14px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px)}
       .floating-support{bottom:calc(14px + env(safe-area-inset-bottom))}
@@ -437,7 +453,6 @@
       .metric-name-wrap{grid-column:1/-1}
       .metric-amount{grid-column:1;width:100%;text-align:left}
       .metric-top .switch{grid-column:2;grid-row:2;justify-self:end}
-      .delivery-fields{grid-template-columns:1fr}
       .curve-reset{margin-left:auto}
     }
 
@@ -555,6 +570,7 @@
             <li><button class="nav-item" type="button" data-view="wallet">Wallet</button></li>
             <li><button class="nav-item" type="button" data-view="support"><span class="nav-icon" aria-hidden="true">◎</span>Support</button></li>
             <li><button class="nav-item" type="button" data-view="settings"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</button></li>
+            <li class="mobile-telegram-item"><a class="nav-item mobile-telegram-link" href="https://t.me/Cryusog" target="_blank" rel="noopener" aria-label="Open R-SMM on Telegram"><span class="telegram-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23.9 3.8 20.3 20.8c-.3 1.2-1 1.5-2 .9l-5.4-4-2.7 2.5c-.3.3-.5.5-1.1.5l.4-5.5 10.1-9.1c.4-.4-.1-.6-.7-.2L6.9 14 1.6 12.3c-1.2-.4-1.2-1.2.2-1.6l20.8-8c1-.4 1.8.2 1.3 1.1Z"/></svg></span>Telegram</a></li>
           </ul>
         </nav>
         <div class="side-bottom">
@@ -710,7 +726,7 @@
       </section>
       </div>
       <div class="dashboard-toast" id="dashboard-toast" role="status" hidden></div>
-      <button class="floating-support" id="support-button" type="button" aria-label="Support">➤</button>
+      <a class="floating-support" id="support-button" href="https://t.me/Cryusog" target="_blank" rel="noopener" aria-label="Open R-SMM on Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.9 3.8 20.3 20.8c-.3 1.2-1 1.5-2 .9l-5.4-4-2.7 2.5c-.3.3-.5.5-1.1.5l.4-5.5 10.1-9.1c.4-.4-.1-.6-.7-.2L6.9 14 1.6 12.3c-1.2-.4-1.2-1.2.2-1.6l20.8-8c1-.4 1.8.2 1.3 1.1Z"/></svg></a>
     </div>
     <section id="admin-panel" class="admin-panel" hidden>
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>ADMIN CONSOLE</small></div></div><div class="admin-account"><span id="admin-email">aryan793gupta@gmail.com</span><button class="draft-pill refresh-button" id="refresh-admin" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="admin-logout" type="button">Sign out</button></div></header>
@@ -767,11 +783,8 @@
         '<div class="metric-range">' + metric.range + ' · Rate: ' + metric.rateLabel + ' USDT/USDC</div></div></div>' +
         '<input class="metric-amount" data-metric-input="' + metric.key + '" type="number" min="' + metric.min + '" max="' + metric.max + '" value="' + metric.amount + '" required aria-label="' + metric.name + ' quantity">' +
         '<label class="switch" aria-label="Enable ' + metric.name + '"><input class="metric-toggle" type="checkbox" checked><span class="switch-track"></span></label></div>' +
-        '<details class="delivery"><summary><span class="delivery-icon" aria-hidden="true">◷</span><span class="delivery-copy">Tap to customise delivery<small>Set delivery time, number of runs, variance &amp; peak hours</small></span><span class="delivery-open">OPEN⌄</span></summary>' +
-        '<div class="delivery-fields"><label>Start delivery<select><option>As soon as possible</option><option>In 30 minutes</option><option>In 1 hour</option></select></label>' +
-        '<label>Number of runs<select><option>1 run</option><option>3 runs</option><option>5 runs</option><option>10 runs</option></select></label>' +
-        '<label>Delivery variance<select><option>0%</option><option selected>10%</option><option>20%</option></select></label>' +
-      '<label>Peak hours<select><option>No preference</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></label></div></details></article>';
+        '<details class="delivery"><summary><span class="delivery-icon" aria-hidden="true">◷</span><span class="delivery-copy">Tap to customise delivery<small>Choose the interval between delivery actions</small></span><span class="delivery-open">OPEN⌄</span></summary>' +
+        '<div class="delivery-fields"><label>Interval<input data-interval-input type="number" min="1" max="10080" step="1" value="30" required aria-label="' + metric.name + ' interval in minutes"><span class="interval-unit">Minutes</span></label></div></details></article>';
     }).join("");
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
@@ -884,10 +897,19 @@
         const items = Array.isArray(settings.metrics) ? settings.metrics : [];
         const active = items.filter(item => item.enabled);
         const metricsHtml = active.map(item => '<span class="order-chip">' + escapeHtml(item.type) + ' ' + Number(item.quantity).toLocaleString() + '</span>').join("");
-        const deliveryHtml = active.map(item => '<p><strong>' + escapeHtml(item.type) + ':</strong> ' + (Array.isArray(item.delivery) ? item.delivery.map(escapeHtml).join(" · ") : "Default") + '</p>').join("");
-        const curves = settings.curves && typeof settings.curves === "object" ? Object.entries(settings.curves) : [];
+        const deliveryHtml = active.map(item => {
+          if (Number.isInteger(item.interval_minutes)) return '<p><strong>' + escapeHtml(item.type) + ':</strong> Every ' + item.interval_minutes.toLocaleString() + ' minutes</p>';
+          if (Array.isArray(item.delivery)) {
+            const [start, runs, variance, peak] = item.delivery.map(escapeHtml);
+            return '<p><strong>' + escapeHtml(item.type) + ':</strong> Start ' + start + ' · Runs ' + runs + ' · Variance ' + variance + ' · Peak ' + peak + '</p>';
+          }
+          return '<p><strong>' + escapeHtml(item.type) + ':</strong> Interval not set</p>';
+        }).join("");
+        const selectedTypes = new Set(active.map(item => item.type));
+        const curves = settings.curves && typeof settings.curves === "object" ? Object.entries(settings.curves).filter(([type]) => selectedTypes.has(type)) : [];
         const curveHtml = curves.length ? '<p>Growth curves: ' + curves.map(([type, points]) => escapeHtml(type) + ' (' + (Array.isArray(points) ? points.length : 0) + ' points)').join(" · ") + '</p>' : "";
-        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div><details class="order-details"><summary>Delivery and curve settings</summary>' + deliveryHtml + curveHtml + '<p>Curve drawing: ' + (settings.drawing_enabled ? "on" : "off") + '</p></details>';
+        const curveDetails = curveHtml ? '<details class="order-details"><summary>Growth curve settings</summary>' + curveHtml + '<p>Curve drawing: ' + (settings.drawing_enabled ? "on" : "off") + '</p></details>' : "";
+        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div><div class="order-delivery">' + deliveryHtml + '</div>' + curveDetails;
       } catch (_) { return '<p>Order settings are unavailable.</p>'; }
     }
     async function requestJson(url, options = {}) {
@@ -954,7 +976,7 @@
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' base views · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></article>'
+          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></article>'
         ).join("") : '<div class="empty-state">No pending orders.</div>';
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
@@ -994,10 +1016,11 @@
       const active = metrics.filter(metric => metricEnabled(metric.key));
       const total = active.reduce((sum, metric) => sum + metricQuantity(metric.key), 0);
       const validMetrics = metrics.every(metric => metricList.querySelector('[data-metric-input="' + metric.key + '"]').checkValidity());
+      const validIntervals = active.every(metric => metricList.querySelector('[data-metric="' + metric.key + '"] [data-interval-input]').checkValidity());
       const orderTotal = formatPrice(cost);
       document.querySelector("#order-total").textContent = orderTotal;
       document.querySelector("#place-order").textContent = "Place Order — " + orderTotal + " " + walletCurrency;
-      document.querySelector("#place-order").disabled = views < 100 || views > 10000000 || !validMetrics || walletBalanceMicros < cost;
+      document.querySelector("#place-order").disabled = views < 100 || views > 10000000 || !validMetrics || !validIntervals || walletBalanceMicros < cost;
       document.querySelector("#order-count").textContent = total.toLocaleString() + " engagements • " + active.length + " types";
       document.querySelector("#preview-total").textContent = "⚡ " + total.toLocaleString();
       document.querySelector("#active-count").textContent = active.length;
@@ -1089,8 +1112,10 @@
       document.querySelectorAll(".curve-preset").forEach(button => {
         button.classList.toggle("active", button.dataset.preset === activePreset[activeSeries]);
       });
-      document.querySelector("#growth-chart").classList.toggle("drawing-off", !document.querySelector("#drawing-toggle").checked);
-      document.querySelector("#draw-badge").textContent = document.querySelector("#drawing-toggle").checked ? "Draw Mode ON" : "Draw Mode OFF";
+      const drawingEnabled = document.querySelector("#drawing-toggle").checked;
+      document.querySelector("#growth-chart").classList.toggle("drawing-off", !drawingEnabled);
+      document.querySelector(".growth-card").classList.toggle("is-collapsed", !drawingEnabled);
+      document.querySelector("#draw-badge").textContent = drawingEnabled ? "Draw Mode ON" : "Draw Mode OFF";
       renderSummary();
     }
     function graphPosition(event) {
@@ -1171,7 +1196,10 @@
       activePreset[activeSeries] = activeSeries === "views" ? "double-peak" : "steady";
       renderCurve();
     });
-    document.querySelector("#drawing-toggle").addEventListener("change", renderCurve);
+    document.querySelector("#drawing-toggle").addEventListener("change", event => {
+      if (!event.currentTarget.checked) draggingPoint = null;
+      renderCurve();
+    });
     document.querySelector("#mode-link").addEventListener("click", event => {
       event.preventDefault();
       setMode(mode === "login" ? "signup" : "login");
@@ -1212,6 +1240,7 @@
       if (rateInput) rateInput.value = engagementRates[rateInput.dataset.rateInput].toFixed(2);
     });
     metricList.addEventListener("input", event => {
+      if (event.target.matches("[data-interval-input]")) renderSummary();
       if (event.target.matches(".metric-amount")) {
         if (event.target.matches('[data-metric-input="views"]')) previewQuantity(event.target.value);
         else {
@@ -1232,7 +1261,6 @@
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
     document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.go)));
     document.querySelector("#add-funds").addEventListener("click", () => showCustomerPage("wallet"));
-    document.querySelector("#support-button").addEventListener("click", () => showCustomerPage("support"));
     document.querySelector("#refresh-orders").addEventListener("click", loadCustomerOrders);
     document.querySelector("#refresh-wallet").addEventListener("click", () => { refreshWallet(); loadCustomerWallet(); });
     document.querySelector("#refresh-admin").addEventListener("click", loadAdmin);
@@ -1297,7 +1325,7 @@
                   type:metric.key,
                   quantity:metricQuantity(metric.key),
                   enabled:card.querySelector(".metric-toggle").checked,
-                  delivery:Array.from(card.querySelectorAll(".delivery-fields select"), select => select.value)
+                  interval_minutes:card.querySelector(".metric-toggle").checked ? Number(card.querySelector("[data-interval-input]").value) : 0
                 };
               }),
               curves:curves,

@@ -236,12 +236,18 @@ def valid_order_settings(settings, views):
             return False
         kind = item.get("type")
         quantity = item.get("quantity")
-        delivery = item.get("delivery")
+        interval = item.get("interval_minutes")
+        legacy_delivery = item.get("delivery")
+        if "interval_minutes" in item:
+            delivery_is_valid = (not isinstance(interval, bool) and isinstance(interval, int)
+                                 and (0 if not item.get("enabled") else 1) <= interval <= 10080)
+        else:
+            delivery_is_valid = (isinstance(legacy_delivery, list) and len(legacy_delivery) == 4
+                                 and all(isinstance(value, str) and len(value) <= 50 for value in legacy_delivery))
         if (not isinstance(kind, str) or kind not in METRIC_LIMITS or kind in seen or isinstance(quantity, bool)
                 or not isinstance(quantity, int) or not METRIC_LIMITS[kind][0] <= quantity <= METRIC_LIMITS[kind][1]
                 or not isinstance(item.get("enabled"), bool)
-                or not isinstance(delivery, list) or len(delivery) != 4
-                or any(not isinstance(value, str) or len(value) > 50 for value in delivery)):
+                or not delivery_is_valid):
             return False
         if kind == "views" and quantity != views:
             return False
