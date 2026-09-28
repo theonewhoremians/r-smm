@@ -541,8 +541,17 @@ class App(BaseHTTPRequestHandler):
         except InvalidOperation:
             self.respond(400, {"error": "Deposit amount must be a valid number."})
             return
-        if not amount.is_finite() or amount < Decimal("2") or amount > 1000000 or amount.as_tuple().exponent < -6:
-            self.respond(400, {"error": "The minimum deposit is 2 USDT or USDC, with no more than 6 decimal places."})
+        if not amount.is_finite():
+            self.respond(400, {"error": "Deposit amount must be a finite number."})
+            return
+        amount_tuple = amount.as_tuple()
+        decimal_places = max(0, -amount_tuple.exponent)
+        for digit in reversed(amount_tuple.digits):
+            if digit != 0:
+                break
+            decimal_places -= 1
+        if amount < Decimal("2") or amount > 1000000 or decimal_places > 2:
+            self.respond(400, {"error": "The minimum deposit is 2 USDT or USDC, with no more than 2 decimal places."})
             return
         amount_micros = int(amount * 1_000_000)
         reference = reference.strip().casefold()
@@ -555,17 +564,20 @@ class App(BaseHTTPRequestHandler):
                 db.rollback()
                 self.respond(409, {"error": "This wallet already uses " + wallet["currency"] + "."})
                 return
+            created_at = int(time.time())
             try:
                 cursor = db.execute("""
                     INSERT INTO deposit_requests (email, created_at, currency, amount_micros, reference)
                     VALUES (?, ?, ?, ?, ?) RETURNING id
-                """, (user["email"], int(time.time()), currency, amount_micros, reference))
+                """, (user["email"], created_at, currency, amount_micros, reference))
             except sqlite3.IntegrityError:
                 db.rollback()
                 self.respond(409, {"error": "That transfer reference has already been submitted."})
                 return
             db.commit()
-        self.respond(201, {"ok": True, "deposit_id": cursor.fetchone()["id"], "status": "pending"})
+        self.respond(201, {"ok": True, "deposit_id": cursor.fetchone()["id"], "created_at": created_at,
+                           "currency": currency, "network": "Base" if currency == "USDC" else "TRC20",
+                           "amount_micros": amount_micros, "reference": reference, "status": "pending"})
 
     def require_admin(self):
         user = self.session_user()

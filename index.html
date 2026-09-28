@@ -704,7 +704,7 @@
             <p class="deposit-note">Minimum deposit is 2 USDT or USDC. Send only USDT on TRC20 or USDC on Base to the matching address below, then submit your transaction reference for manual verification.</p>
             <form id="deposit-form" class="deposit-form">
               <label>Token &amp; network<select id="deposit-currency" required><option value="USDT">USDT · TRC20</option><option value="USDC">USDC · Base</option></select></label>
-              <label>Amount<input id="deposit-amount" type="number" min="2" max="1000000" step="0.000001" placeholder="2.00" required></label>
+              <label>Amount<input id="deposit-amount" type="number" min="2" max="1000000" step="0.01" placeholder="2.00" required></label>
               <label class="deposit-reference">Transfer reference / transaction hash<input id="deposit-reference" type="text" minlength="8" maxlength="256" placeholder="Paste your transaction reference" required></label>
               <button class="place-order" type="submit">Submit for verification</button>
             </form>
@@ -767,6 +767,7 @@
     const graphPoints = document.querySelector("#graph-points");
     let mode = "login";
     let toastTimer;
+    let walletRequestVersion = 0;
     let walletCurrency = "USDT";
     let walletBalanceMicros = 0;
     const depositAddresses = {
@@ -891,6 +892,12 @@
     function formatDate(seconds) {
       return new Date(Number(seconds) * 1000).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
     }
+    function formatDepositAmount(micros) {
+      return (Number(micros) / 1000000).toFixed(2);
+    }
+    function customerDepositHtml(item) {
+      return '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + '</strong><span class="status-badge ' + escapeHtml(item.status) + '">' + escapeHtml(item.status) + '</span></div><span>' + formatDate(item.created_at) + '</span></div><p>Reference: <code>' + escapeHtml(item.reference) + '</code></p></article>';
+    }
     function orderSettingsHtml(raw) {
       try {
         const settings = JSON.parse(raw || "{}");
@@ -951,15 +958,15 @@
       } catch (error) { showToast(error.message); }
     }
     async function loadCustomerWallet() {
+      const requestVersion = ++walletRequestVersion;
       try {
         const {transactions, deposits} = await requestJson("/api/wallet");
+        if (requestVersion !== walletRequestVersion) return;
         const depositList = document.querySelector("#customer-deposits");
-        depositList.innerHTML = deposits.length ? deposits.map(item =>
-          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatPrice(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + '</strong><span class="status-badge ' + escapeHtml(item.status) + '">' + escapeHtml(item.status) + '</span></div><span>' + formatDate(item.created_at) + '</span></div><p>Reference: <code>' + escapeHtml(item.reference) + '</code></p></article>'
-        ).join("") : '<div class="empty-state">No deposit requests yet.</div>';
+        depositList.innerHTML = deposits.length ? deposits.map(customerDepositHtml).join("") : '<div class="empty-state">No deposit requests yet.</div>';
         const transactionList = document.querySelector("#wallet-transactions");
         transactionList.innerHTML = transactions.length ? transactions.map(item =>
-          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + formatPrice(Math.abs(item.amount_micros)) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + (item.kind === "deposit" ? formatDepositAmount(Math.abs(item.amount_micros)) : formatPrice(Math.abs(item.amount_micros))) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
         ).join("") : '<div class="empty-state">No wallet activity yet.</div>';
         document.querySelector("#overview-deposits").textContent = deposits.filter(item => item.status === "pending").length;
       } catch (error) { showToast(error.message); }
@@ -980,7 +987,7 @@
         ).join("") : '<div class="empty-state">No pending orders.</div>';
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
-          '<article class="record-card"><div class="record-top"><div><strong>' + formatPrice(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge pending">pending</span></div>' +
+          '<article class="record-card"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge pending">pending</span></div>' +
           '<p>Submitted ' + formatDate(item.created_at) + '</p><p class="reference-line">Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p><div class="admin-actions"><button class="admin-action" type="button" data-credit-deposit="' + item.id + '">Verify &amp; credit</button><button class="admin-action secondary" type="button" data-reject-deposit="' + item.id + '">Reject</button></div></article>'
         ).join("") : '<div class="empty-state">No pending payments.</div>';
         orderList.querySelectorAll("[data-complete-order]").forEach(button => button.addEventListener("click", () => completeOrder(button.dataset.completeOrder)));
@@ -1291,16 +1298,19 @@
       const button = event.currentTarget.querySelector('[type="submit"]');
       button.disabled = true;
       try {
-        await requestJson("/api/deposits", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({
+        const deposit = await requestJson("/api/deposits", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({
           currency:document.querySelector("#deposit-currency").value,
           amount:document.querySelector("#deposit-amount").value,
           reference:document.querySelector("#deposit-reference").value
         })});
-        event.currentTarget.reset();
-        document.querySelector("#deposit-currency").value = walletCurrency;
-        showToast("Deposit request submitted. Your balance will update after admin verification.");
-        loadCustomerWallet();
-        loadOverview();
+        walletRequestVersion++;
+        const depositList = document.querySelector("#customer-deposits");
+        const depositCard = customerDepositHtml(deposit);
+        if (depositList.querySelector(".empty-state")) depositList.innerHTML = depositCard;
+        else depositList.insertAdjacentHTML("afterbegin", depositCard);
+        document.querySelector("#deposit-amount").value = "";
+        document.querySelector("#deposit-reference").value = "";
+        showToast("Deposit request queued for manual verification. Your balance will change after admin approval.");
       } catch (error) { showToast(error.message); }
       finally { button.disabled = false; }
     });
