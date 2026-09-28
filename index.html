@@ -891,7 +891,7 @@
       } catch (_) { return '<p>Order settings are unavailable.</p>'; }
     }
     async function requestJson(url, options = {}) {
-      const response = await fetch(url, options);
+      const response = await fetch(url, {...options, credentials:"same-origin", cache:"no-store"});
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not complete this request.");
       return result;
@@ -1284,6 +1284,7 @@
       try {
         const response = await fetch("/api/order", {
           method:"POST",
+          credentials:"same-origin",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify({
             platform:document.querySelector(".platform-button.selected").dataset.platform,
@@ -1322,7 +1323,7 @@
     });
     async function refreshWallet() {
       try {
-        const response = await fetch("/api/me");
+        const response = await fetch("/api/me", {credentials:"same-origin", cache:"no-store"});
         const account = await response.json();
         if (account.authenticated && account.role === "admin") loadAdmin();
         else if (account.authenticated) updateWallet(account.currency, account.balance_micros);
@@ -1341,6 +1342,7 @@
       try {
         const response = await fetch("/api/" + mode, {
           method: "POST",
+          credentials: "same-origin",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify(payload)
         });
@@ -1355,7 +1357,7 @@
       }
     });
     async function signOut() {
-      await fetch("/api/logout", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"});
+      await fetch("/api/logout", {method: "POST", credentials:"same-origin", headers: {"Content-Type": "application/json"}, body: "{}"});
       document.querySelector("#workspace").hidden = true;
       document.querySelector("#admin-panel").hidden = true;
       document.querySelector("#customer-shell").hidden = false;
@@ -1365,7 +1367,7 @@
     }
     document.querySelector("#logout").addEventListener("click", signOut);
     document.querySelector("#admin-logout").addEventListener("click", signOut);
-    fetch("/api/me").then(response => response.json()).then(data => {
+    fetch("/api/me", {credentials:"same-origin", cache:"no-store"}).then(response => response.json()).then(data => {
       if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role);
     }).catch(() => {});
   </script>
