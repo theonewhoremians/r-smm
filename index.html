@@ -471,6 +471,14 @@
     .growth-card .curve-preset.active{border-color:#d9b476;box-shadow:0 0 0 2px #d9b47624}
     .growth-card .curve-legend{border-color:#ffffff1c;color:#f3f0eacc}
     .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.saves{background:#d9b476}.growth-card .legend-dot.shares{background:#93a9e8}
+    .metric-list{gap:24px}
+    .metric-card{transition:padding .18s ease,border-color .18s ease,box-shadow .18s ease}
+    .metric-card.is-collapsed{padding:14px 18px;box-shadow:none;background:#f7f4ed}
+    .metric-card.is-collapsed .metric-top{grid-template-columns:minmax(0,1fr) auto;gap:12px}
+    .metric-card.is-collapsed .metric-range,.metric-card.is-collapsed .metric-amount,.metric-card.is-collapsed .delivery{display:none}
+    .metric-card.is-collapsed .switch{grid-column:2;grid-row:1;justify-self:end}
+    @media(max-width:760px){.metric-list{gap:18px}}
+    @media(max-width:430px){.metric-card.is-collapsed .metric-name-wrap{grid-column:auto}}
   </style>
 </head>
 <body>
@@ -536,15 +544,15 @@
         <section class="wallet-card" aria-label="Wallet balance">
           <div class="wallet-label"><span aria-hidden="true">▱</span> WALLET BALANCE</div>
           <strong class="wallet-balance" id="wallet-balance">0.00 USDT</strong>
-          <button class="funds-button" id="add-funds" type="button">▱ &nbsp; Add Funds</button>
+          <button class="funds-button" id="add-funds" type="button">Add Funds</button>
         </section>
         <nav class="side-menu" aria-label="Main menu">
           <p class="menu-caption">MENU</p>
           <ul>
-            <li><button class="nav-item" type="button" data-view="dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</button></li>
-            <li><button class="nav-item current" type="button" data-view="full-engagement" aria-current="page"><span class="nav-icon" aria-hidden="true">♧</span>Full Engagement</button></li>
-            <li><button class="nav-item" type="button" data-view="orders"><span class="nav-icon" aria-hidden="true">✧</span>Engagement Orders</button></li>
-            <li><button class="nav-item" type="button" data-view="wallet"><span class="nav-icon" aria-hidden="true">▱</span>Wallet</button></li>
+            <li><button class="nav-item" type="button" data-view="dashboard">Dashboard</button></li>
+            <li><button class="nav-item current" type="button" data-view="full-engagement" aria-current="page">Full Engagement</button></li>
+            <li><button class="nav-item" type="button" data-view="orders">Engagement Orders</button></li>
+            <li><button class="nav-item" type="button" data-view="wallet">Wallet</button></li>
             <li><button class="nav-item" type="button" data-view="support"><span class="nav-icon" aria-hidden="true">◎</span>Support</button></li>
             <li><button class="nav-item" type="button" data-view="settings"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</button></li>
           </ul>
@@ -1215,7 +1223,10 @@
       }
     });
     metricList.addEventListener("change", event => {
-      if (event.target.matches(".metric-toggle")) renderSummary();
+      if (event.target.matches(".metric-toggle")) {
+        event.target.closest(".metric-card").classList.toggle("is-collapsed", !event.target.checked);
+        renderSummary();
+      }
       if (event.target.matches('[data-metric-input="views"]')) setQuantity(event.target.value);
     });
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
