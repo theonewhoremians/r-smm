@@ -357,6 +357,8 @@
     .deposit-address-content code{display:block;overflow-wrap:anywhere;color:#4d463b;font-size:12px;line-height:1.5}
     .copy-address{margin-top:10px;min-height:36px;padding:0 12px;border:1px solid #cbb996;border-radius:9px;background:#fffdf8;color:#4d402c;font-size:12px;font-weight:700}
     .deposit-address-content small{display:block;margin-top:8px;color:#71695d;font-size:11px;line-height:1.5}
+    .deposit-telegram-note{margin:15px 0 0;padding-top:14px;border-top:1px solid #e1d7c6;color:#71695d;font-size:12px;line-height:1.55}
+    .deposit-telegram-note a{color:#4d402c;font-weight:700;text-decoration:none}
     .record-list{display:grid;gap:12px}
     .record-card{padding:17px 18px;border:1px solid #ded5c6;border-radius:16px;background:#fffdf8}
     .record-card p{margin:10px 0;color:#71695d;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
@@ -438,6 +440,18 @@
       .delivery-fields{grid-template-columns:1fr}
       .curve-reset{margin-left:auto}
     }
+
+    @media(max-width:760px){
+      .landing-page .page-heading{margin-bottom:18px}
+      .landing-page .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+      .landing-page .overview-card{padding:15px;border-radius:16px}
+      .landing-page .overview-card:first-child{grid-column:1/-1;padding:20px;background:linear-gradient(135deg,#eee4d1,#faf6ed)}
+      .landing-page .overview-card:first-child strong{font-size:30px}
+      .landing-page .quick-start{gap:12px;padding:18px}
+      .landing-page .quick-start h2{font-size:17px}
+      .deposit-telegram-note{text-align:center}
+    }
+    @media(max-width:350px){.landing-page .overview-grid{grid-template-columns:1fr}.landing-page .overview-card:first-child{grid-column:auto}}
 
     /* Trajectory simulator graph theme */
     .growth-card{background:radial-gradient(520px 260px at 8% -20%,#d9b4762e,transparent 62%),radial-gradient(480px 240px at 100% 0,#93a9e828,transparent 62%),linear-gradient(145deg,#08090b,#11141a);border-color:#ffffff1c;box-shadow:0 14px 36px #00000042,inset 0 1px 0 #ffffff1c}
@@ -640,7 +654,7 @@
           </section>
         </div>
       </section>
-      <section class="dashboard secondary-page" id="dashboard-page" data-page="dashboard" hidden>
+      <section class="dashboard secondary-page landing-page" id="dashboard-page" data-page="dashboard" hidden>
         <div class="dashboard-inner">
           <header class="page-heading"><div><div class="eyebrow">YOUR WORKSPACE</div><h1>Dashboard</h1><p>Your balance and recent social growth activity.</p></div></header>
           <div class="overview-grid">
@@ -674,6 +688,7 @@
               <div class="deposit-qr"><img id="deposit-qr" alt="QR code for USDT on TRC20" loading="lazy"><span id="deposit-qr-error" hidden>QR unavailable</span></div>
               <div class="deposit-address-content"><span class="eyebrow">SEND ONLY ON THIS NETWORK</span><strong id="deposit-address-title">USDT · TRC20</strong><code id="deposit-address"></code><button class="copy-address" id="copy-deposit-address" type="button">Copy address</button><small>Minimum 2. Double-check the selected token and network before sending.</small></div>
             </div>
+            <p class="deposit-telegram-note">For faster deposit and order processing, connect on the <a href="https://t.me/Cryusog" target="_blank" rel="noopener">given Telegram</a>.</p>
           </section>
           <section class="form-card"><div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">◷</span><h2>Deposit requests</h2></div></div><div class="record-list compact" id="customer-deposits"><div class="empty-state">No deposit requests yet.</div></div></section>
           <section class="form-card"><div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↕</span><h2>Wallet activity</h2></div></div><div class="record-list compact" id="wallet-transactions"><div class="empty-state">No wallet activity yet.</div></div></section>
@@ -802,7 +817,7 @@
       document.querySelector("#settings-name").textContent = displayName;
       document.querySelector("#settings-email").textContent = email || "";
       updateWallet(currency, balanceMicros);
-      showCustomerPage("full-engagement");
+      showCustomerPage("dashboard");
       loadCustomerOrders();
       loadCustomerWallet();
     }
