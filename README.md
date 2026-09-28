@@ -1,10 +1,16 @@
 # R-SMM
 
-Run locally with Python 3 using `python app.py`, then open http://127.0.0.1:8000. Keep the server running while using the site.
+Run locally with Python 3 using `python app.py`, then open http://127.0.0.1:8000. Keep the server running while using the site. Local mode stores data in SQLite; Vercel mode uses Neon Postgres.
+
+## Vercel database setup
+
+Create a free Neon Postgres project at https://neon.com, then add its pooled connection URL as the private `DATABASE_URL` environment variable in the R-SMM Vercel project. Do not use a `NEXT_PUBLIC_` variable or commit the URL. Add `RSMM_ADMIN_PASSWORD` as a private Vercel environment variable before the first API request, then redeploy. The app creates its tables on the first request. The admin password must be at least 10 characters.
+
+Production starts with an empty database. The local `auth.sqlite3` file is ignored by Git and is not uploaded or copied to Neon.
 
 ## Accounts and balances
 
-Customer accounts and wallet balances are stored in the local SQLite database, `auth.sqlite3`. Each account's sign-in email is its primary key; orders, deposit requests, and wallet transactions are tied to that email. Balances persist across server restarts on this machine. The admin panel lists each account and its current balance.
+Each account's sign-in email is its primary key; orders, deposit requests, and wallet transactions are tied to that email. Local balances are in `auth.sqlite3`; production balances are in the linked Neon database. The admin panel lists each account and its current balance.
 
 Three consecutive incorrect passwords lock that email out for six hours. The administrator account is `aryan793gupta@gmail.com`; its password is stored as a salted PBKDF2 hash in the database. For a fresh database or an intentional password reset, set `RSMM_ADMIN_PASSWORD` before starting the server. The value is read only during startup and is not stored in source files.
 

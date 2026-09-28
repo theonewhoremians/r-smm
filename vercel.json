@@ -1,0 +1,15 @@
+{
+  "rewrites": [
+    { "source": "/api/me", "destination": "/api/handler?route=me" },
+    { "source": "/api/signup", "destination": "/api/handler?route=signup" },
+    { "source": "/api/login", "destination": "/api/handler?route=login" },
+    { "source": "/api/logout", "destination": "/api/handler?route=logout" },
+    { "source": "/api/order", "destination": "/api/handler?route=order" },
+    { "source": "/api/orders", "destination": "/api/handler?route=orders" },
+    { "source": "/api/wallet", "destination": "/api/handler?route=wallet" },
+    { "source": "/api/deposits", "destination": "/api/handler?route=deposits" },
+    { "source": "/api/admin/summary", "destination": "/api/handler?route=admin/summary" },
+    { "source": "/api/admin/orders/:id/complete", "destination": "/api/handler?route=admin/orders/:id/complete" },
+    { "source": "/api/admin/deposits/:id/:action", "destination": "/api/handler?route=admin/deposits/:id/:action" }
+  ]
+}
