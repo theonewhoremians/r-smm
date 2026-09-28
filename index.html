@@ -90,7 +90,7 @@
     .side-bottom{margin-top:auto}
     .currency-pill{height:51px;border:1px solid #eee8ed;border-radius:15px;background:#fcfbfc;display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#536174;font-size:14px;margin-bottom:10px}
     .currency-pill span:last-child{color:#9099a5}
-    .telegram-card{width:100%;border:1px solid #d9eefe;border-radius:15px;background:#eff8ff;padding:12px 13px;display:flex;align-items:center;gap:11px;text-align:left;color:#087ac1;margin-bottom:7px}
+    .telegram-card{width:100%;border:1px solid #d9eefe;border-radius:15px;background:#eff8ff;padding:12px 13px;display:flex;align-items:center;gap:11px;text-align:left;color:#087ac1;margin-bottom:7px;text-decoration:none;cursor:pointer}
     .telegram-icon{width:22px;height:22px;border-radius:50%;background:#12a5e5;color:white;display:grid;place-items:center;font-size:12px}
     .telegram-copy strong,.telegram-copy small{display:block}
     .telegram-copy strong{font-size:12px;font-weight:700}
@@ -438,6 +438,25 @@
       .delivery-fields{grid-template-columns:1fr}
       .curve-reset{margin-left:auto}
     }
+
+    /* Trajectory simulator graph theme */
+    .growth-card{background:radial-gradient(520px 260px at 8% -20%,#d9b4762e,transparent 62%),radial-gradient(480px 240px at 100% 0,#93a9e828,transparent 62%),linear-gradient(145deg,#08090b,#11141a);border-color:#ffffff1c;box-shadow:0 14px 36px #00000042,inset 0 1px 0 #ffffff1c}
+    .growth-card .growth-heading h2{color:#f3f0ea}
+    .growth-card .growth-instructions,.growth-card .draw-control{color:#f3f0eaaa}
+    .growth-card .draw-badge{background:linear-gradient(135deg,#d9b476,#e08a94);color:#171613;box-shadow:0 4px 16px #d9b47638}
+    .growth-card .switch-track{background:#ffffff24;border:1px solid #ffffff22}
+    .growth-card .switch input:checked + .switch-track{background:linear-gradient(135deg,#e08a94,#d9b476)}
+    .growth-card .growth-chart{border-color:#ffffff1c;background-color:#090b0e;background-image:radial-gradient(440px 230px at 15% 0,#d9b4761f,transparent 68%),radial-gradient(420px 240px at 100% 100%,#93a9e81c,transparent 68%),linear-gradient(#ffffff0c 1px,transparent 1px),linear-gradient(90deg,#ffffff0c 1px,transparent 1px);background-size:auto,auto,30px 30px,30px 30px;box-shadow:inset 0 1px 0 #ffffff12}
+    .growth-card .graph-baseline{stroke:#d9b476;opacity:.55}
+    .growth-card .graph-line{stroke-width:4;filter:drop-shadow(0 4px 8px #00000080)}
+    .growth-card .graph-point{fill:#0d1013;filter:drop-shadow(0 2px 4px #00000090)}
+    .growth-card .graph-label{color:#f3f0ea80;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .growth-card .series-tab,.growth-card .curve-preset,.growth-card .curve-reset{border-color:#ffffff1c;background:#ffffff0b;color:#f3f0eacc}
+    .growth-card .series-tab.active,.growth-card .series-tab[data-series="likes"].active,.growth-card .series-tab[data-series="saves"].active,.growth-card .series-tab[data-series="shares"].active{outline-color:#d9b476;border-color:#d9b47680;background:linear-gradient(135deg,#d9b47655,#e08a9448);color:#fffaf0}
+    .growth-card .series-tab.active small{background:#f3f0ead9;color:#191713}
+    .growth-card .curve-preset.active{border-color:#d9b476;box-shadow:0 0 0 2px #d9b47624}
+    .growth-card .curve-legend{border-color:#ffffff1c;color:#f3f0eacc}
+    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.saves{background:#d9b476}.growth-card .legend-dot.shares{background:#93a9e8}
   </style>
 </head>
 <body>
@@ -518,7 +537,7 @@
         </nav>
         <div class="side-bottom">
           <div class="currency-pill"><span>WALLET TOKEN</span><strong id="side-currency">USDT</strong></div>
-          <div class="telegram-card"><span class="telegram-icon" aria-hidden="true">➤</span><span class="telegram-copy"><strong>Join our Telegram</strong><small>Updates &amp; support</small></span></div>
+          <a class="telegram-card" href="https://t.me/Cryusog" target="_blank" rel="noopener"><span class="telegram-icon" aria-hidden="true">➤</span><span class="telegram-copy"><strong>Join our Telegram</strong><small>Updates &amp; support</small></span></a>
           <button class="logout-button" id="logout" type="button"><span aria-hidden="true">⇥</span>Sign out</button>
         </div>
       </aside>
@@ -703,7 +722,7 @@
       shares:[[0,0],[1,1]]
     };
     const curves = JSON.parse(JSON.stringify(curveDefaults));
-    const curveColors = {views:"#211e18",likes:"#a58c63",saves:"#d2c2a5",shares:"#776344"};
+    const curveColors = {views:"#d9cfc0",likes:"#e08a94",saves:"#d9b476",shares:"#93a9e8"};
     const graphSvg = document.querySelector("#growth-svg");
     const graphLine = document.querySelector("#graph-line");
     const graphPoints = document.querySelector("#graph-points");
