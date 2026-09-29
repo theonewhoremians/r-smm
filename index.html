@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f7f7f4">
+  <meta name="theme-color" content="#090d18">
   <title>R-SMM — Social, in sync</title>
   <style>
     :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#20231f;background:#f7f7f4;font-synthesis:none;text-rendering:optimizeLegibility}
@@ -506,6 +506,263 @@
     .metric-card.is-collapsed .switch{grid-column:2;grid-row:1;justify-self:end}
     @media(max-width:760px){.metric-list{gap:18px}}
     @media(max-width:430px){.metric-card.is-collapsed .metric-name-wrap{grid-column:auto}}
+
+    /* Premium liquid-glass theme shared by auth, customer and admin pages */
+    :root{
+      color-scheme:dark;
+      --ink:#090d18;
+      --text:#f4f6ff;
+      --muted:#a4aec5;
+      --violet:#a18cff;
+      --aqua:#6ce6dc;
+      --glass:rgba(20,27,45,.76);
+      --glass-soft:rgba(27,35,56,.66);
+      --glass-border:rgba(207,220,255,.15);
+      color:var(--text);
+      background:var(--ink);
+      font-synthesis:none
+    }
+    body{
+      color:var(--text);
+      background:
+        radial-gradient(ellipse at 12% 4%,rgba(110,92,210,.2),transparent 34%),
+        radial-gradient(ellipse at 91% 18%,rgba(47,196,189,.13),transparent 31%),
+        linear-gradient(145deg,#090d18 0%,#0d1221 53%,#0a1120 100%);
+      background-attachment:fixed
+    }
+    .shell{background:transparent}
+    .story{
+      color:#f6f7ff;
+      background:
+        radial-gradient(ellipse at 82% 15%,rgba(108,230,220,.2),transparent 34%),
+        radial-gradient(ellipse at 14% 76%,rgba(137,111,255,.33),transparent 46%),
+        linear-gradient(145deg,#15182a,#101625 62%,#111d2b);
+      border:1px solid rgba(223,229,255,.16);
+      box-shadow:0 28px 90px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.14)
+    }
+    .story:before,.story:after{border-color:rgba(191,180,255,.2)}
+    .brand-mark{border-color:rgba(226,231,255,.48);color:#d9d0ff;background:rgba(255,255,255,.07)}
+    .eyebrow{color:#b8aaff}
+    .story-copy p{color:#c1c9dc}
+    .story-foot{color:#bbc6dd}
+    .story-foot i{background:var(--aqua);box-shadow:0 0 14px rgba(108,230,220,.8)}
+    .social-card{
+      color:#f5f6ff;
+      background:rgba(26,33,53,.74);
+      border-color:rgba(226,232,255,.22);
+      box-shadow:0 24px 70px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.17);
+      backdrop-filter:blur(18px) saturate(145%);
+      -webkit-backdrop-filter:blur(18px) saturate(145%)
+    }
+    .social-head,.social-meta{color:#c3cbe0}
+    .avatar{background:linear-gradient(135deg,#a18cff,#6ce6dc);color:#101526}
+    .social-visual{background:linear-gradient(145deg,#a18cff 0 35%,#5668b5 35% 59%,#54c8b6 59%)}
+    .panel{color:var(--text)}
+    .panel-top{color:var(--muted)}
+    .panel-top a,.text-button,.terms a{color:#b9adff}
+    .form-wrap h2,.form-label{color:#f4f6ff}
+    .intro,.auth-helper,.terms,.panel-foot{color:#a5aec2}
+    .auth-select,input,.deposit-form input,.deposit-form select,.per-type-rate input{
+      color:#f1f4ff;
+      background:rgba(12,18,32,.78);
+      border-color:rgba(202,216,255,.18);
+      box-shadow:inset 0 1px rgba(255,255,255,.035)
+    }
+    .auth-select option,.deposit-form select option{background:#151c2d;color:#f1f4ff}
+    input::placeholder{color:#7f8aa5}
+    input:focus,.link-input:focus,.custom-quantity:focus,.metric-amount:focus,.per-type-rate input:focus{
+      border-color:rgba(108,230,220,.78);
+      box-shadow:0 0 0 3px rgba(108,230,220,.14),0 0 22px rgba(108,230,220,.08)
+    }
+    .show-pass{color:#b9c2d8}
+    .submit,.funds-button,.place-order,.admin-action,.admin-tab[aria-pressed="true"]{
+      color:#08111b;
+      background:linear-gradient(115deg,#b2a0ff 0%,#8c9eff 46%,#72e8dc 100%);
+      box-shadow:0 10px 28px rgba(103,133,255,.22),inset 0 1px rgba(255,255,255,.48)
+    }
+    .submit:hover,.funds-button:hover,.place-order:hover,.admin-action:hover{
+      color:#07111a;
+      background:linear-gradient(115deg,#c2b4ff,#9daeff 46%,#90f0e6);
+      filter:brightness(1.04)
+    }
+    .submit:disabled,.place-order:disabled{color:#aeb7ca;background:#303a50;box-shadow:none}
+    .divider{color:#818ca4}
+    .divider:before,.divider:after{background:rgba(207,220,255,.14)}
+    .notice{border:1px solid rgba(210,220,255,.12);backdrop-filter:blur(14px)}
+    .notice.error{background:rgba(116,47,67,.4);color:#ffc3ce;border-color:rgba(255,125,156,.24)}
+    .notice.success{background:rgba(25,108,99,.34);color:#a9f4e8;border-color:rgba(108,230,220,.22)}
+    .workspace,.dashboard,.admin-panel{color:var(--text);background:transparent}
+    .app-shell{background:transparent}
+    .sidebar,.admin-topbar{
+      background:rgba(13,19,33,.78);
+      border-color:var(--glass-border);
+      box-shadow:0 16px 42px rgba(0,0,0,.16),inset 0 1px rgba(255,255,255,.07);
+      backdrop-filter:blur(22px) saturate(150%);
+      -webkit-backdrop-filter:blur(22px) saturate(150%)
+    }
+    .side-brand-copy strong,.account-copy strong,.wallet-balance,.page-heading h1,
+    .section-title h2,.engagement-head h2,.growth-heading h2,.preview-heading h2,
+    .overview-card strong,.wallet-overview strong,.quick-start h2,.support-card h2,
+    .admin-section-heading h2,.settings-card strong,.record-top,.per-type-name,
+    .metric-title,.preview-metric strong,.per-type-box strong,.per-type-rows b,
+    .balance-pill strong,.deposit-address-content strong{color:#f3f5ff}
+    .side-brand-copy small,.wallet-label,.page-heading .eyebrow{color:#a99aff}
+    .account-card,.wallet-card,.currency-pill,.telegram-card,.draft-pill,.overview-card,
+    .form-card,.metric-card,.preview-metric,.per-type-box,.wallet-overview,
+    .deposit-address-card,.record-card,.admin-tabs,.admin-action.secondary,
+    .admin-logout,.empty-state,.per-type-row,.delivery,.order-delivery,
+    .order-chip,.balance-pill,.copy-address,.curve-preset,.curve-reset,
+    .series-tab,.platform-button,.quantity-preset,.link-input,.custom-quantity,
+    .metric-amount,.how-details summary,.delivery-fields input{
+      color:#eaf0ff;
+      background:linear-gradient(145deg,rgba(31,40,63,.76),rgba(16,24,41,.73));
+      border-color:var(--glass-border);
+      box-shadow:0 12px 30px rgba(0,0,0,.14),inset 0 1px rgba(255,255,255,.07);
+      backdrop-filter:blur(17px) saturate(135%);
+      -webkit-backdrop-filter:blur(17px) saturate(135%)
+    }
+    .account-card{background:linear-gradient(115deg,rgba(39,62,80,.72),rgba(26,38,58,.68));border-color:rgba(108,230,220,.18)}
+    .account-avatar{color:#0d1720;background:linear-gradient(135deg,#8c9eff,#6ce6dc)}
+    .account-copy small,.menu-caption,.page-heading p,.engagement-head p,.preview-subtitle,
+    .growth-instructions,.preview-metric small,.overview-card span,.wallet-overview span,
+    .overview-card small,.wallet-overview small,.quick-start p,.support-card p,
+    .deposit-note,.deposit-address-content small,.deposit-address-content code,
+    .record-card p,.record-top>div>span:not(.status-badge),.record-top>span,
+    .order-details,.order-rejection,.admin-section-heading p,.admin-account,
+    .settings-card>div,.per-type-help,.per-type-rows,.per-type-row small,
+    .order-rate,.order-count,.balance-pill,.delivery-fields label{color:var(--muted)}
+    .wallet-label{color:#86e9df}
+    .wallet-card,.wallet-overview{background:linear-gradient(135deg,rgba(77,83,147,.44),rgba(23,90,98,.34));border:1px solid rgba(151,174,255,.2)}
+    .wallet-card .funds-button{background:linear-gradient(115deg,#b2a0ff,#72e8dc);color:#08111b}
+    .side-menu .nav-item{color:#c7cfe2;border:1px solid transparent}
+    .side-menu .nav-item:hover{background:rgba(143,155,255,.1);border-color:rgba(174,186,255,.13)}
+    .side-menu .nav-item.current{color:#f3f5ff;background:linear-gradient(110deg,rgba(161,140,255,.2),rgba(108,230,220,.12));border-color:rgba(157,177,255,.22)}
+    .nav-icon,.side-menu .nav-item.current .nav-icon{color:#a99aff}
+    .currency-pill{background:rgba(24,32,51,.72)}
+    .telegram-card,.mobile-telegram-link{color:#a8f1ec;background:rgba(20,97,115,.25);border-color:rgba(108,230,220,.2)}
+    .telegram-icon,.mobile-telegram-link .telegram-nav-icon{color:#08121b;background:linear-gradient(135deg,#6ce6dc,#72aaff)}
+    .logout-button{color:#c7cfe2;background:rgba(13,19,33,.86);border-color:var(--glass-border)}
+    .logout-button span{color:#ff91a8}
+    .dashboard{background:radial-gradient(ellipse at 52% 0,rgba(104,91,198,.11),transparent 47%)}
+    .draft-pill{color:#c8c2ff}
+    .form-card,.metric-card,.overview-card,.record-card,.admin-section .overview-card{
+      border:1px solid var(--glass-border);
+      background:linear-gradient(145deg,rgba(27,36,58,.77),rgba(17,25,42,.78));
+      box-shadow:0 18px 42px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.1);
+      backdrop-filter:blur(20px) saturate(145%);
+      -webkit-backdrop-filter:blur(20px) saturate(145%)
+    }
+    .section-icon,.delivery-icon,.support-mark,.wallet-overview .wallet-emblem{
+      color:#dcd6ff;
+      background:linear-gradient(145deg,rgba(161,140,255,.22),rgba(108,230,220,.12));
+      border:1px solid rgba(207,220,255,.13)
+    }
+    .pick-label{color:#a5aec2}
+    .platform-button{color:#cbd3e6}
+    .platform-button .platform-icon{background:rgba(255,255,255,.09)}
+    .platform-button.selected[data-platform="instagram"]{color:white;background:linear-gradient(110deg,#bd35c8,#ed527a 55%,#ff9d43);border-color:transparent;box-shadow:0 8px 24px rgba(225,64,150,.2)}
+    .platform-button.selected[data-platform="tiktok"]{color:#f3f5ff;background:linear-gradient(115deg,#242b40,#111927);border-color:rgba(108,230,220,.48);box-shadow:0 0 0 2px rgba(108,230,220,.09)}
+    .link-input,.custom-quantity,.metric-amount{color:#f2f5ff;background:rgba(9,15,27,.62);border-color:rgba(207,220,255,.17)}
+    .quantity-preset{color:#cbd3e6}
+    .quantity-preset.active,.active-count,.draw-badge{color:#09121c;background:linear-gradient(115deg,#b2a0ff,#72e8dc);border-color:transparent}
+    .engagement-head h2,.growth-heading h2,.preview-heading h2{color:#f3f5ff}
+    .how-details summary{color:#c8c2ff;border-color:rgba(161,140,255,.28);background:rgba(161,140,255,.1)}
+    .how-popover{color:#b8c1d6;background:rgba(17,24,41,.96);border-color:var(--glass-border);box-shadow:0 16px 40px rgba(0,0,0,.32)}
+    .how-popover strong{color:#f3f5ff}
+    .metric-symbol{color:#a99aff}
+    .metric-title,.metric-title.views,.metric-title.likes,.metric-title.saves,.metric-title.shares,.metric-title.reposts{color:#e7eaff}
+    .base-badge{color:#101521;background:linear-gradient(110deg,#b2a0ff,#72e8dc)}
+    .switch-track{background:rgba(191,202,226,.2);border:1px solid rgba(219,227,255,.15)}
+    .switch input:checked + .switch-track{background:linear-gradient(100deg,#9b85ff,#41d9c8)}
+    .delivery{background:rgba(16,35,46,.58);border-color:rgba(108,230,220,.2)}
+    .delivery-icon:after{background:#6ce6dc}
+    .delivery-open{color:#72e8dc}
+    .delivery-fields label,.delivery-fields .interval-unit{color:#aeb8ce}
+    .delivery-fields input{color:#f1f4ff;background:rgba(9,15,27,.7);border-color:rgba(207,220,255,.16)}
+    .metric-card.is-collapsed{background:linear-gradient(145deg,rgba(26,35,56,.65),rgba(16,23,39,.67));border-color:rgba(207,220,255,.11)}
+    .growth-card{
+      background:radial-gradient(560px 270px at 8% -20%,rgba(161,140,255,.2),transparent 62%),radial-gradient(500px 270px at 100% 0,rgba(108,230,220,.14),transparent 62%),linear-gradient(145deg,rgba(27,35,56,.88),rgba(14,21,37,.9));
+      border-color:rgba(207,220,255,.19)
+    }
+    .growth-card .growth-heading h2{color:#f3f5ff}
+    .growth-card .growth-instructions,.growth-card .draw-control{color:#b6bfd4}
+    .growth-card .draw-badge{color:#0b1420;background:linear-gradient(110deg,#b2a0ff,#72e8dc)}
+    .growth-card .switch input:checked + .switch-track{background:linear-gradient(100deg,#9b85ff,#41d9c8)}
+    .growth-card .growth-chart{
+      border-color:rgba(108,230,220,.52);
+      background-color:rgba(8,15,29,.72);
+      background-image:radial-gradient(440px 230px at 15% 0,rgba(161,140,255,.13),transparent 68%),radial-gradient(420px 240px at 100% 100%,rgba(108,230,220,.1),transparent 68%),linear-gradient(rgba(223,231,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(223,231,255,.055) 1px,transparent 1px);
+      box-shadow:inset 0 1px rgba(255,255,255,.07)
+    }
+    .growth-card .graph-baseline{stroke:#a18cff;opacity:.72}
+    .growth-card .graph-line{stroke:#72c9ff;filter:drop-shadow(0 0 8px rgba(114,201,255,.28))}
+    .growth-card .graph-point{fill:#121b2c;stroke:#9dcbff}
+    .growth-card .graph-label{color:#aab5cd}
+    .growth-card .series-tab,.growth-card .curve-preset,.growth-card .curve-reset{color:#d0d7e9;background:rgba(255,255,255,.045);border-color:rgba(207,220,255,.15)}
+    .growth-card .series-tab.active,.growth-card .series-tab[data-series="likes"].active,.growth-card .series-tab[data-series="saves"].active,.growth-card .series-tab[data-series="shares"].active{outline-color:#8eafff;border-color:rgba(156,178,255,.54);background:linear-gradient(115deg,rgba(161,140,255,.3),rgba(108,230,220,.17));color:#fff}
+    .growth-card .series-tab.active small{color:#101522;background:#b7c2ff}
+    .growth-card .curve-preset.active{border-color:#6ce6dc;box-shadow:0 0 0 2px rgba(108,230,220,.13)}
+    .growth-card .curve-legend{border-color:rgba(207,220,255,.15);color:#d5dcef}
+    .growth-card .legend-dot.views{background:#72c9ff}.growth-card .legend-dot.likes{background:#62e4ad}.growth-card .legend-dot.saves{background:#ffc76e}.growth-card .legend-dot.shares{background:#ae96ff}
+    .preview-subtitle,.order-rate,.order-count{color:#a8b2c8}
+    .preview-metric{background:rgba(10,17,31,.48);border-color:rgba(207,220,255,.13)}
+    .preview-metric strong,.per-type-box strong,.per-type-rows b{color:#edf0ff}
+    .preview-metric small,.per-type-help,.per-type-row small{color:#a4aec5}
+    .per-type-box{background:rgba(11,18,32,.52);border-color:rgba(207,220,255,.15)}
+    .per-type-row{background:rgba(21,30,48,.7);border-color:rgba(207,220,255,.13)}
+    .per-type-name{color:#e8ecff}
+    .per-type-rate{color:#b5bfd5}
+    .order-summary{color:#eef1ff;border-color:rgba(108,230,220,.33);background:rgba(19,37,48,.82);box-shadow:0 18px 40px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.13);backdrop-filter:blur(22px) saturate(160%)}
+    .order-price{color:#82e7da}
+    .order-price small{color:#b8c2d7}
+    .balance-pill{color:#dce3f5;background:rgba(255,255,255,.07)}
+    .balance-pill strong{color:#f3f5ff}
+    .dashboard-toast{color:#f4f6ff;background:rgba(24,31,50,.94);border:1px solid var(--glass-border);box-shadow:0 14px 38px rgba(0,0,0,.3);backdrop-filter:blur(18px)}
+    .floating-support{color:#07131d;background:linear-gradient(145deg,#78dcf2,#729eff);border-color:rgba(239,247,255,.8);box-shadow:0 12px 32px rgba(76,165,230,.3)}
+    .floating-support:hover{background:linear-gradient(145deg,#9ae9f7,#8eafff)}
+    .overview-card span,.wallet-overview span,.overview-card small,.wallet-overview small{color:#aab5ca}
+    .wallet-overview small b{color:#d6d9ff}
+    .wallet-overview .wallet-emblem{color:#d7d1ff;background:linear-gradient(145deg,rgba(161,140,255,.24),rgba(108,230,220,.16))}
+    .deposit-note{color:#aab5ca}
+    .deposit-address-card{background:rgba(11,18,32,.58);border-color:rgba(207,220,255,.15)}
+    .deposit-qr{background:#f7f8fc}
+    .deposit-address-content strong{color:#eef1ff}
+    .deposit-address-content code{color:#b8c5df}
+    .copy-address{color:#dce4fa;background:rgba(255,255,255,.06);border-color:rgba(207,220,255,.18)}
+    .deposit-address-content small,.deposit-telegram-note{color:#a5afc4}
+    .deposit-telegram-note{border-color:rgba(207,220,255,.13)}
+    .deposit-telegram-note a,.record-card a{color:#83e5dd}
+    .record-card p{color:#aab4ca}
+    .record-top{color:#eff2ff}
+    .record-top>div>span:not(.status-badge),.record-top>span{color:#a3aec5}
+    .record-card code{color:#c9d2eb;background:rgba(255,255,255,.08)}
+    .order-chip{color:#d4dcf0;background:rgba(161,140,255,.1);border-color:rgba(161,140,255,.2)}
+    .order-delivery{color:#c0d8dc;background:rgba(37,132,131,.12);border-color:rgba(108,230,220,.18)}
+    .order-details{color:#a9b3c8}
+    .order-details summary,.order-rejection summary{color:#c4b9ff}
+    .order-rejection{color:#ffb4c1}
+    .status-badge{color:#cbd4ec;background:rgba(161,140,255,.16)}
+    .status-badge.credited,.status-badge.completed{color:#9ef0d3;background:rgba(47,190,145,.16)}
+    .status-badge.rejected{color:#ffb0be;background:rgba(230,84,119,.17)}
+    .empty-state{color:#a6b1c8;background:rgba(255,255,255,.025);border-color:rgba(207,220,255,.2)}
+    .credit{color:#75e4b3}.debit{color:#ffbd9c}
+    .settings-card>div{color:#aeb8cd;border-color:rgba(207,220,255,.12)}
+    .settings-card strong{color:#f1f3ff}
+    .admin-panel{background:radial-gradient(ellipse at 50% -12%,rgba(114,96,220,.16),transparent 40%),transparent;color:#f3f5ff}
+    .admin-topbar{color:#f3f5ff}
+    .admin-account{color:#b6c0d6}
+    .admin-logout{color:#dce3f5;background:rgba(255,255,255,.055);border-color:var(--glass-border)}
+    .admin-tabs{background:rgba(12,18,32,.62);border-color:var(--glass-border)}
+    .admin-tab{color:#b6c0d5}
+    .admin-section-heading h2{color:#f3f5ff}
+    .admin-section-heading p{color:#a5aec2}
+    .admin-action.secondary{color:#dce3f5;background:rgba(255,255,255,.055);border-color:var(--glass-border)}
+    .admin-action.secondary:hover,.admin-logout:hover,.copy-address:hover{background:rgba(161,140,255,.16);border-color:rgba(161,140,255,.34)}
+    .growth-card.is-collapsed,.metric-card.is-collapsed{background:rgba(19,26,43,.78)}
+    @media(max-width:760px){
+      .sidebar{background:rgba(13,19,33,.9);border-bottom-color:var(--glass-border)}
+      .story{box-shadow:0 16px 40px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.13)}
+    }
   </style>
 </head>
 <body>
