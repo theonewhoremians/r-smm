@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import json
 import os
 import re
@@ -16,6 +17,7 @@ ROOT = Path(__file__).parent
 DATABASE = ROOT / "auth.sqlite3"
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 _DB_READY = False
+_TELEGRAM_WEBHOOK_READY = False
 PASSWORD_ROUNDS = 310_000
 LOCK_SECONDS = 6 * 60 * 60
 SESSION_SECONDS = 7 * 24 * 60 * 60
@@ -40,23 +42,60 @@ METRIC_LIMITS = {
 CURVE_SERIES = ("views", "likes", "saves", "shares")
 
 
-def notify_admin_telegram(message):
+def telegram_webhook_secret(token):
+    return hmac.new(token.encode(), b"r-smm-telegram-payment-approvals-v1", hashlib.sha256).hexdigest()
+
+
+def telegram_api_call(token, method, payload, timeout=3):
+    try:
+        request = Request(
+            f"https://api.telegram.org/bot{token}/{method}",
+            data=json.dumps(payload).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urlopen(request, timeout=timeout) as response:
+            result = json.load(response)
+            return result if response.status == 200 and isinstance(result, dict) else None
+    except Exception as error:
+        print("R-SMM Telegram API call failed:", method, type(error).__name__)
+    return None
+
+
+def ensure_telegram_webhook(token):
+    global _TELEGRAM_WEBHOOK_READY
+    if _TELEGRAM_WEBHOOK_READY:
+        return True
+    if not os.environ.get("VERCEL"):
+        return False
+    webhook_url = os.environ.get("TELEGRAM_WEBHOOK_URL", "").strip()
+    if not webhook_url:
+        webhook_url = "https://r-smm.vercel.app/api/telegram/webhook"
+    response = telegram_api_call(token, "setWebhook", {
+        "url": webhook_url,
+        "secret_token": telegram_webhook_secret(token),
+        "allowed_updates": ["callback_query"],
+    })
+    _TELEGRAM_WEBHOOK_READY = bool(response and response.get("ok"))
+    if not _TELEGRAM_WEBHOOK_READY:
+        print("R-SMM Telegram webhook setup failed.")
+    return _TELEGRAM_WEBHOOK_READY
+
+
+def notify_admin_telegram(message, reply_markup=None):
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
     if not token or not chat_id:
         return
-    try:
-        request = Request(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            data=json.dumps({"chat_id": chat_id, "text": message}).encode(),
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urlopen(request, timeout=2) as response:
-            if response.status != 200 or not json.load(response).get("ok"):
-                print("R-SMM Telegram notification failed.")
-    except Exception as error:
-        print("R-SMM Telegram notification failed:", type(error).__name__)
+    payload = {"chat_id": chat_id, "text": message}
+    if reply_markup is not None:
+        if ensure_telegram_webhook(token):
+            payload["reply_markup"] = reply_markup
+        else:
+            payload["text"] += "\n\nTelegram actions are unavailable right now; review this request in the admin panel."
+    response = telegram_api_call(token, "sendMessage", payload)
+    if not response or not response.get("ok"):
+        print("R-SMM Telegram notification failed.")
 
 
 class PostgresConnection:
@@ -416,6 +455,8 @@ class App(BaseHTTPRequestHandler):
                 self.reject_order(data)
             elif re.fullmatch(r"/api/admin/deposits/\d+/(credit|reject)", self.path):
                 self.review_deposit(data)
+            elif self.path == "/api/telegram/webhook":
+                self.telegram_webhook(data)
             elif self.path == "/api/logout":
                 self.logout()
             else:
@@ -636,10 +677,16 @@ class App(BaseHTTPRequestHandler):
                 return
             deposit_id = cursor.fetchone()["id"]
             db.commit()
+        reference_display = re.sub(r"\s+", " ", reference).strip()
         notify_admin_telegram(
             f"New R-SMM payment request #{deposit_id}\n"
             f"Amount: {Decimal(amount_micros) / Decimal(1_000_000):.2f} {currency}\n"
-            f"Network: {'Base' if currency == 'USDC' else 'TRC20'}"
+            f"Network: {'Base' if currency == 'USDC' else 'TRC20'}\n"
+            f"Transfer reference: {reference_display}",
+            reply_markup={"inline_keyboard": [[
+                {"text": "✅ Approve", "callback_data": f"deposit:approve:{deposit_id}"},
+                {"text": "❌ Reject", "callback_data": f"deposit:reject:{deposit_id}"},
+            ]]},
         )
         self.respond(201, {"ok": True, "deposit_id": deposit_id, "created_at": created_at,
                            "currency": currency, "network": "Base" if currency == "USDC" else "TRC20",
@@ -752,32 +799,34 @@ class App(BaseHTTPRequestHandler):
         parts = self.path.split("/")
         deposit_id = int(parts[4])
         action = parts[5]
+        status, result = self.apply_deposit_review(deposit_id, action)
+        self.respond(status, result)
+
+    def apply_deposit_review(self, deposit_id, action):
+        if action not in ("credit", "reject"):
+            return 400, {"error": "Invalid payment action."}
         with connect() as db:
             db.execute("BEGIN IMMEDIATE")
             deposit = db.execute(row_lock("SELECT * FROM deposit_requests WHERE id = ?"), (deposit_id,)).fetchone()
             if not deposit:
                 db.rollback()
-                self.respond(404, {"error": "Deposit request not found."})
-                return
+                return 404, {"error": "Deposit request not found."}
             if deposit["status"] != "pending":
                 db.rollback()
-                self.respond(409, {"error": "This deposit request has already been reviewed."})
-                return
+                return 409, {"error": "This deposit request has already been reviewed."}
             reviewed_at = int(time.time())
             if action == "reject":
                 db.execute("UPDATE deposit_requests SET status = 'rejected', reviewed_at = ? WHERE id = ?",
                            (reviewed_at, deposit_id))
                 db.commit()
-                self.respond(200, {"ok": True, "deposit_id": deposit_id, "status": "rejected"})
-                return
+                return 200, {"ok": True, "deposit_id": deposit_id, "status": "rejected"}
             wallet = db.execute(row_lock("SELECT currency, balance_micros FROM users WHERE email = ?"),
                                 (deposit["email"],)).fetchone()
             prior_activity = db.execute("SELECT 1 FROM wallet_transactions WHERE email = ? LIMIT 1",
                                         (deposit["email"],)).fetchone()
             if prior_activity and wallet["currency"] != deposit["currency"]:
                 db.rollback()
-                self.respond(409, {"error": "Customer wallet already uses " + wallet["currency"] + "."})
-                return
+                return 409, {"error": "Customer wallet already uses " + wallet["currency"] + "."}
             balance = wallet["balance_micros"] + deposit["amount_micros"]
             db.execute("UPDATE users SET currency = ?, balance_micros = ? WHERE email = ?",
                        (deposit["currency"], balance, deposit["email"]))
@@ -787,8 +836,77 @@ class App(BaseHTTPRequestHandler):
             db.execute("UPDATE deposit_requests SET status = 'credited', reviewed_at = ? WHERE id = ?",
                        (reviewed_at, deposit_id))
             db.commit()
-        self.respond(200, {"ok": True, "deposit_id": deposit_id, "status": "credited",
-                           "currency": deposit["currency"], "balance_micros": balance})
+        return 200, {"ok": True, "deposit_id": deposit_id, "status": "credited",
+                     "currency": deposit["currency"], "balance_micros": balance}
+
+    def telegram_webhook(self, update):
+        token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+        chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+        received_secret = self.headers.get("X-Telegram-Bot-Api-Secret-Token", "")
+        if not token or not chat_id or not secrets.compare_digest(
+                received_secret, telegram_webhook_secret(token)):
+            self.respond(403, {"error": "Unauthorized."})
+            return
+
+        callback = update.get("callback_query")
+        if not isinstance(callback, dict):
+            self.respond(200, {"ok": True})
+            return
+        callback_id = callback.get("id")
+        sender = callback.get("from") or {}
+        message = callback.get("message") or {}
+        chat = message.get("chat") or {}
+        if (str(sender.get("id", "")) != chat_id
+                or str(chat.get("id", "")) != chat_id
+                or chat.get("type") != "private"):
+            if isinstance(callback_id, str):
+                telegram_api_call(token, "answerCallbackQuery", {
+                    "callback_query_id": callback_id,
+                    "text": "This action is only available to the configured admin.",
+                    "show_alert": True,
+                })
+            self.respond(200, {"ok": True})
+            return
+
+        match = re.fullmatch(r"deposit:(approve|reject):(\d{1,18})", str(callback.get("data", "")))
+        if not match or not isinstance(callback_id, str):
+            if isinstance(callback_id, str):
+                telegram_api_call(token, "answerCallbackQuery", {
+                    "callback_query_id": callback_id, "text": "This payment button is invalid.",
+                    "show_alert": True,
+                })
+            self.respond(200, {"ok": True})
+            return
+
+        button_action, deposit_id = match.groups()
+        action = "credit" if button_action == "approve" else "reject"
+        status, result = self.apply_deposit_review(int(deposit_id), action)
+        if status == 200:
+            outcome = "approved and credited" if action == "credit" else "rejected"
+            telegram_api_call(token, "answerCallbackQuery", {
+                "callback_query_id": callback_id, "text": f"Payment request {outcome}.",
+            })
+            message_text = message.get("text", f"R-SMM payment request #{deposit_id}")
+            telegram_api_call(token, "editMessageText", {
+                "chat_id": chat_id,
+                "message_id": message.get("message_id"),
+                "text": message_text + f"\n\nPayment {outcome} from Telegram.",
+                "reply_markup": {"inline_keyboard": []},
+            })
+        else:
+            already_reviewed = status == 409 and "already been reviewed" in result.get("error", "")
+            telegram_api_call(token, "answerCallbackQuery", {
+                "callback_query_id": callback_id,
+                "text": result.get("error", "Could not update this payment request.")[:190],
+                "show_alert": True,
+            })
+            if already_reviewed or status == 404:
+                telegram_api_call(token, "editMessageReplyMarkup", {
+                    "chat_id": chat_id,
+                    "message_id": message.get("message_id"),
+                    "reply_markup": {"inline_keyboard": []},
+                })
+        self.respond(200, {"ok": True})
 
     def logout(self):
         cookies = self.headers.get("Cookie", "")

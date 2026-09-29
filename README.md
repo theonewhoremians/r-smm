@@ -14,9 +14,9 @@ Each account's sign-in email is its primary key; orders, deposit requests, and w
 
 Three consecutive incorrect passwords lock that email out for six hours. The administrator account is `aryan793gupta@gmail.com`; its password is stored as a salted PBKDF2 hash in the database. For a fresh database or an intentional password reset, set `RSMM_ADMIN_PASSWORD` before starting the server. The value is read only during startup and is not stored in source files.
 
-## Telegram order alerts
+## Telegram alerts and payment approvals
 
-Create a bot with Telegram's `@BotFather`, open a private chat with it, and send `/start`. Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` as private Production environment variables in Vercel, then redeploy. Get the chat ID from the bot's `getUpdates` response after sending `/start`; never share the bot token. The bot sends alerts after a new order is saved and after a deposit is approved. Notification failures do not undo an order or wallet credit, and alerts do not include customer email addresses or transfer references.
+Create a bot with Telegram's `@BotFather`, open a private chat with it, and send `/start`. Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` as private Production environment variables in Vercel. Get the chat ID from the bot's `getUpdates` response before the webhook is activated; never share the bot token. The first new payment request automatically registers the production webhook. The notification includes the network and transfer reference plus **Approve** and **Reject** buttons. Only callbacks from the configured private admin chat are accepted; the same database transaction and duplicate-review checks used by the admin panel apply. After a review, the alert is updated and its buttons are removed. Notification failures do not undo a payment request or wallet credit. While a webhook is active, Telegram's `getUpdates` method is unavailable for that bot.
 
 ## Wallet and orders
 
