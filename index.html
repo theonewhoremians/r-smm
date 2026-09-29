@@ -357,7 +357,17 @@
     .wallet-overview{display:flex;align-items:center;justify-content:space-between;margin:0 4px 22px;padding:28px;border:1px solid #cdbc9a;border-radius:20px;background:linear-gradient(120deg,#eee5d4,#f7f2e8)}
     .wallet-overview strong{display:block;margin:9px 0 8px;color:#191713;font-size:38px;letter-spacing:-.05em}
     .wallet-overview small b{color:#4d402c}
+    .wallet-currency-picker{display:flex;align-items:center;gap:10px;color:#71695d;font-size:12px}
+    .wallet-currency-picker select{height:36px;padding:0 12px;border:1px solid #cdbc9a;border-radius:10px;background:#fffdf8;color:#211e18;font:inherit;font-weight:700}
+    .wallet-currency-picker select:disabled{opacity:.6;cursor:wait}
     .wallet-overview .wallet-emblem{display:grid;place-items:center;flex:none;width:62px;height:62px;border-radius:18px;background:#191713;color:#e6d8bd;font-size:30px}
+    .wallet-activity-details>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none}
+    .wallet-activity-details>summary::-webkit-details-marker{display:none}
+    .wallet-activity-details>summary:focus-visible{outline:2px solid #9d855d;outline-offset:4px;border-radius:10px}
+    .wallet-activity-details>summary .section-head{margin:0}
+    .wallet-activity-details[open]>summary{margin-bottom:18px}
+    .wallet-activity-chevron{display:grid;place-items:center;width:34px;height:34px;border:1px solid #ded5c6;border-radius:10px;color:#655b4b;transition:transform .16s ease}
+    .wallet-activity-details[open] .wallet-activity-chevron{transform:rotate(180deg)}
     .wallet-emblem svg{display:block;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
     .deposit-note{max-width:760px;margin:-2px 0 18px;color:#71695d;font-size:13px;line-height:1.6}
     .deposit-form{display:grid;grid-template-columns:160px minmax(150px,220px) minmax(240px,1fr) auto;align-items:end;gap:12px}
@@ -449,7 +459,6 @@
       .nav-item{width:100%;min-height:46px;height:auto;justify-content:flex-start;white-space:normal;padding:8px 11px;font-size:13px;line-height:1.25}
       .admin-tabs{overflow:auto}.admin-tab{flex:none;padding:0 12px;font-size:12px}
       .side-menu [data-view="support"]{display:none}
-      .mobile-support-item{display:none}
       .mobile-telegram-item{display:block}
       .mobile-telegram-link{border:1px solid #e2d7c4;background:#f5f0e6;color:#66563c}
       .mobile-telegram-link .telegram-nav-icon{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#229ed9;color:#fff;flex:none}
@@ -728,6 +737,9 @@
     .floating-support:hover{background:linear-gradient(145deg,#9ae9f7,#8eafff)}
     .overview-card span,.wallet-overview span,.overview-card small,.wallet-overview small{color:#aab5ca}
     .wallet-overview small b{color:#d6d9ff}
+    .wallet-currency-picker{color:#aab5ca}
+    .wallet-currency-picker select{color:#eef1ff;background:rgba(9,15,27,.62);border-color:rgba(207,220,255,.17)}
+    .wallet-activity-chevron{color:#dcd6ff;border-color:rgba(207,220,255,.15)}
     .wallet-overview .wallet-emblem{color:#d7d1ff;background:linear-gradient(145deg,rgba(161,140,255,.24),rgba(108,230,220,.16))}
     .deposit-note{color:#aab5ca}
     .deposit-address-card{background:rgba(11,18,32,.58);border-color:rgba(207,220,255,.15)}
@@ -858,10 +870,9 @@
           <p class="menu-caption">MENU</p>
           <ul>
             <li><button class="nav-item" type="button" data-view="dashboard">Dashboard</button></li>
-            <li><button class="nav-item current" type="button" data-view="full-engagement" aria-current="page">Full Engagement</button></li>
+            <li><button class="nav-item current" type="button" data-view="full-engagement" aria-current="page">Engagement</button></li>
             <li><button class="nav-item" type="button" data-view="orders">Engagement Orders</button></li>
             <li><button class="nav-item" type="button" data-view="wallet">Wallet</button></li>
-            <li class="mobile-support-item"><button class="nav-item" type="button" data-view="support"><span class="nav-icon" aria-hidden="true">◎</span>Support</button></li>
             <li><button class="nav-item" type="button" data-view="settings">Settings</button></li>
             <li class="mobile-telegram-item"><a class="nav-item mobile-telegram-link" href="https://t.me/Cryusog" target="_blank" rel="noopener" aria-label="Open R-SMM on Telegram"><span class="telegram-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M23.9 3.8 20.3 20.8c-.3 1.2-1 1.5-2 .9l-5.4-4-2.7 2.5c-.3.3-.5.5-1.1.5l.4-5.5 10.1-9.1c.4-.4-.1-.6-.7-.2L6.9 14 1.6 12.3c-1.2-.4-1.2-1.2.2-1.6l20.8-8c1-.4 1.8.2 1.3 1.1Z"/></svg></span>Telegram</a></li>
           </ul>
@@ -876,7 +887,7 @@
       <section class="dashboard" id="engagement-page" data-page="full-engagement">
         <div class="dashboard-inner">
           <header class="page-heading">
-            <div><div class="eyebrow">R-SMM SOCIAL GROWTH</div><h1>Full Engagement</h1><p>Build a natural engagement plan for your next post.</p></div>
+            <div><div class="eyebrow">R-SMM SOCIAL GROWTH</div><h1>Engagement</h1><p>Build a natural engagement plan for your next post.</p></div>
             <div class="page-heading-actions"><span class="draft-pill">● &nbsp; New order</span><button class="draft-pill refresh-button" type="button" id="refresh-main">↻ &nbsp; Refresh</button></div>
           </header>
           <section class="form-card" aria-labelledby="platform-heading">
@@ -959,13 +970,13 @@
           </section>
           <section class="order-summary" aria-label="Order price and balance">
             <div>
-              <div class="order-price"><span id="order-total">0.850000</span> <small id="order-currency">USDT</small></div>
+              <div class="order-price"><span id="order-total">0.850</span> <small id="order-currency">USDT</small></div>
               <span class="order-rate">Fixed rates apply to each selected service; percentages set its quantity.</span>
               <span class="order-count" id="order-count">10,680 engagements • 5 types</span>
             </div>
             <div class="order-actions">
               <span class="balance-pill">Wallet: <strong id="summary-balance">0.00 USDT</strong></span>
-              <button class="place-order" id="place-order" type="button">Place Order — 0.850000 USDT</button>
+              <button class="place-order" id="place-order" type="button">Place Order — 0.850 USDT</button>
             </div>
           </section>
         </div>
@@ -990,7 +1001,7 @@
       <section class="dashboard secondary-page" id="wallet-page" data-page="wallet" hidden>
         <div class="dashboard-inner">
           <header class="page-heading"><div><div class="eyebrow">WALLET</div><h1>Your balance</h1><p>Deposit USDT or USDC and use your balance for orders.</p></div><button class="draft-pill refresh-button" type="button" id="refresh-wallet">↻ &nbsp; Refresh</button></header>
-          <div class="wallet-overview"><div><span>Available balance</span><strong id="wallet-page-balance">0.00 USDT</strong><small>Wallet token: <b id="wallet-page-token">USDT</b></small></div><span class="wallet-emblem" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h13.5v14H6a2.5 2.5 0 0 1-2.5-2.5v-9Z"/><path d="M3.5 8h13M15 12.5h4.5M6.5 5V4.5A1.5 1.5 0 0 1 8 3h10"/><circle cx="16.75" cy="12.5" r=".5"/></svg></span></div>
+          <div class="wallet-overview"><div><span>Available balance</span><strong id="wallet-page-balance">0.00 USDT</strong><label class="wallet-currency-picker" for="wallet-currency">Wallet currency<select id="wallet-currency" aria-label="Wallet currency"><option value="USDT">USDT</option><option value="USDC">USDC</option></select></label></div><span class="wallet-emblem" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h13.5v14H6a2.5 2.5 0 0 1-2.5-2.5v-9Z"/><path d="M3.5 8h13M15 12.5h4.5M6.5 5V4.5A1.5 1.5 0 0 1 8 3h10"/><circle cx="16.75" cy="12.5" r=".5"/></svg></span></div>
           <section class="form-card deposit-card">
             <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">＋</span><h2>Request a deposit</h2></div><span class="pick-label">MANUAL REVIEW</span></div>
             <p class="deposit-note">Minimum deposit is 2 USDT or USDC. Send only USDT on TRC20 or USDC on Base to the matching address below, then submit your transaction reference for manual verification.</p>
@@ -1007,7 +1018,7 @@
             <p class="deposit-telegram-note">For faster deposit and order processing, connect on the <a href="https://t.me/Cryusog" target="_blank" rel="noopener">given Telegram</a>.</p>
           </section>
           <section class="form-card"><div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">◷</span><h2>Deposit requests</h2></div></div><div class="record-list compact" id="customer-deposits"><div class="empty-state">No deposit requests yet.</div></div></section>
-          <section class="form-card"><div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↕</span><h2>Wallet activity</h2></div></div><div class="record-list compact" id="wallet-transactions"><div class="empty-state">No wallet activity yet.</div></div></section>
+          <details class="form-card wallet-activity-details"><summary><span class="section-head"><span class="section-title"><span class="section-icon" aria-hidden="true">↕</span><span class="section-title-text"><h2>Wallet activity</h2></span></span></span><span class="wallet-activity-chevron" aria-hidden="true">⌄</span></summary><div class="record-list compact" id="wallet-transactions"><div class="empty-state">No wallet activity yet.</div></div></details>
         </div>
       </section>
       <section class="dashboard secondary-page" id="support-page" data-page="support" hidden>
@@ -1076,6 +1087,7 @@
     let accountViewVersion = 0;
     let walletCurrency = "USDT";
     let walletBalanceMicros = 0;
+    let walletCurrencyChanging = false;
     const depositAddresses = {
       USDC:{network:"Base", address:"0x98e56Af262E9FDbe77616e9fF8638E65ceed5f01"},
       USDT:{network:"TRC20", address:"TSi3EAdmxqw1NsDHRpDJYJBK2gkntjGUzE"}
@@ -1142,10 +1154,10 @@
       loadCustomerWallet();
     }
     function formatPrice(micros) {
-      return (micros / 1000000).toFixed(6);
+      return (Number(micros) / 1000000).toFixed(3).replace(/(?:\.0+|(\.\d*?[1-9])0+)$/, "$1");
     }
     function formatBalance(micros) {
-      const value = formatPrice(micros).replace(/0+$/, "").replace(/\.$/, "");
+      const value = formatPrice(micros);
       return value.includes(".") ? value.padEnd(value.indexOf(".") + 3, "0") : value + ".00";
     }
     function updateDepositAddress() {
@@ -1174,7 +1186,7 @@
       document.querySelector("#wallet-balance").textContent = balance;
       document.querySelector("#summary-balance").textContent = balance;
       document.querySelector("#wallet-page-balance").textContent = balance;
-      document.querySelector("#wallet-page-token").textContent = walletCurrency;
+      document.querySelector("#wallet-currency").value = walletCurrency;
       document.querySelector("#overview-balance").textContent = balance;
       document.querySelector("#settings-currency").textContent = walletCurrency;
       document.querySelector("#side-currency").textContent = walletCurrency;
@@ -1260,7 +1272,7 @@
         list.innerHTML = orders.length ? orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + '</strong><span class="status-badge ' + escapeHtml(order.status) + '">' + escapeHtml(order.status) + '</span>' + (order.status === "rejected" && order.rejection_reason ? '<details class="order-rejection"><summary>Reason</summary><p>' + escapeHtml(order.rejection_reason) + '</p></details>' : "") + '</div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
           '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' views · ' + formatDate(order.created_at) + '</p><a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open post ↗</a></article>'
-        ).join("") : '<div class="empty-state">No orders yet. Start with a Full Engagement order.</div>';
+        ).join("") : '<div class="empty-state">No orders yet. Start with an Engagement order.</div>';
         return true;
       } catch (error) { showToast(error.message); return false; }
     }
@@ -1289,7 +1301,7 @@
         document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
         const balances = document.querySelector("#admin-balances");
         balances.innerHTML = summary.accounts.length ? summary.accounts.map(account =>
-          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + formatBalance(account.balance_micros) + ' ' + escapeHtml(account.currency) + '</strong></div><p>Account type: ' + escapeHtml(account.role) + ' · balance saved to this sign-in email</p></article>'
+          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + (account.wallets || []).map(wallet => formatBalance(wallet.balance_micros) + ' ' + escapeHtml(wallet.currency)).join(' · ') + '</strong></div><p>Account type: ' + escapeHtml(account.role) + ' · balances saved to this sign-in email</p></article>'
         ).join("") : '<div class="empty-state">No accounts yet.</div>';
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
@@ -1375,7 +1387,7 @@
     }
     function renderSummary() {
       const views = metricQuantity("views");
-      const cost = metrics.reduce((sum, metric) => sum + (metricEnabled(metric.key) ? metricQuantity(metric.key) * metric.rateMicros : 0), 0);
+      const cost = Math.round(metrics.reduce((sum, metric) => sum + (metricEnabled(metric.key) ? metricQuantity(metric.key) * metric.rateMicros : 0), 0) / 1000) * 1000;
       const active = metrics.filter(metric => metricEnabled(metric.key));
       const total = active.reduce((sum, metric) => sum + metricQuantity(metric.key), 0);
       const quantityInput = document.querySelector("#custom-quantity");
@@ -1411,7 +1423,7 @@
         const rateInput = perTypeRows.querySelector('[data-rate-input="' + metric.key + '"]');
         return !metricEnabled(metric.key) || rateInput.checkValidity();
       });
-      document.querySelector("#place-order").disabled = views < 100 || views > 10000000 || !validMetrics || walletBalanceMicros < cost;
+      document.querySelector("#place-order").disabled = walletCurrencyChanging || views < 100 || views > 10000000 || !validMetrics || walletBalanceMicros < cost;
       document.querySelector("#curve-legend").innerHTML = ["views","likes","saves","shares"].map(key => {
         const metric = metrics.find(item => item.key === key);
         return '<span class="legend-item"><i class="legend-dot ' + key + '"></i>' + metric.symbol + ' ' +
@@ -1638,6 +1650,24 @@
       });
     }));
     document.querySelector("#deposit-currency").addEventListener("change", updateDepositAddress);
+    document.querySelector("#wallet-currency").addEventListener("change", async event => {
+      const selector = event.currentTarget;
+      walletCurrencyChanging = true;
+      selector.disabled = true;
+      renderSummary();
+      try {
+        const result = await requestJson("/api/wallet/currency", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({currency:selector.value})});
+        updateWallet(result.currency, result.balance_micros);
+        showToast("Your " + result.currency + " wallet is selected.");
+      } catch (error) {
+        updateWallet(walletCurrency, walletBalanceMicros);
+        showToast(error.message);
+      } finally {
+        walletCurrencyChanging = false;
+        selector.disabled = false;
+        renderSummary();
+      }
+    });
     document.querySelector("#copy-deposit-address").addEventListener("click", async event => {
       const address = depositAddresses[document.querySelector("#deposit-currency").value].address;
       const button = event.currentTarget;
