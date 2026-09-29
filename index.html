@@ -953,7 +953,7 @@
               <div class="engagement-actions">
                 <details class="how-details">
                   <summary>● &nbsp;ⓘ &nbsp;How it works &nbsp;⌄</summary>
-                  <div class="how-popover"><strong>A balanced engagement plan</strong><br>Choose a base view quantity, tap the service cards to select what you need, then adjust percentages to update quantities and pricing.</div>
+                  <div class="how-popover"><strong>A balanced engagement plan</strong><br>Choose a base view quantity, tap the service cards to select what you need, then set percentages with Views or enter amounts directly without it.</div>
                 </details>
                 <span class="active-count"><span id="active-count">5</span> active</span>
               </div>
@@ -962,7 +962,7 @@
               <div class="preview-heading"><span class="preview-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span><h2 id="preview-heading">Select Services</h2></div>
               <p class="preview-subtitle">Tap to select; press and hold for delivery settings.</p>
               <div class="preview-metrics" id="preview-metrics"></div>
-              <div class="per-type-box"><strong>▦ &nbsp;Per-Type Settings</strong><p class="per-type-help">Set each engagement as a percentage of views. Counts update automatically and fixed USDT/USDC rates price each enabled service.</p><div class="per-type-rows" id="per-type-rows"></div></div>
+              <div class="per-type-box"><strong>▦ &nbsp;Customization</strong><p class="per-type-help">With Views selected, set service percentages. Without Views, enter each service amount directly. Fixed USDT/USDC rates price selected services.</p><div class="per-type-rows" id="per-type-rows"></div></div>
             </section>
             <section class="form-card growth-card" aria-labelledby="growth-heading">
               <div class="growth-top">
@@ -1004,7 +1004,7 @@
           <section class="order-summary" id="order-summary" aria-label="Order price and balance">
             <div>
               <div class="order-price"><span id="order-total">0.850</span> <small id="order-currency">USDT</small></div>
-              <span class="order-rate">Fixed rates apply to each selected service; percentages set its quantity.</span>
+              <span class="order-rate">Fixed rates price selected services; choose Views to set quantities by percentage.</span>
               <span class="order-count" id="order-count">10,680 engagements • 5 types</span>
             </div>
             <div class="order-actions">
@@ -1113,6 +1113,7 @@
     ];
     const engagementMetrics = metrics.filter(metric => !metric.base);
     const engagementRates = {};
+    const engagementAmounts = Object.fromEntries(engagementMetrics.map(metric => [metric.key, metric.amount]));
     const serviceDeliverySettings = Object.fromEntries(metrics.map(metric => [metric.key, {interval_minutes:0, delivery_time_hours:0}]));
     const selectedServices = Object.fromEntries(metrics.map(metric => [metric.key, !metric.base]));
     engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
@@ -1149,9 +1150,9 @@
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
       '<div class="per-type-row"><span class="per-type-row-heading"><span class="per-type-name">' + metric.symbol + metric.name +
-      '</span><label class="per-type-rate">Rate <input data-rate-input="' + metric.key + '" type="number" min="0" step="any" required value="' +
+      '</span><label class="per-type-rate" data-rate-control>Rate <input data-rate-input="' + metric.key + '" type="number" min="0" step="any" required value="' +
       engagementRates[metric.key].toFixed(2) + '" aria-label="' + metric.name + ' percentage of views">%</label></span>' +
-      '<div class="per-type-row-count"><label for="quantity-' + metric.key + '">Amount <input id="quantity-' + metric.key + '" data-quantity-input="' + metric.key + '" type="number" min="' + metric.min + '" max="' + metric.max + '" step="1" value="' + metric.amount + '" aria-label="' + metric.name + ' amount" required disabled></label><small>of <span data-rate-views></span> views</small></div></div>'
+      '<div class="per-type-row-count"><label for="quantity-' + metric.key + '">Amount <input id="quantity-' + metric.key + '" data-quantity-input="' + metric.key + '" type="number" min="' + metric.min + '" max="' + metric.max + '" step="1" value="' + metric.amount + '" aria-label="' + metric.name + ' amount" required disabled></label><small data-view-amount>of <span data-rate-views></span> views</small></div></div>'
     ).join("");
     renderCurve();
     function setMode(next) {
@@ -1433,6 +1434,7 @@
       const metric = metrics.find(item => item.key === key);
       if (!metric) return 0;
       if (metric.base) return Math.max(0, Math.floor(Number(document.querySelector("#custom-quantity").value) || 0));
+      if (!metricEnabled("views")) return engagementAmounts[key];
       const views = metricQuantity("views");
       return Math.max(metric.min, Math.min(metric.max, Math.round(views * engagementRates[key] / 100)));
     }
@@ -1481,23 +1483,28 @@
         const rateInput = row.querySelector("[data-rate-input]");
         const amountInput = row.querySelector("[data-quantity-input]");
         const rateBase = Math.max(1, views);
+        const viewsSelected = metricEnabled("views");
         rateInput.min = (metric.min / rateBase * 100).toString();
         rateInput.max = (metric.max / rateBase * 100).toString();
-        rateInput.disabled = !metricEnabled(metric.key);
+        row.querySelector("[data-rate-control]").hidden = !viewsSelected;
+        rateInput.disabled = !metricEnabled(metric.key) || !viewsSelected;
         amountInput.disabled = !metricEnabled(metric.key);
+        amountInput.readOnly = viewsSelected;
         amountInput.min = metric.min;
         amountInput.max = metric.max;
         if (document.activeElement !== rateInput) rateInput.value = engagementRates[metric.key].toString();
         if (document.activeElement !== amountInput) amountInput.value = metricQuantity(metric.key);
         row.classList.toggle("muted", !metricEnabled(metric.key));
         row.querySelector("[data-rate-views]").textContent = views.toLocaleString();
+        row.querySelector("[data-view-amount]").hidden = !viewsSelected;
       });
       const validMetrics = quantityInput.checkValidity() && active.length > 0 && engagementMetrics.every(metric => {
         const rateInput = perTypeRows.querySelector('[data-rate-input="' + metric.key + '"]');
         const amountInput = perTypeRows.querySelector('[data-quantity-input="' + metric.key + '"]');
-        return !metricEnabled(metric.key) || (rateInput.checkValidity() && amountInput.checkValidity());
+        return !metricEnabled(metric.key) || (amountInput.checkValidity() && (!metricEnabled("views") || rateInput.checkValidity()));
       });
-      const orderDisabled = orderSubmitting || walletCurrencyChanging || views < 100 || views > 10000000 || !validMetrics || walletBalanceMicros < cost;
+      const viewsInvalid = metricEnabled("views") && (views < 100 || views > 10000000);
+      const orderDisabled = orderSubmitting || walletCurrencyChanging || viewsInvalid || !validMetrics || walletBalanceMicros < cost;
       document.querySelector("#place-order").disabled = orderDisabled;
       document.querySelector("#compact-place-order").disabled = orderDisabled;
       document.querySelector("#curve-legend").innerHTML = ["views","likes","saves","shares"].map(key => {
@@ -1716,7 +1723,14 @@
         suppressPreviewClick = "";
         return;
       }
-      selectedServices[key] = !metricEnabled(key);
+      if (key === "views" && metricEnabled("views")) {
+        engagementMetrics.forEach(metric => { engagementAmounts[metric.key] = metricQuantity(metric.key); });
+        selectedServices.views = false;
+      } else if (key === "views") {
+        const views = Math.max(1, metricQuantity("views"));
+        engagementMetrics.forEach(metric => { engagementRates[metric.key] = engagementAmounts[metric.key] / views * 100; });
+        selectedServices.views = true;
+      } else selectedServices[key] = !metricEnabled(key);
       renderSummary();
       document.querySelector('[data-preview-metric="' + key + '"]')?.focus();
     });
@@ -1767,7 +1781,8 @@
       } else if (amountInput) {
         const metric = engagementMetrics.find(item => item.key === amountInput.dataset.quantityInput);
         if (metric && metricEnabled(metric.key) && amountInput.value !== "" && amountInput.checkValidity()) {
-          engagementRates[metric.key] = Number(amountInput.value) / Math.max(1, metricQuantity("views")) * 100;
+          if (metricEnabled("views")) engagementRates[metric.key] = Number(amountInput.value) / Math.max(1, metricQuantity("views")) * 100;
+          else engagementAmounts[metric.key] = Number(amountInput.value);
         }
       } else return;
       renderSummary();
@@ -1785,7 +1800,8 @@
         const metric = engagementMetrics.find(item => item.key === amountInput.dataset.quantityInput);
         if (metric && metricEnabled(metric.key) && amountInput.value !== "") {
           const quantity = Math.max(metric.min, Math.min(metric.max, Math.round(Number(amountInput.value))));
-          engagementRates[metric.key] = quantity / Math.max(1, metricQuantity("views")) * 100;
+          if (metricEnabled("views")) engagementRates[metric.key] = quantity / Math.max(1, metricQuantity("views")) * 100;
+          else engagementAmounts[metric.key] = quantity;
           amountInput.value = quantity;
         }
       }
