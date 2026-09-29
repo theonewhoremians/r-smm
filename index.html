@@ -222,7 +222,6 @@
     .preview-metric:focus-visible{outline:2px solid #9c8358;outline-offset:3px}
     .per-type-box{background:#f7f5f3;border:1px solid #dedbd8;border-radius:17px;padding:15px}
     .per-type-box strong{font-size:13px;color:#252a32}
-    .per-type-help{margin:6px 0 0;color:#6e675b;font-size:12px}
     .per-type-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px;color:#545b67;font-size:12px}
     .per-type-row{display:grid;gap:7px;padding:11px 12px;border:1px solid #e2d9ca;border-radius:12px;background:#fffdf8}
     .per-type-row.muted{opacity:.5}
@@ -672,7 +671,7 @@
     .deposit-note,.deposit-address-content small,.deposit-address-content code,
     .record-card p,.record-top>div>span:not(.status-badge),.record-top>span,
     .order-details,.order-rejection,.admin-section-heading p,.admin-account,
-    .settings-card>div,.per-type-help,.per-type-rows,.per-type-row small,
+    .settings-card>div,.per-type-rows,.per-type-row small,
     .order-rate,.order-count,.balance-pill,.delivery-fields label{color:var(--muted)}
     .wallet-label{color:#86e9df}
     .wallet-card,.wallet-overview{background:linear-gradient(135deg,rgba(77,83,147,.44),rgba(23,90,98,.34));border:1px solid rgba(151,174,255,.2)}
@@ -754,7 +753,7 @@
     .preview-metric.selected{background:linear-gradient(145deg,rgba(108,230,220,.16),rgba(161,140,255,.13));border-color:rgba(108,230,220,.48);box-shadow:0 0 0 2px rgba(108,230,220,.08),inset 0 1px rgba(255,255,255,.08)}
     .preview-metric-name{color:#c3cbe0}
     .preview-metric strong,.per-type-box strong,.per-type-rows b{color:#edf0ff}
-    .preview-metric small,.per-type-help,.per-type-row small{color:#a4aec5}
+    .preview-metric small,.per-type-row small{color:#a4aec5}
     .per-type-box{background:rgba(11,18,32,.52);border-color:rgba(207,220,255,.15)}
     .per-type-row{background:rgba(21,30,48,.7);border-color:rgba(207,220,255,.13)}
     .per-type-name{color:#e8ecff}
@@ -962,7 +961,7 @@
               <div class="preview-heading"><span class="preview-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span><h2 id="preview-heading">Select Services</h2></div>
               <p class="preview-subtitle">Tap to select; press and hold for delivery settings.</p>
               <div class="preview-metrics" id="preview-metrics"></div>
-              <div class="per-type-box"><strong>▦ &nbsp;Customization</strong><p class="per-type-help">With Views selected, set service percentages. Without Views, enter each service amount directly. Fixed USDT/USDC rates price selected services.</p><div class="per-type-rows" id="per-type-rows"></div></div>
+              <div class="per-type-box"><strong>▦ &nbsp;Customization</strong><div class="per-type-rows" id="per-type-rows"></div></div>
             </section>
             <section class="form-card growth-card" aria-labelledby="growth-heading">
               <div class="growth-top">
@@ -1114,6 +1113,7 @@
     const engagementMetrics = metrics.filter(metric => !metric.base);
     const engagementRates = {};
     const engagementAmounts = Object.fromEntries(engagementMetrics.map(metric => [metric.key, metric.amount]));
+    const tiktokRateMicros = {views:300, likes:120, comments:200, saves:120, shares:150, reposts:50};
     const serviceDeliverySettings = Object.fromEntries(metrics.map(metric => [metric.key, {interval_minutes:0, delivery_time_hours:0}]));
     const selectedServices = Object.fromEntries(metrics.map(metric => [metric.key, !metric.base]));
     engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
@@ -1441,6 +1441,12 @@
     function metricEnabled(key) {
       return selectedServices[key] === true;
     }
+    function selectedPlatform() {
+      return document.querySelector(".platform-button.selected")?.dataset.platform || "instagram";
+    }
+    function rateMicrosFor(metric, platform) {
+      return platform === "tiktok" ? tiktokRateMicros[metric.key] : metric.rateMicros;
+    }
     function openServiceDialog(key) {
       const metric = metrics.find(item => item.key === key);
       if (!metric) return;
@@ -1451,8 +1457,9 @@
       document.querySelector("#service-delivery-dialog").showModal();
     }
     function renderSummary() {
+      const platform = selectedPlatform();
       const views = metricQuantity("views");
-      const cost = Math.round(metrics.reduce((sum, metric) => sum + (metricEnabled(metric.key) ? metricQuantity(metric.key) * metric.rateMicros : 0), 0) / 1000) * 1000;
+      const cost = Math.round(metrics.reduce((sum, metric) => sum + (metricEnabled(metric.key) ? metricQuantity(metric.key) * rateMicrosFor(metric, platform) : 0), 0) / 1000) * 1000;
       const active = metrics.filter(metric => metricEnabled(metric.key));
       const total = active.reduce((sum, metric) => sum + metricQuantity(metric.key), 0);
       const quantityInput = document.querySelector("#custom-quantity");
@@ -1681,6 +1688,7 @@
       });
       const label = button.dataset.platform === "instagram" ? "instagram.com" : "tiktok.com";
       document.querySelector("#post-link").placeholder = "https://www." + label + "/...";
+      renderSummary();
     }));
     document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => setQuantity(button.dataset.quantity)));
     document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));
@@ -1903,7 +1911,7 @@
           credentials:"same-origin",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify({
-            platform:document.querySelector(".platform-button.selected").dataset.platform,
+            platform:selectedPlatform(),
             post_url:link.value,
             views:metricQuantity("views"),
             settings:{

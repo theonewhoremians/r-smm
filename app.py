@@ -29,6 +29,14 @@ ORDER_RATE_MICROS = {
     "shares": 520,
     "reposts": 2080,
 }
+TIKTOK_RATE_MICROS = {
+    "views": 300,
+    "likes": 120,
+    "comments": 200,
+    "saves": 120,
+    "shares": 150,
+    "reposts": 50,
+}
 ADMIN_EMAIL = "aryan793gupta@gmail.com"
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 METRIC_LIMITS = {
@@ -384,8 +392,9 @@ def valid_order_settings(settings, views):
     return isinstance(settings.get("drawing_enabled"), bool)
 
 
-def order_amount_micros(settings):
-    amount = sum(item["quantity"] * ORDER_RATE_MICROS[item["type"]]
+def order_amount_micros(settings, platform):
+    rates = TIKTOK_RATE_MICROS if platform == "tiktok" else ORDER_RATE_MICROS
+    amount = sum(item["quantity"] * rates[item["type"]]
                  for item in settings["metrics"] if item["enabled"])
     return ((amount + 500) // 1000) * 1000
 
@@ -588,7 +597,7 @@ class App(BaseHTTPRequestHandler):
         if not valid_order_settings(settings, views):
             self.respond(400, {"error": "Review the engagement quantities and growth curve, then try again."})
             return
-        amount = order_amount_micros(settings)
+        amount = order_amount_micros(settings, platform)
         with connect() as db:
             db.execute("BEGIN IMMEDIATE")
             wallet = db.execute(row_lock("SELECT currency, balance_micros FROM users WHERE email = ?"), (user["email"],)).fetchone()
