@@ -199,7 +199,6 @@
     .curve-preset.active{border-color:#0cba80;box-shadow:0 0 0 2px #0cba8020}
     .curve-reset{white-space:nowrap}
     .curve-legend{display:flex;flex-wrap:wrap;gap:18px;border-top:1px solid #e5e1df;margin-top:15px;padding-top:14px;color:#30333d;font-size:13px}
-    .metric-list + .growth-card{margin-top:24px}
     .growth-card.is-collapsed{padding-bottom:16px}
     .growth-card.is-collapsed .growth-instructions,.growth-card.is-collapsed .series-tabs,.growth-card.is-collapsed .growth-chart,.growth-card.is-collapsed .curve-actions,.growth-card.is-collapsed .curve-legend{display:none}
     .legend-item{display:flex;align-items:center;gap:7px}
@@ -211,16 +210,21 @@
     .preview-pills{display:flex;gap:8px;flex-wrap:wrap}
     .preview-pill{border:1px solid #ddd9d6;border-radius:99px;background:#fff;padding:6px 11px;font-size:11px;color:#424651}
     .preview-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:27px 0 18px}
-    .preview-metric{min-height:94px;border:1px solid #dedbd8;border-radius:17px;background:#f7f5f3;display:grid;place-content:center;text-align:center;gap:4px}
+    .preview-metric{min-height:94px;border:1px solid #dedbd8;border-radius:17px;background:#f7f5f3;display:grid;place-content:center;text-align:center;gap:4px;font:inherit;color:inherit;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease,opacity .16s ease}
     .preview-metric-icon{font-size:20px}
+    .preview-metric-name{font-size:11px;color:#727985}
     .preview-metric strong{font-size:14px;color:#252a32}
     .preview-metric small{font-size:11px;color:#727985}
     .preview-metric.muted{opacity:.48}
+    .preview-metric.selected{border-color:#9c8358;background:linear-gradient(145deg,#fffdf7,#f0e9dc);box-shadow:0 0 0 2px #9c835822}
+    .preview-metric:hover{transform:translateY(-2px);border-color:#9c8358}
+    .preview-metric:focus-visible{outline:2px solid #9c8358;outline-offset:3px}
     .per-type-box{background:#f7f5f3;border:1px solid #dedbd8;border-radius:17px;padding:15px}
     .per-type-box strong{font-size:13px;color:#252a32}
     .per-type-help{margin:6px 0 0;color:#6e675b;font-size:12px}
     .per-type-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px;color:#545b67;font-size:12px}
     .per-type-row{display:grid;gap:7px;padding:11px 12px;border:1px solid #e2d9ca;border-radius:12px;background:#fffdf8}
+    .per-type-row.muted{opacity:.5}
     .per-type-row-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .per-type-name{display:flex;align-items:center;gap:7px;color:#332b1f;font-weight:700}
     .per-type-name .metric-svg{width:16px;height:16px}
@@ -706,6 +710,8 @@
     .growth-card .legend-dot.views{background:#72c9ff}.growth-card .legend-dot.likes{background:#62e4ad}.growth-card .legend-dot.saves{background:#ffc76e}.growth-card .legend-dot.shares{background:#ae96ff}
     .preview-subtitle,.order-rate,.order-count{color:#a8b2c8}
     .preview-metric{background:rgba(10,17,31,.48);border-color:rgba(207,220,255,.13)}
+    .preview-metric.selected{background:linear-gradient(145deg,rgba(108,230,220,.16),rgba(161,140,255,.13));border-color:rgba(108,230,220,.48);box-shadow:0 0 0 2px rgba(108,230,220,.08),inset 0 1px rgba(255,255,255,.08)}
+    .preview-metric-name{color:#c3cbe0}
     .preview-metric strong,.per-type-box strong,.per-type-rows b{color:#edf0ff}
     .preview-metric small,.per-type-help,.per-type-row small{color:#a4aec5}
     .per-type-box{background:rgba(11,18,32,.52);border-color:rgba(207,220,255,.15)}
@@ -902,12 +908,18 @@
               <div class="engagement-actions">
                 <details class="how-details">
                   <summary>● &nbsp;ⓘ &nbsp;How it works &nbsp;⌄</summary>
-                  <div class="how-popover"><strong>A balanced engagement plan</strong><br>Choose a base view quantity, then turn each engagement type on or off and set its amount. Delivery options let you spread activity over time.</div>
+                  <div class="how-popover"><strong>A balanced engagement plan</strong><br>Choose a base view quantity, tap the service cards to select what you need, then adjust percentages to update quantities and pricing.</div>
                 </details>
                 <span class="active-count"><span id="active-count">5</span> active</span>
               </div>
             </header>
-            <div class="metric-list" id="metric-list"></div>
+            <section class="form-card preview-card" aria-labelledby="preview-heading">
+              <div class="preview-heading"><span aria-hidden="true">↗</span><h2 id="preview-heading">Per-Type Organic Delivery Preview</h2></div>
+              <p class="preview-subtitle">Tap a service to add or remove it from your order.</p>
+              <div class="preview-pills"><span class="preview-pill" id="preview-total">⚡ 10,680</span><span class="preview-pill">◴ &nbsp;3 runs</span><span class="preview-pill">◷ &nbsp;~23h 25m</span></div>
+              <div class="preview-metrics" id="preview-metrics"></div>
+              <div class="per-type-box"><strong>▦ &nbsp;Per-Type Settings</strong><p class="per-type-help">Set each engagement as a percentage of views. Counts update automatically and fixed USDT/USDC rates price each enabled service.</p><div class="per-type-rows" id="per-type-rows"></div></div>
+            </section>
             <section class="form-card growth-card" aria-labelledby="growth-heading">
               <div class="growth-top">
                 <div>
@@ -944,18 +956,11 @@
               </div>
               <div class="curve-legend" id="curve-legend"></div>
             </section>
-            <section class="form-card preview-card" aria-labelledby="preview-heading">
-              <div class="preview-heading"><span aria-hidden="true">↗</span><h2 id="preview-heading">Per-Type Organic Delivery Preview</h2></div>
-              <p class="preview-subtitle">Each type has its own organic settings</p>
-              <div class="preview-pills"><span class="preview-pill" id="preview-total">⚡ 10,680</span><span class="preview-pill">◴ &nbsp;3 runs</span><span class="preview-pill">◷ &nbsp;~23h 25m</span></div>
-              <div class="preview-metrics" id="preview-metrics"></div>
-              <div class="per-type-box"><strong>▦ &nbsp;Per-Type Settings</strong><p class="per-type-help">Set each engagement as a percentage of views. Counts update automatically and fixed USDT/USDC rates price each enabled service.</p><div class="per-type-rows" id="per-type-rows"></div></div>
-            </section>
           </section>
           <section class="order-summary" aria-label="Order price and balance">
             <div>
               <div class="order-price"><span id="order-total">0.850000</span> <small id="order-currency">USDT</small></div>
-              <span class="order-rate">Fixed rates apply to each enabled service; see the rate on each card.</span>
+              <span class="order-rate">Fixed rates apply to each selected service; percentages set its quantity.</span>
               <span class="order-count" id="order-count">10,680 engagements • 5 types</span>
             </div>
             <div class="order-actions">
@@ -1042,17 +1047,17 @@
   <script>
     const form = document.querySelector("#auth-form");
     const notice = document.querySelector("#notice");
-    const metricList = document.querySelector("#metric-list");
     const metrics = [
-      {key:"views", name:"Views", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg>', amount:10000, rateMicros:85, rateLabel:"0.085 / 1,000", min:100, max:10000000, range:"Min: 100 • Max: 10,000,000", base:true},
-      {key:"likes", name:"Likes", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>', amount:310, rateMicros:5210, rateLabel:"5.21 / 1,000", min:10, max:500000, range:"Min: 10 • Max: 500,000"},
-      {key:"comments", name:"Comments", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v12H9l-5 4v-16Z"/><path d="M8 9h8M8 12.5h5"/></svg>', amount:50, rateMicros:52000, rateLabel:"0.052 each", min:1, max:100000, range:"Min: 1 • Max: 100,000"},
-      {key:"saves", name:"Saves", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12v17l-6-4-6 4v-17Z"/></svg>', amount:110, rateMicros:312, rateLabel:"0.312 / 1,000", min:10, max:500000, range:"Min: 10 • Max: 500,000"},
-      {key:"shares", name:"Shares", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/></svg>', amount:130, rateMicros:520, rateLabel:"0.52 / 1,000", min:10, max:100000, range:"Min: 10 • Max: 100,000"},
-      {key:"reposts", name:"Reposts", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4m14-1v2a3 3 0 0 1-3 3H3"/></svg>', amount:130, rateMicros:2080, rateLabel:"2.08 / 1,000", min:10, max:1000000, range:"Min: 10 • Max: 1,000,000"}
+      {key:"views", name:"Views", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg>', amount:10000, rateMicros:85, min:100, max:10000000, base:true},
+      {key:"likes", name:"Likes", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>', amount:310, rateMicros:5210, min:10, max:500000},
+      {key:"comments", name:"Comments", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v12H9l-5 4v-16Z"/><path d="M8 9h8M8 12.5h5"/></svg>', amount:50, rateMicros:52000, min:1, max:100000},
+      {key:"saves", name:"Saves", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12v17l-6-4-6 4v-17Z"/></svg>', amount:110, rateMicros:312, min:10, max:500000},
+      {key:"shares", name:"Shares", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/></svg>', amount:130, rateMicros:520, min:10, max:100000},
+      {key:"reposts", name:"Reposts", symbol:'<svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4m14-1v2a3 3 0 0 1-3 3H3"/></svg>', amount:130, rateMicros:2080, min:10, max:1000000}
     ];
     const engagementMetrics = metrics.filter(metric => !metric.base);
     const engagementRates = {};
+    const selectedServices = Object.fromEntries(metrics.map(metric => [metric.key, !metric.base]));
     engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
     const curveDefaults = {
       views:[[0,0],[.27,.52],[.43,.31],[.68,.78],[1,1]],
@@ -1078,16 +1083,6 @@
     let activeSeries = "views";
     let draggingPoint = null;
     const activePreset = {views:"double-peak",likes:"steady",saves:"steady",shares:"steady"};
-    metricList.innerHTML = metrics.map(function(metric) {
-      return '<article class="metric-card" data-metric="' + metric.key + '">' +
-        '<div class="metric-top"><div class="metric-name-wrap"><span class="metric-symbol" aria-hidden="true">' + metric.symbol + '</span><div>' +
-        '<div class="metric-title ' + metric.key + '">' + metric.name + (metric.base ? '<span class="base-badge">BASE</span>' : "") + '</div>' +
-        '<div class="metric-range">' + metric.range + ' · Rate: ' + metric.rateLabel + ' USDT/USDC</div></div></div>' +
-        '<input class="metric-amount" data-metric-input="' + metric.key + '" type="number" min="' + metric.min + '" max="' + metric.max + '" value="' + metric.amount + '" required aria-label="' + metric.name + ' quantity">' +
-        '<label class="switch" aria-label="Enable ' + metric.name + '"><input class="metric-toggle" type="checkbox" checked><span class="switch-track"></span></label></div>' +
-        '<details class="delivery"><summary><span class="delivery-icon" aria-hidden="true">◷</span><span class="delivery-copy">Tap to customise delivery<small>Choose the interval between delivery actions</small></span><span class="delivery-open">OPEN⌄</span></summary>' +
-        '<div class="delivery-fields"><label>Interval<input data-interval-input type="number" min="1" max="10080" step="1" placeholder="30" aria-label="' + metric.name + ' interval in minutes"><span class="interval-unit">Minutes</span></label></div></details></article>';
-    }).join("");
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
       '<div class="per-type-row"><span class="per-type-row-heading"><span class="per-type-name">' + metric.symbol + metric.name +
@@ -1369,26 +1364,24 @@
       } catch (error) { showToast(error.message); }
     }
     function metricQuantity(key) {
-      return Math.max(0, Math.floor(Number(metricList.querySelector('[data-metric-input="' + key + '"]').value) || 0));
+      const metric = metrics.find(item => item.key === key);
+      if (!metric) return 0;
+      if (metric.base) return Math.max(0, Math.floor(Number(document.querySelector("#custom-quantity").value) || 0));
+      const views = metricQuantity("views");
+      return Math.max(metric.min, Math.min(metric.max, Math.round(views * engagementRates[key] / 100)));
     }
     function metricEnabled(key) {
-      return metricList.querySelector('[data-metric="' + key + '"] .metric-toggle').checked;
+      return selectedServices[key] === true;
     }
     function renderSummary() {
-      if (!metricList.querySelector(".metric-card")) return;
       const views = metricQuantity("views");
       const cost = metrics.reduce((sum, metric) => sum + (metricEnabled(metric.key) ? metricQuantity(metric.key) * metric.rateMicros : 0), 0);
       const active = metrics.filter(metric => metricEnabled(metric.key));
       const total = active.reduce((sum, metric) => sum + metricQuantity(metric.key), 0);
-      const validMetrics = metrics.every(metric => metricList.querySelector('[data-metric-input="' + metric.key + '"]').checkValidity());
-      const validIntervals = active.every(metric => {
-        const field = metricList.querySelector('[data-metric="' + metric.key + '"] [data-interval-input]');
-        return !field.value || field.checkValidity();
-      });
+      const quantityInput = document.querySelector("#custom-quantity");
       const orderTotal = formatPrice(cost);
       document.querySelector("#order-total").textContent = orderTotal;
       document.querySelector("#place-order").textContent = "Place Order — " + orderTotal + " " + walletCurrency;
-      document.querySelector("#place-order").disabled = views < 100 || views > 10000000 || !validMetrics || !validIntervals || walletBalanceMicros < cost;
       document.querySelector("#order-count").textContent = total.toLocaleString() + " engagements • " + active.length + " types";
       document.querySelector("#preview-total").textContent = "⚡ " + total.toLocaleString();
       document.querySelector("#active-count").textContent = active.length;
@@ -1399,8 +1392,8 @@
       const preview = document.querySelector("#preview-metrics");
       preview.innerHTML = metrics.map(metric => {
         const enabled = metricEnabled(metric.key);
-        return '<div class="preview-metric' + (enabled ? "" : " muted") + '"><span class="preview-metric-icon">' + metric.symbol +
-          '</span><strong>' + metricQuantity(metric.key).toLocaleString() + '</strong><small>' + (enabled ? "Auto" : "Off") + '</small></div>';
+        return '<button class="preview-metric' + (enabled ? " selected" : " muted") + '" type="button" data-preview-metric="' + metric.key + '" aria-pressed="' + enabled + '" aria-label="' + metric.name + ' service, ' + (enabled ? "selected" : "not selected") + '"><span class="preview-metric-icon">' + metric.symbol +
+          '</span><span class="preview-metric-name">' + metric.name + '</span><strong>' + metricQuantity(metric.key).toLocaleString() + '</strong><small>' + (enabled ? "Selected" : "Not selected") + '</small></button>';
       }).join("");
       engagementMetrics.forEach(metric => {
         const row = perTypeRows.querySelector('[data-rate-count="' + metric.key + '"]').closest(".per-type-row");
@@ -1410,9 +1403,15 @@
         rateInput.max = (metric.max / rateBase * 100).toFixed(4);
         rateInput.disabled = !metricEnabled(metric.key);
         if (document.activeElement !== rateInput) rateInput.value = engagementRates[metric.key].toFixed(2);
+        row.classList.toggle("muted", !metricEnabled(metric.key));
         row.querySelector('[data-rate-count="' + metric.key + '"]').textContent = metricQuantity(metric.key).toLocaleString();
         row.querySelector("[data-rate-views]").textContent = views.toLocaleString();
       });
+      const validMetrics = quantityInput.checkValidity() && active.length > 0 && engagementMetrics.every(metric => {
+        const rateInput = perTypeRows.querySelector('[data-rate-input="' + metric.key + '"]');
+        return !metricEnabled(metric.key) || rateInput.checkValidity();
+      });
+      document.querySelector("#place-order").disabled = views < 100 || views > 10000000 || !validMetrics || walletBalanceMicros < cost;
       document.querySelector("#curve-legend").innerHTML = ["views","likes","saves","shares"].map(key => {
         const metric = metrics.find(item => item.key === key);
         return '<span class="legend-item"><i class="legend-dot ' + key + '"></i>' + metric.symbol + ' ' +
@@ -1425,7 +1424,6 @@
     }
     function previewQuantity(value) {
       document.querySelector("#custom-quantity").value = value;
-      document.querySelector('[data-metric-input="views"]').value = value;
       document.querySelectorAll(".quantity-preset").forEach(button => {
         const active = Number(button.dataset.quantity) === Number(value);
         button.classList.toggle("active", active);
@@ -1439,7 +1437,6 @@
       if (views < 100) return;
       engagementMetrics.forEach(metric => {
         const amount = Math.max(metric.min, Math.min(metric.max, Math.round(views * engagementRates[metric.key] / 100)));
-        metricList.querySelector('[data-metric-input="' + metric.key + '"]').value = amount;
         if (amount === metric.min || amount === metric.max) engagementRates[metric.key] = amount / views * 100;
       });
     }
@@ -1592,39 +1589,30 @@
     document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => setQuantity(button.dataset.quantity)));
     document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));
     document.querySelector("#custom-quantity").addEventListener("change", event => setQuantity(event.currentTarget.value));
+    document.querySelector("#preview-metrics").addEventListener("click", event => {
+      const button = event.target.closest("[data-preview-metric]");
+      if (!button) return;
+      selectedServices[button.dataset.previewMetric] = !metricEnabled(button.dataset.previewMetric);
+      renderSummary();
+      document.querySelector('[data-preview-metric="' + button.dataset.previewMetric + '"]')?.focus();
+    });
     perTypeRows.addEventListener("input", event => {
       const rateInput = event.target.closest("[data-rate-input]");
-      if (!rateInput || rateInput.value === "") return;
+      if (!rateInput) return;
       const metric = engagementMetrics.find(item => item.key === rateInput.dataset.rateInput);
-      const views = Math.max(1, metricQuantity("views"));
-      const rate = Math.max(Number(rateInput.min), Math.min(Number(rateInput.max), Number(rateInput.value)));
-      const amount = Math.max(metric.min, Math.min(metric.max, Math.round(views * rate / 100)));
-      metricList.querySelector('[data-metric-input="' + metric.key + '"]').value = amount;
-      engagementRates[metric.key] = amount / views * 100;
+      if (metric && rateInput.value !== "" && rateInput.checkValidity()) engagementRates[metric.key] = Number(rateInput.value);
       renderSummary();
     });
     perTypeRows.addEventListener("change", event => {
       const rateInput = event.target.closest("[data-rate-input]");
-      if (rateInput) rateInput.value = engagementRates[rateInput.dataset.rateInput].toFixed(2);
-    });
-    metricList.addEventListener("input", event => {
-      if (event.target.matches("[data-interval-input]")) renderSummary();
-      if (event.target.matches(".metric-amount")) {
-        if (event.target.matches('[data-metric-input="views"]')) previewQuantity(event.target.value);
-        else {
-          const metric = engagementMetrics.find(item => item.key === event.target.dataset.metricInput);
-          const views = metricQuantity("views");
-          if (metric && views > 0 && event.target.checkValidity()) engagementRates[metric.key] = metricQuantity(metric.key) / views * 100;
-          renderSummary();
+      if (rateInput) {
+        const metric = engagementMetrics.find(item => item.key === rateInput.dataset.rateInput);
+        if (metric && rateInput.value !== "") {
+          engagementRates[metric.key] = Math.max(Number(rateInput.min), Math.min(Number(rateInput.max), Number(rateInput.value)));
+          rateInput.value = engagementRates[metric.key].toFixed(2);
         }
-      }
-    });
-    metricList.addEventListener("change", event => {
-      if (event.target.matches(".metric-toggle")) {
-        event.target.closest(".metric-card").classList.toggle("is-collapsed", !event.target.checked);
         renderSummary();
       }
-      if (event.target.matches('[data-metric-input="views"]')) setQuantity(event.target.value);
     });
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
     document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.go)));
@@ -1708,12 +1696,11 @@
             views:metricQuantity("views"),
             settings:{
               metrics:metrics.map(metric => {
-                const card = metricList.querySelector('[data-metric="' + metric.key + '"]');
                 return {
                   type:metric.key,
                   quantity:metricQuantity(metric.key),
-                  enabled:card.querySelector(".metric-toggle").checked,
-                  interval_minutes:card.querySelector(".metric-toggle").checked && card.querySelector("[data-interval-input]").value ? Number(card.querySelector("[data-interval-input]").value) : 0
+                  enabled:metricEnabled(metric.key),
+                  interval_minutes:0
                 };
               }),
               curves:curves,
