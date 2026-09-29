@@ -634,8 +634,14 @@ class App(BaseHTTPRequestHandler):
                 db.rollback()
                 self.respond(409, {"error": "That transfer reference has already been submitted."})
                 return
+            deposit_id = cursor.fetchone()["id"]
             db.commit()
-        self.respond(201, {"ok": True, "deposit_id": cursor.fetchone()["id"], "created_at": created_at,
+        notify_admin_telegram(
+            f"New R-SMM payment request #{deposit_id}\n"
+            f"Amount: {Decimal(amount_micros) / Decimal(1_000_000):.2f} {currency}\n"
+            f"Network: {'Base' if currency == 'USDC' else 'TRC20'}"
+        )
+        self.respond(201, {"ok": True, "deposit_id": deposit_id, "created_at": created_at,
                            "currency": currency, "network": "Base" if currency == "USDC" else "TRC20",
                            "amount_micros": amount_micros, "reference": reference, "status": "pending"})
 
@@ -781,11 +787,6 @@ class App(BaseHTTPRequestHandler):
             db.execute("UPDATE deposit_requests SET status = 'credited', reviewed_at = ? WHERE id = ?",
                        (reviewed_at, deposit_id))
             db.commit()
-        notify_admin_telegram(
-            f"R-SMM payment approved\nDeposit request #{deposit_id}\n"
-            f"Amount: {Decimal(deposit['amount_micros']) / Decimal(1_000_000):.2f} {deposit['currency']}\n"
-            f"Network: {'Base' if deposit['currency'] == 'USDC' else 'TRC20'}"
-        )
         self.respond(200, {"ok": True, "deposit_id": deposit_id, "status": "credited",
                            "currency": deposit["currency"], "balance_micros": balance})
 
