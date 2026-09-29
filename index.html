@@ -771,6 +771,21 @@
       #auth-screen .panel{padding:18px 22px calc(22px + env(safe-area-inset-bottom))}
       #auth-screen .form-wrap{margin:23px 0 17px}
     }
+    .page-heading{align-items:center;margin-bottom:15px}
+    .page-heading .eyebrow,.page-heading p{display:none}
+    .page-heading h1{margin:0;line-height:1.12}
+    .page-heading-actions{align-self:center}
+    @media(max-width:760px){
+      .dashboard{padding-top:18px}
+      .page-heading{flex-wrap:wrap;gap:10px;margin:0 4px 12px}
+      .landing-page .page-heading{margin-bottom:12px}
+      .page-heading-actions{margin-top:0}
+    }
+    @media(max-width:430px){
+      .page-heading{display:flex;align-items:center}
+      .page-heading-actions{margin-top:0}
+      .page-heading-actions .draft-pill{margin-top:0}
+    }
   </style>
 </head>
 <body>
@@ -824,10 +839,6 @@
   <main class="workspace" id="workspace" hidden>
     <div class="app-shell" id="customer-shell">
       <aside class="sidebar">
-        <div class="side-brand">
-          <div class="logo-badge" aria-hidden="true"><span>R</span></div>
-          <div class="side-brand-copy"><strong>R-SMM</strong></div>
-        </div>
         <div class="account-card">
           <span class="account-avatar" id="account-avatar">A</span>
           <div class="account-copy"><strong id="account-name">Your account</strong><small id="account-email">you@example.com</small></div>
