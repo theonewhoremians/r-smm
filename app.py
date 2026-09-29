@@ -9,6 +9,7 @@ from decimal import Decimal, InvalidOperation
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
+from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).parent
@@ -37,6 +38,25 @@ METRIC_LIMITS = {
     "reposts": (10, 1000000),
 }
 CURVE_SERIES = ("views", "likes", "saves", "shares")
+
+
+def notify_admin_telegram(message):
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        return
+    try:
+        request = Request(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            data=json.dumps({"chat_id": chat_id, "text": message}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urlopen(request, timeout=2) as response:
+            if response.status != 200 or not json.load(response).get("ok"):
+                print("R-SMM Telegram notification failed.")
+    except Exception as error:
+        print("R-SMM Telegram notification failed:", type(error).__name__)
 
 
 class PostgresConnection:
@@ -522,6 +542,10 @@ class App(BaseHTTPRequestHandler):
             db.execute("INSERT INTO wallet_transactions VALUES (NULL, ?, ?, ?, ?, 'order', ?)",
                        (user["email"], int(time.time()), wallet["currency"], -amount, f"order:{order_id}"))
             db.commit()
+        notify_admin_telegram(
+            f"New R-SMM order #{order_id}\nPlatform: {platform.title()}\n"
+            f"Views: {views:,}\nAmount: {Decimal(amount) / Decimal(1_000_000):.2f} {wallet['currency']}"
+        )
         self.respond(201, {"ok": True, "order_id": order_id, "views": views,
                            "amount_micros": amount, "balance_micros": new_balance, "currency": wallet["currency"]})
 
@@ -757,6 +781,11 @@ class App(BaseHTTPRequestHandler):
             db.execute("UPDATE deposit_requests SET status = 'credited', reviewed_at = ? WHERE id = ?",
                        (reviewed_at, deposit_id))
             db.commit()
+        notify_admin_telegram(
+            f"R-SMM payment approved\nDeposit request #{deposit_id}\n"
+            f"Amount: {Decimal(deposit['amount_micros']) / Decimal(1_000_000):.2f} {deposit['currency']}\n"
+            f"Network: {'Base' if deposit['currency'] == 'USDC' else 'TRC20'}"
+        )
         self.respond(200, {"ok": True, "deposit_id": deposit_id, "status": "credited",
                            "currency": deposit["currency"], "balance_micros": balance})
 

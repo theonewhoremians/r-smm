@@ -14,6 +14,10 @@ Each account's sign-in email is its primary key; orders, deposit requests, and w
 
 Three consecutive incorrect passwords lock that email out for six hours. The administrator account is `aryan793gupta@gmail.com`; its password is stored as a salted PBKDF2 hash in the database. For a fresh database or an intentional password reset, set `RSMM_ADMIN_PASSWORD` before starting the server. The value is read only during startup and is not stored in source files.
 
+## Telegram order alerts
+
+Create a bot with Telegram's `@BotFather`, open a private chat with it, and send `/start`. Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` as private Production environment variables in Vercel, then redeploy. Get the chat ID from the bot's `getUpdates` response after sending `/start`; never share the bot token. The bot sends alerts after a new order is saved and after a deposit is approved. Notification failures do not undo an order or wallet credit, and alerts do not include customer email addresses or transfer references.
+
 ## Wallet and orders
 
 The minimum deposit is 2 USDT on TRC20 or 2 USDC on Base. Deposit requests remain pending until an administrator checks the transfer reference and credits the wallet. The app does not monitor blockchains, and balances change only after manual review.
