@@ -346,11 +346,15 @@ def valid_order_settings(settings, views):
         kind = item.get("type")
         quantity = item.get("quantity")
         interval = item.get("interval_minutes")
+        delivery_hours = item.get("delivery_time_hours", 0)
         legacy_delivery = item.get("delivery")
         if "interval_minutes" in item:
             delivery_is_valid = (not isinstance(interval, bool) and isinstance(interval, int)
                                  and 0 <= interval <= 10080
-                                 and (item.get("enabled") or interval == 0))
+                                 and (item.get("enabled") or interval == 0)
+                                 and not isinstance(delivery_hours, bool) and isinstance(delivery_hours, int)
+                                 and 0 <= delivery_hours <= 168
+                                 and (item.get("enabled") or delivery_hours == 0))
         else:
             delivery_is_valid = (isinstance(legacy_delivery, list) and len(legacy_delivery) == 4
                                  and all(isinstance(value, str) and len(value) <= 50 for value in legacy_delivery))
