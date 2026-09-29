@@ -199,12 +199,14 @@ def init_db():
                 email TEXT NOT NULL REFERENCES users(email), created_at BIGINT NOT NULL,
                 currency TEXT NOT NULL CHECK (currency IN ('USDT', 'USDC')),
                 amount_micros BIGINT NOT NULL CHECK (amount_micros > 0),
+                bonus_micros BIGINT NOT NULL DEFAULT 0,
                 reference TEXT NOT NULL UNIQUE,
                 status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'credited', 'rejected')),
                 reviewed_at BIGINT
             );
             """)
             db.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS rejection_reason TEXT")
+            db.execute("ALTER TABLE deposit_requests ADD COLUMN IF NOT EXISTS bonus_micros BIGINT NOT NULL DEFAULT 0")
             status_constraint = db.execute("""
                 SELECT 1 FROM pg_constraint
                 WHERE conrelid = 'orders'::regclass AND conname = 'orders_status_check_v2'
@@ -266,11 +268,15 @@ def init_db():
                 created_at INTEGER NOT NULL,
                 currency TEXT NOT NULL CHECK (currency IN ('USDT', 'USDC')),
                 amount_micros INTEGER NOT NULL CHECK (amount_micros > 0),
+                bonus_micros INTEGER NOT NULL DEFAULT 0,
                 reference TEXT NOT NULL UNIQUE,
                 status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'credited', 'rejected')),
                 reviewed_at INTEGER
             );
         """)
+            deposit_columns = {row["name"] for row in db.execute("PRAGMA table_info(deposit_requests)")}
+            if "bonus_micros" not in deposit_columns:
+                db.execute("ALTER TABLE deposit_requests ADD COLUMN bonus_micros INTEGER NOT NULL DEFAULT 0")
             columns = {row["name"] for row in db.execute("PRAGMA table_info(users)")}
             if "role" not in columns:
                 db.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'customer'")
@@ -397,6 +403,10 @@ def order_amount_micros(settings, platform):
     amount = sum(item["quantity"] * rates[item["type"]]
                  for item in settings["metrics"] if item["enabled"])
     return ((amount + 500) // 1000) * 1000
+
+
+def deposit_bonus_micros(currency, amount_micros):
+    return min(amount_micros // 10, 200_000_000) if currency == "USDC" else 0
 
 
 class App(BaseHTTPRequestHandler):
@@ -677,7 +687,7 @@ class App(BaseHTTPRequestHandler):
             deposits = db.execute("""
                 SELECT id, created_at, currency,
                        CASE currency WHEN 'USDC' THEN 'Base' ELSE 'TRC20' END AS network,
-                       amount_micros, reference, status
+                       amount_micros, bonus_micros, reference, status
                 FROM deposit_requests WHERE email = ? ORDER BY id DESC LIMIT 100
             """, (user["email"],)).fetchall()
         self.respond(200, {"transactions": [dict(row) for row in transactions],
@@ -717,15 +727,16 @@ class App(BaseHTTPRequestHandler):
             self.respond(400, {"error": "The minimum deposit is 2 USDT or USDC, with no more than 2 decimal places."})
             return
         amount_micros = int(amount * 1_000_000)
+        bonus_micros = deposit_bonus_micros(currency, amount_micros)
         reference = reference.strip().casefold()
         with connect() as db:
             db.execute("BEGIN IMMEDIATE")
             created_at = int(time.time())
             try:
                 cursor = db.execute("""
-                    INSERT INTO deposit_requests (email, created_at, currency, amount_micros, reference)
-                    VALUES (?, ?, ?, ?, ?) RETURNING id
-                """, (user["email"], created_at, currency, amount_micros, reference))
+                    INSERT INTO deposit_requests (email, created_at, currency, amount_micros, bonus_micros, reference)
+                    VALUES (?, ?, ?, ?, ?, ?) RETURNING id
+                """, (user["email"], created_at, currency, amount_micros, bonus_micros, reference))
             except sqlite3.IntegrityError:
                 db.rollback()
                 self.respond(409, {"error": "That transfer reference has already been submitted."})
@@ -733,9 +744,15 @@ class App(BaseHTTPRequestHandler):
             deposit_id = cursor.fetchone()["id"]
             db.commit()
         reference_display = re.sub(r"\s+", " ", reference).strip()
+        promo_message = (
+            f"USDC bonus on approval: {Decimal(bonus_micros) / Decimal(1_000_000):.3f} USDC\n"
+            f"Total credit on approval: {Decimal(amount_micros + bonus_micros) / Decimal(1_000_000):.3f} USDC\n"
+            if bonus_micros else ""
+        )
         notify_admin_telegram(
             f"New R-SMM payment request #{deposit_id}\n"
             f"Amount: {Decimal(amount_micros) / Decimal(1_000_000):.2f} {currency}\n"
+            f"{promo_message}"
             f"Network: {'Base' if currency == 'USDC' else 'TRC20'}\n"
             f"Transfer reference: {reference_display}",
             reply_markup={"inline_keyboard": [[
@@ -745,7 +762,8 @@ class App(BaseHTTPRequestHandler):
         )
         self.respond(201, {"ok": True, "deposit_id": deposit_id, "created_at": created_at,
                            "currency": currency, "network": "Base" if currency == "USDC" else "TRC20",
-                           "amount_micros": amount_micros, "reference": reference, "status": "pending"})
+                           "amount_micros": amount_micros, "bonus_micros": bonus_micros,
+                           "reference": reference, "status": "pending"})
 
     def require_admin(self):
         user = self.session_user()
@@ -770,7 +788,7 @@ class App(BaseHTTPRequestHandler):
             deposits = db.execute("""
                 SELECT d.id, d.email, u.name, d.created_at, d.currency,
                        CASE d.currency WHEN 'USDC' THEN 'Base' ELSE 'TRC20' END AS network,
-                       d.amount_micros,
+                       d.amount_micros, d.bonus_micros,
                        d.reference, d.status
                 FROM deposit_requests d JOIN users u ON u.email = d.email
                 WHERE d.status = 'pending' ORDER BY d.id ASC
@@ -784,7 +802,7 @@ class App(BaseHTTPRequestHandler):
             approved_deposits = db.execute("""
                 SELECT d.id, d.email, u.name, d.created_at, d.currency,
                        CASE d.currency WHEN 'USDC' THEN 'Base' ELSE 'TRC20' END AS network,
-                       d.amount_micros, d.reference, d.status, d.reviewed_at
+                       d.amount_micros, d.bonus_micros, d.reference, d.status, d.reviewed_at
                 FROM deposit_requests d JOIN users u ON u.email = d.email
                 WHERE d.status = 'credited' ORDER BY d.id DESC
             """).fetchall()
@@ -891,19 +909,23 @@ class App(BaseHTTPRequestHandler):
                        (deposit["email"], deposit["currency"]))
             wallet = db.execute(row_lock("SELECT balance_micros FROM wallet_balances WHERE email = ? AND currency = ?"),
                                 (deposit["email"], deposit["currency"])).fetchone()
-            balance = wallet["balance_micros"] + deposit["amount_micros"]
+            bonus_micros = deposit["bonus_micros"]
+            credited_micros = deposit["amount_micros"] + bonus_micros
+            balance = wallet["balance_micros"] + credited_micros
             db.execute("UPDATE wallet_balances SET balance_micros = ? WHERE email = ? AND currency = ?",
                        (balance, deposit["email"], deposit["currency"]))
             db.execute("UPDATE users SET balance_micros = ? WHERE email = ? AND currency = ?",
                        (balance, deposit["email"], deposit["currency"]))
             db.execute("INSERT INTO wallet_transactions VALUES (NULL, ?, ?, ?, ?, 'deposit', ?)",
-                       (deposit["email"], reviewed_at, deposit["currency"], deposit["amount_micros"],
+                       (deposit["email"], reviewed_at, deposit["currency"], credited_micros,
                         f"deposit-request:{deposit_id}"))
             db.execute("UPDATE deposit_requests SET status = 'credited', reviewed_at = ? WHERE id = ?",
                        (reviewed_at, deposit_id))
             db.commit()
         return 200, {"ok": True, "deposit_id": deposit_id, "status": "credited",
-                     "currency": deposit["currency"], "balance_micros": balance}
+                     "currency": deposit["currency"], "amount_micros": deposit["amount_micros"],
+                     "bonus_micros": bonus_micros, "credited_micros": credited_micros,
+                     "balance_micros": balance}
 
     def telegram_webhook(self, update):
         token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -952,11 +974,14 @@ class App(BaseHTTPRequestHandler):
             telegram_api_call(token, "answerCallbackQuery", {
                 "callback_query_id": callback_id, "text": f"Payment request {outcome}.",
             })
+            credited_detail = (f" Credit: {Decimal(result['credited_micros']) / Decimal(1_000_000):.3f} "
+                               f"{result['currency']} (includes {Decimal(result['bonus_micros']) / Decimal(1_000_000):.3f} "
+                               f"USDC bonus)." if result.get("bonus_micros") else "")
             message_text = message.get("text", f"R-SMM payment request #{deposit_id}")
             telegram_api_call(token, "editMessageText", {
                 "chat_id": chat_id,
                 "message_id": message.get("message_id"),
-                "text": message_text + f"\n\nPayment {outcome} from Telegram.",
+                "text": message_text + f"\n\nPayment {outcome} from Telegram.{credited_detail}",
                 "reply_markup": {"inline_keyboard": []},
             })
         else:

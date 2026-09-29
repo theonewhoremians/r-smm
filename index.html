@@ -399,6 +399,7 @@
     .wallet-activity-details[open] .wallet-activity-chevron{transform:rotate(180deg)}
     .wallet-emblem svg{display:block;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
     .deposit-note{max-width:760px;margin:-2px 0 18px;color:#71695d;font-size:13px;line-height:1.6}
+    .deposit-promo{margin:0 0 16px;padding:12px 14px;border:1px solid #d8c8a8;border-radius:12px;background:linear-gradient(115deg,#f7f0e4,#fffdf8);color:#50442f;font-size:13px;line-height:1.55}
     .deposit-form{display:grid;grid-template-columns:160px minmax(150px,220px) minmax(240px,1fr) auto;align-items:end;gap:12px}
     .deposit-form label{display:block;color:#4d463b;font-size:11px;font-weight:700}
     .deposit-form input,.deposit-form select{display:block;width:100%;height:46px;margin-top:7px;border:1px solid #ddd4c6;border-radius:10px;background:#fffdf8;padding:0 12px;color:#211e18;font:inherit;font-size:13px}
@@ -776,6 +777,7 @@
     .wallet-activity-chevron{color:#dcd6ff;border-color:rgba(207,220,255,.15)}
     .wallet-overview .wallet-emblem{color:#d7d1ff;background:linear-gradient(145deg,rgba(161,140,255,.24),rgba(108,230,220,.16))}
     .deposit-note{color:#aab5ca}
+    .deposit-promo{color:#f0e8d8;background:linear-gradient(115deg,rgba(109,87,50,.22),rgba(21,31,48,.72));border-color:rgba(217,185,125,.28)}
     .deposit-address-card{background:rgba(11,18,32,.58);border-color:rgba(207,220,255,.15)}
     .deposit-qr{background:#f7f8fc}
     .deposit-address-content strong{color:#eef1ff}
@@ -1049,6 +1051,7 @@
           <section class="form-card deposit-card">
             <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">＋</span><h2>Request a deposit</h2></div><span class="pick-label">MANUAL REVIEW</span></div>
             <p class="deposit-note">Minimum deposit is 2 USDT or USDC. Send only USDT on TRC20 or USDC on Base to the matching address below, then submit your transaction reference for manual verification.</p>
+            <p class="deposit-promo"><strong>USDC promotion:</strong> Get 10% extra on USDC (Base) deposits, up to 200 USDC per deposit. The bonus is credited after your transfer is verified and approved.</p>
             <form id="deposit-form" class="deposit-form">
               <label>Token &amp; network<select id="deposit-currency" required><option value="USDT">USDT · TRC20</option><option value="USDC">USDC · Base</option></select></label>
               <label>Amount<input id="deposit-amount" type="number" min="2" max="1000000" step="0.01" placeholder="2.00" required></label>
@@ -1092,7 +1095,7 @@
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="payments" hidden>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer reference externally before crediting its wallet.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer externally; approved USDC requests include a 10% bonus, capped at 200 USDC.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved deposits</h2><p>Payment requests already verified and credited to customer wallets.</p></div></div><div class="record-list" id="admin-approved-deposits"><div class="empty-state">No approved deposits yet.</div></div></section>
         </div>
       </div>
@@ -1258,7 +1261,9 @@
       return (Number(micros) / 1000000).toFixed(2);
     }
     function customerDepositHtml(item) {
-      return '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + '</strong><span class="status-badge ' + escapeHtml(item.status) + '">' + escapeHtml(item.status) + '</span></div><span>' + formatDate(item.created_at) + '</span></div><p>Reference: <code>' + escapeHtml(item.reference) + '</code></p></article>';
+      const bonus = item.status === "rejected" ? 0 : Number(item.bonus_micros) || 0;
+      const bonusNote = bonus ? '<p>USDC bonus ' + (item.status === "credited" ? "credited" : "on approval") + ': +' + formatPrice(bonus) + ' USDC</p>' : "";
+      return '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + '</strong><span class="status-badge ' + escapeHtml(item.status) + '">' + escapeHtml(item.status) + '</span></div><span>' + formatDate(item.created_at) + '</span></div>' + bonusNote + '<p>Reference: <code>' + escapeHtml(item.reference) + '</code></p></article>';
     }
     function orderSettingsHtml(raw) {
       try {
@@ -1370,11 +1375,14 @@
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
           '<article class="record-card"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge pending">pending</span></div>' +
+          (Number(item.bonus_micros) ? '<p>USDC bonus on approval: +' + formatPrice(item.bonus_micros) + ' USDC · total credit: ' + formatPrice(item.amount_micros + item.bonus_micros) + ' USDC</p>' : '') +
           '<p>Submitted ' + formatDate(item.created_at) + '</p><p class="reference-line">Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p><div class="admin-actions"><button class="admin-action" type="button" data-credit-deposit="' + item.id + '">Verify &amp; credit</button><button class="admin-action secondary" type="button" data-reject-deposit="' + item.id + '">Reject</button></div></article>'
         ).join("") : '<div class="empty-state">No pending payments.</div>';
         const approvedList = document.querySelector("#admin-approved-deposits");
         approvedList.innerHTML = summary.approved_deposits.length ? summary.approved_deposits.map(item =>
-          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge credited">approved</span></div><p>Approved ' + formatDate(item.reviewed_at || item.created_at) + ' · Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p></article>'
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge credited">approved</span></div>' +
+          (Number(item.bonus_micros) ? '<p>USDC bonus credited: +' + formatPrice(item.bonus_micros) + ' USDC · total credit: ' + formatPrice(item.amount_micros + item.bonus_micros) + ' USDC</p>' : '') +
+          '<p>Approved ' + formatDate(item.reviewed_at || item.created_at) + ' · Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p></article>'
         ).join("") : '<div class="empty-state">No approved deposits yet.</div>';
         orderList.querySelectorAll("[data-complete-order]").forEach(button => button.addEventListener("click", () => completeOrder(button.dataset.completeOrder)));
         orderList.querySelectorAll("[data-reject-order]").forEach(button => button.addEventListener("click", () => rejectOrder(button.dataset.rejectOrder)));
