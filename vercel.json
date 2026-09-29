@@ -5,6 +5,7 @@
     { "source": "/api/login", "destination": "/api/handler?route=login" },
     { "source": "/api/logout", "destination": "/api/handler?route=logout" },
     { "source": "/api/order", "destination": "/api/handler?route=order" },
+    { "source": "/api/wallet/currency", "destination": "/api/handler?route=wallet/currency" },
     { "source": "/api/orders", "destination": "/api/handler?route=orders" },
     { "source": "/api/wallet", "destination": "/api/handler?route=wallet" },
     { "source": "/api/deposits", "destination": "/api/handler?route=deposits" },
