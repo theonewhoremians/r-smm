@@ -763,12 +763,19 @@
       .sidebar{background:rgba(13,19,33,.9);border-bottom-color:var(--glass-border)}
       .story{box-shadow:0 16px 40px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.13)}
     }
+    @media(max-width:760px){
+      #auth-screen .story{padding:calc(15px + env(safe-area-inset-top)) 22px 18px}
+      #auth-screen .story-copy{padding:4px 0 0}
+      #auth-screen .story-copy h1{font-size:clamp(37px,10.5vw,48px);margin:11px 0 9px}
+      #auth-screen .story-foot{margin-top:19px}
+      #auth-screen .panel{padding:18px 22px calc(22px + env(safe-area-inset-bottom))}
+      #auth-screen .form-wrap{margin:23px 0 17px}
+    }
   </style>
 </head>
 <body>
   <main class="shell" id="auth-screen">
     <section class="story" aria-label="Welcome to R-SMM">
-      <div class="brand"><span class="brand-mark">R</span><span>R-SMM</span></div>
       <article class="story-copy">
         <div class="eyebrow">Your social studio</div>
         <h1>Good ideas<br>deserve good<br>company.</h1>
