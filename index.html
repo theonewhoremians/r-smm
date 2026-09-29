@@ -383,6 +383,30 @@
     .quick-start{display:flex;align-items:center;justify-content:space-between;gap:20px}
     .quick-start h2,.support-card h2{margin:0 0 6px;color:#211e18;font-size:18px}
     .quick-start p,.support-card p{margin:0;color:#71695d;font-size:13px;line-height:1.55}
+    .api-access-card{display:grid;gap:14px}
+    .api-access-card h2{margin:0;color:#211e18;font-size:18px}
+    .api-access-card p{margin:0;color:#71695d;font-size:13px;line-height:1.55}
+    .api-key-create{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px}
+    .api-key-create label{display:grid;gap:7px;color:#625743;font-size:12px;font-weight:700}
+    .api-key-create input{height:44px;width:100%;border:1px solid #d8cdbb;border-radius:11px;background:#fffdf8;padding:0 12px;color:#211e18;font:inherit;font-size:14px}
+    .api-key-create .place-order{min-height:44px;padding:0 16px;font-size:12px}
+    .api-key-result{padding:14px;border:1px solid #9c835866;border-radius:14px;background:#f7f1e5}
+    .api-key-result[hidden]{display:none}
+    .api-key-result strong{display:block;margin-bottom:7px;color:#51442e;font-size:13px}
+    .api-key-value{display:flex;align-items:center;gap:9px;min-width:0}
+    .api-key-value code{flex:1;min-width:0;overflow-wrap:anywhere;padding:10px;border:1px solid #ded5c6;border-radius:9px;background:#fffdf8;color:#342e24;font-size:12px}
+    .api-key-list{display:grid;gap:9px}
+    .api-key-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid #ded5c6;border-radius:12px;background:#f7f4ed}
+    .api-key-row>div{display:grid;gap:4px;min-width:0}
+    .api-key-row strong{color:#211e18;font-size:13px}
+    .api-key-row small{color:#71695d;font-size:11px;overflow-wrap:anywhere}
+    .api-key-revoke,.api-key-copy{min-height:36px;padding:0 11px;border:1px solid #cdbc9a;border-radius:9px;background:#fffdf8;color:#51442e;font:inherit;font-size:11px;font-weight:700;white-space:nowrap}
+    .api-key-revoke:disabled{opacity:.55}
+    .api-access-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px;border-top:1px solid #e1d7c6}
+    .api-key-note{font-size:11px!important}
+    .api-guide-link{color:#755f3e;font-size:12px;font-weight:750;text-decoration:none;white-space:nowrap}
+    .api-guide-link:hover{text-decoration:underline}
+    @media(max-width:760px){.api-key-create{grid-template-columns:1fr}.api-key-create .place-order{width:100%}.api-access-footer{align-items:flex-start;flex-direction:column}.api-key-row{align-items:flex-start}.api-key-value{align-items:stretch;flex-direction:column}}
     .wallet-overview{display:flex;align-items:center;justify-content:space-between;margin:0 4px 22px;padding:28px;border:1px solid #cdbc9a;border-radius:20px;background:linear-gradient(120deg,#eee5d4,#f7f2e8)}
     .wallet-overview strong{display:block;margin:9px 0 8px;color:#191713;font-size:38px;letter-spacing:-.05em}
     .wallet-overview small b{color:#4d402c}
@@ -634,6 +658,14 @@
     .notice{border:1px solid rgba(210,220,255,.12);backdrop-filter:blur(14px)}
     .notice.error{background:rgba(116,47,67,.4);color:#ffc3ce;border-color:rgba(255,125,156,.24)}
     .notice.success{background:rgba(25,108,99,.34);color:#a9f4e8;border-color:rgba(108,230,220,.22)}
+    .api-key-create input,.api-key-value code,.api-key-revoke,.api-key-copy{color:#eaf0ff;background:rgba(13,19,33,.7);border-color:var(--glass-border)}
+    .api-key-result{background:linear-gradient(125deg,rgba(77,83,147,.22),rgba(23,90,98,.2));border-color:rgba(108,230,220,.24)}
+    .api-key-result strong{color:#d7e2ff}
+    .api-key-row{background:linear-gradient(145deg,rgba(31,40,63,.62),rgba(16,24,41,.66));border-color:var(--glass-border)}
+    .api-key-row strong{color:#f3f5ff}
+    .api-key-row small,.api-key-note{color:#aeb8d0}
+    .api-guide-link{color:#bcb3ff}
+    .api-access-footer{border-color:var(--glass-border)}
     .workspace,.dashboard,.admin-panel{color:var(--text);background:transparent}
     .app-shell{background:transparent}
     .sidebar,.admin-topbar{
@@ -645,7 +677,7 @@
     }
     .side-brand-copy strong,.account-copy strong,.wallet-balance,.page-heading h1,
     .section-title h2,.engagement-head h2,.growth-heading h2,.preview-heading h2,
-    .overview-card strong,.wallet-overview strong,.quick-start h2,.support-card h2,
+    .overview-card strong,.wallet-overview strong,.quick-start h2,.support-card h2,.api-access-card h2,.api-key-row strong,
     .admin-section-heading h2,.settings-card strong,.record-top,.per-type-name,
     .metric-title,.preview-metric strong,.per-type-box strong,.per-type-rows b,
     .balance-pill strong,.deposit-address-content strong{color:#f3f5ff}
@@ -655,7 +687,7 @@
     .deposit-address-card,.record-card,.admin-tabs,.admin-action.secondary,
     .admin-logout,.empty-state,.per-type-row,.delivery,.order-delivery,
     .order-chip,.balance-pill,.copy-address,.curve-preset,.curve-reset,
-    .series-tab,.platform-button,.quantity-preset,.link-input,.custom-quantity,
+    .series-tab,.platform-button,.quantity-preset,.link-input,.custom-quantity,.api-key-row,.api-key-result,
     .metric-amount,.how-details summary,.delivery-fields input{
       color:#eaf0ff;
       background:linear-gradient(145deg,rgba(31,40,63,.76),rgba(16,24,41,.73));
@@ -668,7 +700,7 @@
     .account-avatar{color:#0d1720;background:linear-gradient(135deg,#8c9eff,#6ce6dc)}
     .account-copy small,.menu-caption,.page-heading p,.engagement-head p,.preview-subtitle,
     .growth-instructions,.preview-metric small,.overview-card span,.wallet-overview span,
-    .overview-card small,.wallet-overview small,.quick-start p,.support-card p,
+    .overview-card small,.wallet-overview small,.quick-start p,.support-card p,.api-access-card p,.api-key-row small,.api-key-note,
     .deposit-note,.deposit-address-content small,.deposit-address-content code,
     .record-card p,.record-top>div>span:not(.status-badge),.record-top>span,
     .order-details,.order-rejection,.admin-section-heading p,.admin-account,
@@ -1036,6 +1068,19 @@
             <article class="overview-card"><span>Pending deposits</span><strong id="overview-deposits">0</strong><small>Waiting for admin verification</small></article>
           </div>
           <article class="form-card quick-start"><div><h2>Ready for your next post?</h2><p>Build a plan for views and engagement on Instagram or TikTok.</p></div><button class="place-order" type="button" data-go="full-engagement">Create an order</button></article>
+          <section class="form-card api-access-card" aria-labelledby="api-access-title">
+            <div><h2 id="api-access-title">API access</h2><p>Create a private key to place orders from your own app or server. Orders use your current wallet balance.</p></div>
+            <form class="api-key-create" id="api-key-form">
+              <label for="api-key-name">Key name<input id="api-key-name" maxlength="60" value="My API key" required></label>
+              <button class="place-order" type="submit" id="generate-api-key">Generate API key</button>
+            </form>
+            <div class="api-key-result" id="api-key-result" hidden aria-live="polite">
+              <strong>Copy your key now. It will only be shown once.</strong>
+              <div class="api-key-value"><code id="api-key-value"></code><button class="api-key-copy" id="copy-api-key" type="button">Copy key</button></div>
+            </div>
+            <div class="api-key-list" id="api-key-list"><div class="empty-state">Your API keys will appear here.</div></div>
+            <div class="api-access-footer"><p class="api-key-note">Keep this key on a private server. Never publish it in a website or app’s browser code.</p><a class="api-guide-link" href="/output/pdf/r-smm-api-guide.pdf" download>Download API guide (PDF)</a></div>
+          </section>
         </div>
       </section>
       <section class="dashboard secondary-page" id="orders-page" data-page="orders" hidden>
@@ -1187,6 +1232,8 @@
     function enterWorkspace(name, email, currency, balanceMicros, role = "customer") {
       accountViewVersion++;
       walletRequestVersion++;
+      document.querySelector("#api-key-result").hidden = true;
+      document.querySelector("#api-key-value").textContent = "";
       document.querySelector("#auth-screen").hidden = true;
       document.querySelector("#workspace").hidden = false;
       const isAdmin = role === "admin";
@@ -1307,7 +1354,30 @@
       });
       if (page === "wallet") loadCustomerWallet();
       if (page === "orders") { loadCustomerOrders(); refreshWallet(); }
-      if (page === "dashboard") loadOverview();
+      if (page === "dashboard") { loadOverview(); loadApiKeys(); }
+    }
+    async function loadApiKeys(showErrors = false) {
+      try {
+        const {keys} = await requestJson("/api/api-keys");
+        const list = document.querySelector("#api-key-list");
+        list.innerHTML = keys.length ? keys.map(key =>
+          '<article class="api-key-row"><div><strong>' + escapeHtml(key.name) + (key.revoked_at ? ' · Revoked' : ' · Active') + '</strong><small>Ends ' + escapeHtml(key.key_hint) + ' · Created ' + formatDate(key.created_at) + (key.last_used ? ' · Last used ' + formatDate(key.last_used) : '') + '</small></div>' +
+          (key.revoked_at ? '' : '<button class="api-key-revoke" type="button" data-revoke-api-key="' + key.id + '">Revoke</button>') + '</article>'
+        ).join("") : '<div class="empty-state">No API keys yet.</div>';
+        list.querySelectorAll("[data-revoke-api-key]").forEach(button => button.addEventListener("click", () => revokeApiKey(button.dataset.revokeApiKey)));
+        return true;
+      } catch (error) {
+        if (showErrors) showToast(error.message || "Could not refresh API keys.");
+        return false;
+      }
+    }
+    async function revokeApiKey(id) {
+      if (!window.confirm("Revoke this API key? Any app using it will stop working.")) return;
+      try {
+        await requestJson("/api/api-keys/" + encodeURIComponent(id) + "/revoke", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+        showToast("API key revoked.");
+        loadApiKeys();
+      } catch (error) { showToast(error.message); }
     }
     async function loadOverview(showErrors = false) {
       const requestVersion = accountViewVersion;
@@ -1409,7 +1479,7 @@
     }
     async function refreshCustomerWorkspace() {
       const results = await Promise.all([
-        refreshWallet(true), loadOverview(true), loadCustomerOrders(), loadCustomerWallet()
+        refreshWallet(true), loadOverview(true), loadCustomerOrders(), loadCustomerWallet(), loadApiKeys(true)
       ]);
       return results.every(Boolean);
     }
@@ -1825,6 +1895,40 @@
     });
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
     document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.go)));
+    document.querySelector("#api-key-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const button = document.querySelector("#generate-api-key");
+      button.disabled = true;
+      button.textContent = "Generating…";
+      try {
+        const result = await requestJson("/api/api-keys", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({name:document.querySelector("#api-key-name").value})});
+        document.querySelector("#api-key-value").textContent = result.api_key;
+        document.querySelector("#api-key-result").hidden = false;
+        showToast("API key created. Copy it now; it will not be shown again.");
+        await loadApiKeys();
+      } catch (error) { showToast(error.message); }
+      finally { button.disabled = false; button.textContent = "Generate API key"; }
+    });
+    document.querySelector("#copy-api-key").addEventListener("click", async event => {
+      const value = document.querySelector("#api-key-value").textContent;
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
+        else throw new Error("Clipboard unavailable");
+      } catch (_) {
+        const field = document.createElement("textarea");
+        field.value = value;
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        const copied = document.execCommand("copy");
+        field.remove();
+        if (!copied) { showToast("Copy failed. Select the key and copy it manually."); return; }
+      }
+      const copyButton = event.currentTarget;
+      copyButton.textContent = "Copied!";
+      setTimeout(() => { copyButton.textContent = "Copy key"; }, 1400);
+    });
     document.querySelector("#add-funds").addEventListener("click", () => showCustomerPage("wallet"));
     document.querySelector("#refresh-main").addEventListener("click", event => runRefresh(event.currentTarget, refreshCustomerWorkspace));
     document.querySelector("#refresh-dashboard").addEventListener("click", event => runRefresh(event.currentTarget, refreshCustomerWorkspace));
@@ -2016,6 +2120,9 @@
       document.querySelector("#customer-orders").innerHTML = '<div class="empty-state">Your orders will appear here.</div>';
       document.querySelector("#customer-deposits").innerHTML = '<div class="empty-state">No deposit requests yet.</div>';
       document.querySelector("#wallet-transactions").innerHTML = '<div class="empty-state">No wallet activity yet.</div>';
+      document.querySelector("#api-key-result").hidden = true;
+      document.querySelector("#api-key-value").textContent = "";
+      document.querySelector("#api-key-list").innerHTML = '<div class="empty-state">Your API keys will appear here.</div>';
       document.querySelector("#admin-order-count").textContent = "0";
       document.querySelector("#admin-deposit-count").textContent = "0";
       document.querySelector("#admin-balances").innerHTML = '<div class="empty-state">No accounts yet.</div>';
