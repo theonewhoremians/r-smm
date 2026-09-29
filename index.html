@@ -104,7 +104,10 @@
     .page-heading .eyebrow{color:#26965b;font-size:10px;letter-spacing:.16em}
     .page-heading h1{font-size:34px;line-height:1.1;color:#151922;letter-spacing:-.055em;margin:9px 0 7px;font-weight:700}
     .page-heading p{font-size:14px;color:#68746e;margin:0}
+    .page-heading-actions{display:flex;align-items:center;gap:9px}
     .draft-pill{white-space:nowrap;border:1px solid #c9e9d4;border-radius:99px;background:#f5fff8;color:#54806b;padding:9px 13px;font-size:11px;font-weight:650}
+    .refresh-button{cursor:pointer;transition:opacity .15s ease}
+    .refresh-button:disabled{opacity:.6;cursor:wait}
     .form-card{background:#fff;border:1px solid #dedbd8;border-radius:19px;padding:23px 30px 25px;margin-bottom:30px;box-shadow:0 9px 15px #17352612,0 2px 4px #18332608}
     .section-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
     .section-title{display:flex;align-items:center;gap:14px}
@@ -419,7 +422,7 @@
     #admin-toast{bottom:24px;right:24px}
     @media(max-width:1050px){.deposit-form{grid-template-columns:repeat(2,minmax(0,1fr))}.deposit-form .place-order{width:100%}}
     @media(max-width:760px){.nav-item:not(.current){display:flex}.nav-item{flex:none}.overview-grid{grid-template-columns:1fr;gap:9px}.overview-card{padding:16px}.overview-card strong{font-size:23px}.quick-start{align-items:flex-start;flex-direction:column}.quick-start .place-order{width:100%}.wallet-overview{padding:20px}.wallet-overview strong{font-size:30px}.wallet-emblem{width:48px;height:48px}.deposit-form{grid-template-columns:1fr}.deposit-form .place-order{width:100%}.admin-topbar{align-items:flex-start;flex-wrap:wrap}.admin-account{width:100%;justify-content:space-between}.admin-main{padding-top:24px}.admin-main .overview-grid{grid-template-columns:1fr}.record-card{padding:14px}.record-top{font-size:12px}}
-    @media(max-width:430px){.wallet-overview{padding:16px}.wallet-overview strong{font-size:26px}.deposit-address-card{grid-template-columns:86px minmax(0,1fr);gap:11px;padding:11px}.deposit-qr{min-height:82px}.deposit-qr img{width:76px;height:76px}.deposit-address-content code{font-size:10px}.admin-account{gap:7px;flex-wrap:wrap}.admin-logout{margin-left:auto}.record-top{align-items:flex-start}}
+    @media(max-width:430px){.wallet-overview{padding:16px}.wallet-overview strong{font-size:26px}.deposit-address-card{grid-template-columns:86px minmax(0,1fr);gap:11px;padding:11px}.deposit-qr{min-height:82px}.deposit-qr img{width:76px;height:76px}.deposit-address-content code{font-size:10px}.admin-account{gap:7px;flex-wrap:wrap}.admin-logout{margin-left:auto}.record-top{align-items:flex-start}.page-heading-actions{margin-top:12px}.page-heading-actions .draft-pill{margin-top:0}}
 
     /* Phone layout */
     @media(max-width:760px){
@@ -593,7 +596,7 @@
         <div class="dashboard-inner">
           <header class="page-heading">
             <div><div class="eyebrow">R-SMM SOCIAL GROWTH</div><h1>Full Engagement</h1><p>Build a natural engagement plan for your next post.</p></div>
-            <span class="draft-pill">● &nbsp; New order</span>
+            <div class="page-heading-actions"><span class="draft-pill">● &nbsp; New order</span><button class="draft-pill refresh-button" type="button" id="refresh-main">↻ &nbsp; Refresh</button></div>
           </header>
           <section class="form-card" aria-labelledby="platform-heading">
             <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↗</span><h2 id="platform-heading">Select Platform</h2></div><span class="pick-label">PICK ONE</span></div>
@@ -689,7 +692,7 @@
       </section>
       <section class="dashboard secondary-page landing-page" id="dashboard-page" data-page="dashboard" hidden>
         <div class="dashboard-inner">
-          <header class="page-heading"><div><div class="eyebrow">YOUR WORKSPACE</div><h1>Dashboard</h1><p>Your balance and recent social growth activity.</p></div></header>
+          <header class="page-heading"><div><div class="eyebrow">YOUR WORKSPACE</div><h1>Dashboard</h1><p>Your balance and recent social growth activity.</p></div><button class="draft-pill refresh-button" type="button" id="refresh-dashboard">↻ &nbsp; Refresh</button></header>
           <div class="overview-grid">
             <article class="overview-card"><span>Wallet balance</span><strong id="overview-balance">0.00 USDT</strong><small>Available for your next order</small></article>
             <article class="overview-card"><span>Orders placed</span><strong id="overview-orders">0</strong><small>View your order history</small></article>
@@ -790,6 +793,7 @@
     let mode = "login";
     let toastTimer;
     let walletRequestVersion = 0;
+    let accountViewVersion = 0;
     let walletCurrency = "USDT";
     let walletBalanceMicros = 0;
     const depositAddresses = {
@@ -844,6 +848,8 @@
       notice.className = "notice";
     }
     function enterWorkspace(name, email, currency, balanceMicros, role = "customer") {
+      accountViewVersion++;
+      walletRequestVersion++;
       document.querySelector("#auth-screen").hidden = true;
       document.querySelector("#workspace").hidden = false;
       const isAdmin = role === "admin";
@@ -961,29 +967,39 @@
       if (page === "orders") { loadCustomerOrders(); refreshWallet(); }
       if (page === "dashboard") loadOverview();
     }
-    async function loadOverview() {
+    async function loadOverview(showErrors = false) {
+      const requestVersion = accountViewVersion;
       try {
         const [orders, wallet] = await Promise.all([requestJson("/api/orders"), requestJson("/api/wallet")]);
+        if (requestVersion !== accountViewVersion) return false;
         document.querySelector("#overview-orders").textContent = orders.orders.length;
         document.querySelector("#overview-deposits").textContent = wallet.deposits.filter(item => item.status === "pending").length;
-      } catch (_) {}
+        return true;
+      } catch (error) {
+        if (showErrors) showToast(error.message);
+        return false;
+      }
     }
     async function loadCustomerOrders() {
+      const requestVersion = accountViewVersion;
       try {
         const {orders} = await requestJson("/api/orders");
+        if (requestVersion !== accountViewVersion) return false;
         const list = document.querySelector("#customer-orders");
         document.querySelector("#overview-orders").textContent = orders.length;
         list.innerHTML = orders.length ? orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + '</strong><span class="status-badge ' + escapeHtml(order.status) + '">' + escapeHtml(order.status) + '</span>' + (order.status === "rejected" && order.rejection_reason ? '<details class="order-rejection"><summary>Reason</summary><p>' + escapeHtml(order.rejection_reason) + '</p></details>' : "") + '</div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
           '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' views · ' + formatDate(order.created_at) + '</p><a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open post ↗</a></article>'
         ).join("") : '<div class="empty-state">No orders yet. Start with a Full Engagement order.</div>';
-      } catch (error) { showToast(error.message); }
+        return true;
+      } catch (error) { showToast(error.message); return false; }
     }
     async function loadCustomerWallet() {
       const requestVersion = ++walletRequestVersion;
+      const accountVersion = accountViewVersion;
       try {
         const {transactions, deposits} = await requestJson("/api/wallet");
-        if (requestVersion !== walletRequestVersion) return;
+        if (requestVersion !== walletRequestVersion || accountVersion !== accountViewVersion) return false;
         const depositList = document.querySelector("#customer-deposits");
         depositList.innerHTML = deposits.length ? deposits.map(customerDepositHtml).join("") : '<div class="empty-state">No deposit requests yet.</div>';
         const transactionList = document.querySelector("#wallet-transactions");
@@ -991,11 +1007,14 @@
           '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : item.amount_micros > 0 ? "Order refund" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + (item.kind === "deposit" ? formatDepositAmount(Math.abs(item.amount_micros)) : formatPrice(Math.abs(item.amount_micros))) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
         ).join("") : '<div class="empty-state">No wallet activity yet.</div>';
         document.querySelector("#overview-deposits").textContent = deposits.filter(item => item.status === "pending").length;
-      } catch (error) { showToast(error.message); }
+        return true;
+      } catch (error) { showToast(error.message); return false; }
     }
     async function loadAdmin() {
+      const requestVersion = accountViewVersion;
       try {
         const summary = await requestJson("/api/admin/summary");
+        if (requestVersion !== accountViewVersion) return false;
         document.querySelector("#admin-order-count").textContent = summary.pending_orders.length;
         document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
         const balances = document.querySelector("#admin-balances");
@@ -1024,7 +1043,30 @@
         orderList.querySelectorAll("[data-reject-order]").forEach(button => button.addEventListener("click", () => rejectOrder(button.dataset.rejectOrder)));
         depositList.querySelectorAll("[data-credit-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.creditDeposit, "credit")));
         depositList.querySelectorAll("[data-reject-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.rejectDeposit, "reject")));
-      } catch (error) { showToast(error.message); }
+        return true;
+      } catch (error) { showToast(error.message); return false; }
+    }
+    async function runRefresh(button, refresh) {
+      if (button.disabled) return;
+      const label = button.innerHTML;
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      button.innerHTML = "↻ &nbsp; Refreshing…";
+      try {
+        if (await refresh()) showToast("Latest information refreshed.");
+      } catch (error) {
+        showToast(error.message || "Could not refresh. Please try again.");
+      } finally {
+        button.innerHTML = label;
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+      }
+    }
+    async function refreshCustomerWorkspace() {
+      const results = await Promise.all([
+        refreshWallet(true), loadOverview(true), loadCustomerOrders(), loadCustomerWallet()
+      ]);
+      return results.every(Boolean);
     }
     async function completeOrder(orderId) {
       try {
@@ -1312,9 +1354,17 @@
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
     document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.go)));
     document.querySelector("#add-funds").addEventListener("click", () => showCustomerPage("wallet"));
-    document.querySelector("#refresh-orders").addEventListener("click", loadCustomerOrders);
-    document.querySelector("#refresh-wallet").addEventListener("click", () => { refreshWallet(); loadCustomerWallet(); });
-    document.querySelector("#refresh-admin").addEventListener("click", loadAdmin);
+    document.querySelector("#refresh-main").addEventListener("click", event => runRefresh(event.currentTarget, refreshCustomerWorkspace));
+    document.querySelector("#refresh-dashboard").addEventListener("click", event => runRefresh(event.currentTarget, refreshCustomerWorkspace));
+    document.querySelector("#refresh-orders").addEventListener("click", event => runRefresh(event.currentTarget, async () => {
+      const results = await Promise.all([refreshWallet(true), loadOverview(true), loadCustomerOrders()]);
+      return results.every(Boolean);
+    }));
+    document.querySelector("#refresh-wallet").addEventListener("click", event => runRefresh(event.currentTarget, async () => {
+      const results = await Promise.all([refreshWallet(true), loadOverview(true), loadCustomerWallet()]);
+      return results.every(Boolean);
+    }));
+    document.querySelector("#refresh-admin").addEventListener("click", event => runRefresh(event.currentTarget, loadAdmin));
     document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
       document.querySelectorAll("[data-admin-view]").forEach(tab => {
         const active = tab === button;
@@ -1412,13 +1462,21 @@
         renderSummary();
       }
     });
-    async function refreshWallet() {
+    async function refreshWallet(showErrors = false) {
+      const requestVersion = accountViewVersion;
       try {
         const response = await fetch("/api/me", {credentials:"same-origin", cache:"no-store"});
         const account = await response.json();
-        if (account.authenticated && account.role === "admin") loadAdmin();
-        else if (account.authenticated) updateWallet(account.currency, account.balance_micros);
-      } catch (_) {}
+        if (!response.ok) throw new Error(account.error || "Could not refresh your account.");
+        if (requestVersion !== accountViewVersion) return false;
+        if (!account.authenticated) throw new Error("Your session has expired. Please sign in again.");
+        if (account.role === "admin") return await loadAdmin();
+        updateWallet(account.currency, account.balance_micros);
+        return true;
+      } catch (error) {
+        if (showErrors) showToast(error.message || "Could not refresh your account.");
+        return false;
+      }
     }
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) refreshWallet();
@@ -1448,12 +1506,31 @@
       }
     });
     async function signOut() {
-      await fetch("/api/logout", {method: "POST", credentials:"same-origin", headers: {"Content-Type": "application/json"}, body: "{}"});
+      try {
+        await fetch("/api/logout", {method: "POST", credentials:"same-origin", headers: {"Content-Type": "application/json"}, body: "{}"});
+      } catch (_) {}
+      accountViewVersion++;
+      walletRequestVersion++;
       document.querySelector("#workspace").hidden = true;
       document.querySelector("#admin-panel").hidden = true;
       document.querySelector("#customer-shell").hidden = false;
       document.querySelector("#auth-screen").hidden = false;
       form.reset();
+      updateWallet("USDT", 0);
+      document.querySelector("#overview-orders").textContent = "0";
+      document.querySelector("#overview-deposits").textContent = "0";
+      document.querySelector("#customer-orders").innerHTML = '<div class="empty-state">Your orders will appear here.</div>';
+      document.querySelector("#customer-deposits").innerHTML = '<div class="empty-state">No deposit requests yet.</div>';
+      document.querySelector("#wallet-transactions").innerHTML = '<div class="empty-state">No wallet activity yet.</div>';
+      document.querySelector("#admin-order-count").textContent = "0";
+      document.querySelector("#admin-deposit-count").textContent = "0";
+      document.querySelector("#admin-balances").innerHTML = '<div class="empty-state">No accounts yet.</div>';
+      document.querySelector("#admin-orders").innerHTML = '<div class="empty-state">No pending orders.</div>';
+      document.querySelector("#admin-completed-orders").innerHTML = '<div class="empty-state">No fulfilled orders yet.</div>';
+      document.querySelector("#admin-deposits").innerHTML = '<div class="empty-state">No pending payments.</div>';
+      document.querySelector("#admin-approved-deposits").innerHTML = '<div class="empty-state">No approved deposits yet.</div>';
+      const submit = document.querySelector("#submit");
+      submit.disabled = false;
       setMode("login");
     }
     document.querySelector("#logout").addEventListener("click", signOut);
