@@ -867,7 +867,10 @@ class App(BaseHTTPRequestHandler):
             db.commit()
         notify_admin_telegram(
             f"New R-SMM order #{order_id}\nPlatform: {platform.title()}\n"
-            f"Views: {views:,}\nAmount: {Decimal(amount) / Decimal(1_000_000):.3f} {wallet['currency']}"
+            f"Services:\n" + "\n".join(
+                f"{item['type'].title()}: {item['quantity']:,}"
+                for item in settings["metrics"] if item["enabled"]
+            ) + f"\nAmount: {Decimal(amount) / Decimal(1_000_000):.3f} {wallet['currency']}"
         )
         self.respond(201, response_data)
 
