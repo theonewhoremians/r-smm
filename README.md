@@ -22,6 +22,6 @@ Create a bot with Telegram's `@BotFather`, open a private chat with it, and send
 
 The minimum deposit is 2 USDT on TRC20 or 2 USDC on Base. Deposit requests remain pending until an administrator checks the transfer reference and credits the wallet. The app does not monitor blockchains, and balances change only after manual review.
 
-Enabled order items are priced at fixed USDT/USDC rates: views 0.085/1,000, likes 5.21/1,000, comments 0.052 each, saves 0.312/1,000, shares 0.52/1,000, and reposts 2.08/1,000. The server recalculates and deducts the charge atomically when an order is placed. Orders remain pending for an administrator to complete after fulfillment. Admin actions and wallet changes are recorded in `auth.sqlite3`.
+Enabled order items are priced at fixed USDT/USDC rates: views 0.085/1,000, likes 5.21/1,000, comments 0.052 each, saves 0.312/1,000, shares 0.52/1,000, and reposts 2.08/1,000. The server recalculates and deducts the charge atomically when an order is placed. Orders wait for admin approval, then move to processing with a progress estimate based on the configured delivery duration. An administrator marks an order complete after fulfillment. Admin actions and wallet changes are recorded in `auth.sqlite3`.
 
 This prototype does not connect to a social-service provider.
