@@ -529,7 +529,8 @@
     .growth-card .growth-heading h2{color:#f3f0ea}
     .growth-card .growth-chart{border-color:#ffffff1c;background-color:#090b0e;background-image:radial-gradient(440px 230px at 15% 0,#d9b4761f,transparent 68%),radial-gradient(420px 240px at 100% 100%,#93a9e81c,transparent 68%),linear-gradient(#ffffff0c 1px,transparent 1px),linear-gradient(90deg,#ffffff0c 1px,transparent 1px);background-size:auto,auto,40px 40px,40px 40px;box-shadow:inset 0 1px 0 #ffffff12}
     .growth-card .graph-baseline{stroke:#d9b476;opacity:.55}
-    .growth-card .graph-line{stroke-width:4;filter:drop-shadow(0 4px 8px #00000080)}
+    .growth-card .graph-line{stroke-width:4;filter:drop-shadow(0 4px 8px #00000080);transition:stroke .4s ease}
+    .growth-card .graph-line-previous{opacity:0}
     .growth-card .graph-label{color:#f3f0ea80;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
     .growth-card .series-tab{border-color:#ffffff1c;background:#ffffff0b;color:#f3f0eacc}
     .growth-card .series-tab.active{outline:none;color:#fffaf0}
@@ -551,7 +552,6 @@
     .growth-card .trajectory-field input{width:100%;min-width:0;height:38px;padding:0 10px;border:1px solid #ffffff20;border-radius:10px;background:#080b10;color:#f3f0ea;font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color-scheme:dark}
     .growth-card .trajectory-input-wrap small{color:#f3f0ea77;font-size:10px}
     .growth-card .trajectory-generate{height:38px;padding:0 14px;border:1px solid #d9b47670;border-radius:11px;background:linear-gradient(110deg,#d9b476,#e08a94);color:#171613;font-size:11px;font-weight:750;white-space:nowrap;box-shadow:0 5px 16px #d9b47622}
-    .growth-card .trajectory-note{margin:8px 2px 14px;color:#f3f0ea70;font-size:10px;line-height:1.45}
     .growth-card .trajectory-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 12px}
     .growth-card .trajectory-stat{min-width:0;padding:12px 13px;border:1px solid #ffffff14;border-radius:13px;background:#ffffff06}
     .growth-card .trajectory-stat-label{margin-bottom:6px;color:#f3f0ea70;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
@@ -569,9 +569,12 @@
     .growth-card .trajectory-pulse-legend .organic{background:#8ecfa4}.growth-card .trajectory-pulse-legend .watch{background:#d9b476}.growth-card .trajectory-pulse-legend .anomaly{background:#e08a94}
     .growth-card .trajectory-breakdown{margin-top:14px;border-top:1px solid #ffffff15}
     .growth-card .trajectory-breakdown summary{padding:12px 2px 4px;color:#f3f0eab0;font-size:11px;font-weight:650;cursor:pointer;list-style:none}
+    .growth-card .trajectory-likes-intervals summary{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .growth-card .trajectory-interval-mode{color:#e08a94;font-size:10px;font-weight:500;text-align:right}
     .growth-card .trajectory-breakdown summary::-webkit-details-marker{display:none}
     .growth-card .trajectory-table-scroll{overflow:auto;margin-top:8px;border:1px solid #ffffff14;border-radius:12px}
     .growth-card .trajectory-table-scroll table{width:100%;min-width:820px;border-collapse:collapse;color:#f3f0eab0;font-size:10px}
+    .growth-card .trajectory-likes-intervals .trajectory-table-scroll table{min-width:0}
     .growth-card .trajectory-table-scroll th,.growth-card .trajectory-table-scroll td{padding:8px 10px;border-bottom:1px solid #ffffff0d;text-align:right;white-space:nowrap}
     .growth-card .trajectory-table-scroll th{position:sticky;top:0;background:#12151a;color:#f3f0ea96;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
     .growth-card .trajectory-table-scroll th:first-child,.growth-card .trajectory-table-scroll td:first-child,.growth-card .trajectory-table-scroll th:nth-child(2),.growth-card .trajectory-table-scroll td:nth-child(2){text-align:left}
@@ -1027,7 +1030,6 @@
                 </label>
                 <button class="trajectory-generate" id="generate-trajectory" type="button">Generate trajectory</button>
               </div>
-              <p class="trajectory-note">Uses Base Views Quantity and 30-minute intervals. Authenticity scores are heuristic, not a platform diagnosis. Estimates do not change your selected order quantities or price.</p>
               <div class="trajectory-stats" id="trajectory-stats" aria-live="polite"></div>
               <div class="series-tabs" role="group" aria-label="Choose a curve">
                 <button class="series-tab active" type="button" data-series="views" aria-pressed="true"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg> Views <small>5</small></button>
@@ -1041,6 +1043,7 @@
                 <span class="graph-label x-middle" id="graph-x-middle">12h</span><span class="graph-label x-end" id="graph-x-end">24h</span>
                 <svg id="growth-svg" viewBox="0 0 1000 320" preserveAspectRatio="none" role="img" aria-label="Automatically generated growth curve">
                   <path class="graph-baseline" d="M0 320 H1000"></path>
+                  <path class="graph-line graph-line-previous" id="graph-line-previous" d="" aria-hidden="true"></path>
                   <path class="graph-line" id="graph-line" d=""></path>
                 </svg>
               </div>
@@ -1050,11 +1053,20 @@
                 <div class="trajectory-pulse" id="trajectory-pulse" role="list" aria-label="Interval authenticity scores"></div>
                 <div class="trajectory-pulse-legend"><span><i class="organic"></i>Organic 75–100</span><span><i class="watch"></i>Watch 50–74</span><span><i class="anomaly"></i>Low score under 50</span></div>
               </section>
-              <details class="trajectory-breakdown">
-                <summary id="trajectory-table-summary">Interval breakdown</summary>
+              <details class="trajectory-breakdown trajectory-likes-intervals">
+                <summary><span>Interval</span><span class="trajectory-interval-mode" id="trajectory-interval-mode"></span></summary>
                 <div class="trajectory-table-scroll">
                   <table>
-                    <thead><tr><th>#</th><th>Clock time</th><th>Elapsed</th><th>Views (+)</th><th>Cumulative</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Eng. rate</th><th>Signal</th></tr></thead>
+                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Likes / 30 min</th></tr></thead>
+                    <tbody id="trajectory-likes-interval-body"></tbody>
+                  </table>
+                </div>
+              </details>
+              <details class="trajectory-breakdown">
+                <summary id="trajectory-table-summary">Full interval breakdown</summary>
+                <div class="trajectory-table-scroll">
+                  <table>
+                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Views (+)</th><th>Cumulative</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Eng. rate</th><th>Signal</th></tr></thead>
                     <tbody id="trajectory-table-body"></tbody>
                   </table>
                 </div>
@@ -1208,6 +1220,7 @@
     };
     const graphSvg = document.querySelector("#growth-svg");
     const graphLine = document.querySelector("#graph-line");
+    const graphPreviousLine = document.querySelector("#graph-line-previous");
     let mode = "login";
     let toastTimer;
     let walletRequestVersion = 0;
@@ -1822,7 +1835,7 @@
       document.querySelector("#trajectory-pulse").innerHTML = cells;
     }
     function renderTrajectoryTable(rows) {
-      document.querySelector("#trajectory-table-summary").textContent = "Interval breakdown · " + rows.length + " intervals at 30-minute resolution";
+      document.querySelector("#trajectory-table-summary").textContent = "Full breakdown · " + rows.length + " intervals at 30-minute resolution";
       document.querySelector("#trajectory-table-body").innerHTML = rows.map(row =>
         '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) +
         '</td><td>' + row.elapsedLabel + '</td><td>+' + Math.round(row.delta).toLocaleString() +
@@ -1832,11 +1845,20 @@
         '%</td><td class="signal-' + row.className + '">' + row.label + '</td></tr>'
       ).join("");
     }
-    function renderTrajectoryReadouts(rows, totalViews) {
+    function renderLikesIntervals(rows, mode) {
+      const modeName = mode === "explosive" ? "Explosive" : mode === "slow" ? "Slow burn" : "Steady";
+      document.querySelector("#trajectory-interval-mode").textContent = modeName + " · " + rows.length + " intervals · local time";
+      document.querySelector("#trajectory-likes-interval-body").innerHTML = rows.map(row =>
+        '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) + '</td><td>' + row.elapsedLabel +
+        '</td><td>' + row.likes.toLocaleString() + '</td></tr>'
+      ).join("");
+    }
+    function renderTrajectoryReadouts(rows, totalViews, mode) {
       if (!rows.length) return;
       renderTrajectoryStats(rows, totalViews);
       renderTrajectoryPulse(rows);
       renderTrajectoryTable(rows);
+      renderLikesIntervals(rows, mode);
     }
     function curvePointsFromTrajectory(rows, series) {
       let cumulative = 0;
@@ -1865,7 +1887,7 @@
         button.setAttribute("aria-pressed", String(selected));
       });
     }
-    function runTrajectorySimulation() {
+    function runTrajectorySimulation(animate = false) {
       const mode = trajectoryMode;
       const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
       const duration = trajectoryDurationHours();
@@ -1874,14 +1896,16 @@
         curves[series] = curvePointsFromTrajectory(rows, series);
       });
       setTrajectoryModeButtons();
-      renderCurve();
-      renderTrajectoryReadouts(rows, totalViews);
+      renderCurve(animate);
+      renderTrajectoryReadouts(rows, totalViews, mode);
     }
-    function renderCurve() {
+    function renderCurve(animate = false) {
       const points = curves[activeSeries];
       const svgPoints = points.map(point => [point[0] * 1000, (1 - point[1]) * 320]);
       const duration = trajectoryDurationHours();
       const seriesTotal = Math.max(0, metricQuantity(activeSeries));
+      const previousPath = graphLine.getAttribute("d");
+      const previousColor = graphLine.style.stroke || curveColors[activeSeries];
       let path = "M " + svgPoints[0][0] + " " + svgPoints[0][1];
       for (let i = 0; i < svgPoints.length - 1; i++) {
         const before = svgPoints[Math.max(0, i - 1)];
@@ -1894,8 +1918,16 @@
         const c2y = end[1] - (after[1] - start[1]) / 6;
         path += " C " + c1x + " " + c1y + ", " + c2x + " " + c2y + ", " + end[0] + " " + end[1];
       }
+      if (animate && previousPath && typeof graphLine.animate === "function") {
+        graphPreviousLine.setAttribute("d", previousPath);
+        graphPreviousLine.style.stroke = previousColor;
+      }
       graphLine.setAttribute("d", path);
       graphLine.style.stroke = curveColors[activeSeries];
+      if (animate && previousPath && typeof graphLine.animate === "function") {
+        graphPreviousLine.animate([{opacity:1},{opacity:0}], {duration:400,easing:"ease-out"});
+        graphLine.animate([{opacity:0},{opacity:1}], {duration:400,easing:"ease-out"});
+      }
       document.querySelectorAll(".series-tab").forEach(button => {
         const selected = button.dataset.series === activeSeries;
         button.classList.toggle("active", selected);
@@ -1915,7 +1947,7 @@
     document.querySelectorAll("[data-trajectory-mode]").forEach(button => button.addEventListener("click", () => {
       trajectoryMode = button.dataset.trajectoryMode;
       setTrajectoryModeButtons();
-      runTrajectorySimulation();
+      runTrajectorySimulation(true);
     }));
     document.querySelector("#trajectory-duration").addEventListener("change", runTrajectorySimulation);
     document.querySelector("#generate-trajectory").addEventListener("click", runTrajectorySimulation);
