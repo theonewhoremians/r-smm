@@ -172,7 +172,7 @@
     .growth-heading h2,.preview-heading h2{font-size:21px;letter-spacing:-.04em;color:#171923;margin:0}
     .series-tabs{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:17px}
     .series-tab{display:flex;align-items:center;gap:9px;border:1px solid #ddd9d6;border-radius:99px;background:#fff;padding:10px 15px;color:#5f6571;font-size:13px;font-weight:700}
-    .series-tab small{min-width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#f0eff2;color:#56606c;font-size:10px}
+    .series-tab small{min-width:18px;height:18px;padding:0 5px;border-radius:99px;display:grid;place-items:center;background:#f0eff2;color:#56606c;font-size:10px;font-variant-numeric:tabular-nums;white-space:nowrap}
     .series-tab.active{outline:2px solid #5ca5ff;outline-offset:2px;background:#5f9ff1;color:#111827}
     .series-tab[data-series="likes"].active{outline-color:#4dcc8b;background:#e9fff2;color:#22ae68}
     .series-tab[data-series="saves"].active{outline-color:#f5b82e;background:#fff8e4;color:#cd9100}
@@ -1638,8 +1638,7 @@
       document.querySelector("#order-count").textContent = total.toLocaleString() + " engagements • " + active.length + " types";
       document.querySelector("#active-count").textContent = active.length;
       document.querySelectorAll(".series-tab").forEach(button => {
-        const count = curves[button.dataset.series].length;
-        button.querySelector("small").textContent = count;
+        button.querySelector("small").textContent = metricQuantity(button.dataset.series).toLocaleString();
       });
       const preview = document.querySelector("#preview-metrics");
       preview.innerHTML = metrics.map(metric => {
