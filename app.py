@@ -872,8 +872,14 @@ class App(BaseHTTPRequestHandler):
                 db.execute("UPDATE api_idempotency SET response_json = ? WHERE email = ? AND idempotency_key = ?",
                            (json.dumps(response_data, separators=(",", ":")), user["email"], idempotency_key))
             db.commit()
+        trajectory_types = {"custom": "Custom", "explosive": "Explosive",
+                            "steady": "Steady", "slow": "Slow burn"}
+        trajectory_type = trajectory_types.get(settings.get("trajectory_mode", "steady"), "Steady")
+        trajectory_duration = settings.get("trajectory_duration_hours", 24)
         notify_admin_telegram(
             f"New R-SMM order #{order_id}\nPlatform: {platform.title()}\n"
+            f"Order type: {trajectory_type}\n"
+            f"Total duration: {trajectory_duration:g} hours\n"
             f"Services:\n" + "\n".join(
                 f"{item['type'].title()}: {item['quantity']:,}"
                 for item in settings["metrics"] if item["enabled"]
