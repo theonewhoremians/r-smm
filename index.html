@@ -544,9 +544,11 @@
     .growth-card .series-tab[data-series="comments"].active{border-color:#93a9e880;background:#93a9e826}
     .growth-card .series-tab[data-series="shares"].active{border-color:#d9b47680;background:#d9b47626}
     .growth-card .series-tab[data-series="saves"].active{border-color:#8ecfa480;background:#8ecfa426}
+    .growth-card .series-tab[data-series="reposts"].active{border-color:#bc9bff80;background:#bc9bff26}
+    .growth-card .series-tab:disabled:not(.active){opacity:.38;cursor:not-allowed}
     .growth-card .series-tab.active small{background:#f3f0ead9;color:#191713}
     .growth-card .curve-legend{border-color:#ffffff1c;color:#f3f0eacc}
-    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
+    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}.growth-card .legend-dot.reposts{background:#bc9bff}
     .growth-card .trajectory-controls{display:grid;grid-template-columns:minmax(230px,1.25fr) minmax(110px,.55fr) auto;align-items:end;gap:12px;margin:0 0 10px;padding:14px;border:1px solid #ffffff1c;border-radius:16px;background:linear-gradient(135deg,#ffffff0b,#ffffff04)}
     .growth-card .trajectory-mode-field,.growth-card .trajectory-field{display:grid;gap:7px;min-width:0}
     .growth-card .trajectory-field-label,.growth-card .trajectory-field{color:#f3f0eab0;font-size:11px;font-weight:650;letter-spacing:.04em}
@@ -574,12 +576,9 @@
     .growth-card .trajectory-pulse-legend .organic{background:#8ecfa4}.growth-card .trajectory-pulse-legend .watch{background:#d9b476}.growth-card .trajectory-pulse-legend .anomaly{background:#e08a94}
     .growth-card .trajectory-breakdown{margin-top:14px;border-top:1px solid #ffffff15}
     .growth-card .trajectory-breakdown summary{padding:12px 2px 4px;color:#f3f0eab0;font-size:11px;font-weight:650;cursor:pointer;list-style:none}
-    .growth-card .trajectory-likes-intervals summary{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .growth-card .trajectory-interval-mode{color:#e08a94;font-size:10px;font-weight:500;text-align:right}
     .growth-card .trajectory-breakdown summary::-webkit-details-marker{display:none}
     .growth-card .trajectory-table-scroll{overflow:auto;margin-top:8px;border:1px solid #ffffff14;border-radius:12px}
     .growth-card .trajectory-table-scroll table{width:100%;min-width:820px;border-collapse:collapse;color:#f3f0eab0;font-size:10px}
-    .growth-card .trajectory-likes-intervals .trajectory-table-scroll table{min-width:0}
     .growth-card .trajectory-table-scroll th,.growth-card .trajectory-table-scroll td{padding:8px 10px;border-bottom:1px solid #ffffff0d;text-align:right;white-space:nowrap}
     .growth-card .trajectory-table-scroll th{position:sticky;top:0;background:#12151a;color:#f3f0ea96;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
     .growth-card .trajectory-table-scroll th:first-child,.growth-card .trajectory-table-scroll td:first-child,.growth-card .trajectory-table-scroll th:nth-child(2),.growth-card .trajectory-table-scroll td:nth-child(2){text-align:left}
@@ -798,16 +797,20 @@
     .growth-card .series-tab[data-series="comments"].active{border-color:#93a9e880;background:#93a9e826}
     .growth-card .series-tab[data-series="shares"].active{border-color:#d9b47680;background:#d9b47626}
     .growth-card .series-tab[data-series="saves"].active{border-color:#8ecfa480;background:#8ecfa426}
+    .growth-card .series-tab[data-series="reposts"].active{border-color:#bc9bff80;background:#bc9bff26}
+    .growth-card .series-tab:disabled:not(.active){opacity:.38;cursor:not-allowed}
     .growth-card .series-tab.active small{color:#191713;background:#f3f0ead9}
     .growth-card .curve-legend{border-color:rgba(207,220,255,.15);color:#d5dcef}
-    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
+    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}.growth-card .legend-dot.reposts{background:#bc9bff}
     .preview-subtitle,.order-rate,.order-count{color:#a8b2c8}
-    .service-intervals{margin:12px 0 16px;border-top:1px solid rgba(207,220,255,.12)}
-    .service-intervals summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px 4px;color:#d5dcef;font-size:11px;font-weight:650;cursor:pointer;list-style:none}
+    .service-intervals{margin:14px 0 22px;border:1px solid rgba(207,220,255,.14);border-radius:14px;background:rgba(11,16,25,.72);overflow:hidden}
+    .service-intervals summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;color:#d5dcef;font-size:12px;font-weight:700;cursor:pointer;list-style:none}
+    .service-intervals summary:hover{background:rgba(255,255,255,.035)}
+    .service-intervals[open] summary{border-bottom:1px solid rgba(207,220,255,.1)}
     .service-intervals summary::-webkit-details-marker{display:none}
     .service-intervals summary span:last-child{color:#e08a94;font-size:10px;font-weight:500;text-align:right}
     .service-interval-table-scroll{overflow:auto;margin-top:8px;border:1px solid rgba(207,220,255,.12);border-radius:12px}
-    .service-interval-table-scroll table{width:100%;min-width:680px;border-collapse:collapse;color:#d5dcef;font-size:10px}
+    .service-interval-table-scroll table{width:100%;min-width:420px;border-collapse:collapse;color:#d5dcef;font-size:10px}
     .service-interval-table-scroll th,.service-interval-table-scroll td{padding:8px 10px;border-bottom:1px solid rgba(207,220,255,.08);text-align:right;white-space:nowrap}
     .service-interval-table-scroll th{position:sticky;top:0;background:#12151a;color:#aeb8ce;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
     .service-interval-table-scroll th:first-child,.service-interval-table-scroll td:first-child,.service-interval-table-scroll th:nth-child(2),.service-interval-table-scroll td:nth-child(2){text-align:left}
@@ -1027,15 +1030,6 @@
               <div class="preview-heading"><span class="preview-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span><h2 id="preview-heading">Select Services</h2></div>
               <p class="preview-subtitle">Tap to select; press and hold for delivery settings.</p>
               <div class="preview-metrics" id="preview-metrics"></div>
-              <details class="service-intervals">
-                <summary><span>Interval</span><span id="service-interval-mode"></span></summary>
-                <div class="service-interval-table-scroll">
-                  <table>
-                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Views / 30 min</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th></tr></thead>
-                    <tbody id="service-interval-body"></tbody>
-                  </table>
-                </div>
-              </details>
               <div class="per-type-box"><strong>▦ &nbsp;Customization</strong><div class="per-type-rows" id="per-type-rows"></div></div>
             </section>
             <section class="form-card growth-card" aria-labelledby="growth-heading">
@@ -1061,6 +1055,7 @@
                 <button class="series-tab" type="button" data-series="comments" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v12H9l-5 4v-16Z"/><path d="M8 9h8M8 12.5h5"/></svg> Comments <small>2</small></button>
                 <button class="series-tab" type="button" data-series="saves" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12v17l-6-4-6 4v-17Z"/></svg> Saves <small>2</small></button>
                 <button class="series-tab" type="button" data-series="shares" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/></svg> Shares <small>2</small></button>
+                <button class="series-tab" type="button" data-series="reposts" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4m14-1v2a3 3 0 0 1-3 3H3"/></svg> Reposts <small>2</small></button>
               </div>
               <div class="growth-chart" id="growth-chart">
                 <span class="graph-label y-top" id="graph-y-top">10K</span><span class="graph-label y-middle" id="graph-y-middle">5K</span>
@@ -1077,26 +1072,26 @@
                 <div class="trajectory-pulse" id="trajectory-pulse" role="list" aria-label="Interval authenticity scores"></div>
                 <div class="trajectory-pulse-legend"><span><i class="organic"></i>Organic 75–100</span><span><i class="watch"></i>Watch 50–74</span><span><i class="anomaly"></i>Low score under 50</span></div>
               </section>
-              <details class="trajectory-breakdown trajectory-likes-intervals">
-                <summary><span>Interval</span><span class="trajectory-interval-mode" id="trajectory-interval-mode"></span></summary>
-                <div class="trajectory-table-scroll">
-                  <table>
-                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Likes / 30 min</th></tr></thead>
-                    <tbody id="trajectory-likes-interval-body"></tbody>
-                  </table>
-                </div>
-              </details>
               <details class="trajectory-breakdown">
                 <summary id="trajectory-table-summary">Full interval breakdown</summary>
                 <div class="trajectory-table-scroll">
                   <table>
-                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Views (+)</th><th>Cumulative</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Eng. rate</th><th>Signal</th></tr></thead>
+                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Views (+)</th><th>Cumulative</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Reposts</th><th>Eng. rate</th><th>Signal</th></tr></thead>
                     <tbody id="trajectory-table-body"></tbody>
                   </table>
                 </div>
               </details>
             </section>
           </section>
+          <details class="service-intervals">
+            <summary><span>Interval</span><span id="service-interval-mode"></span></summary>
+            <div class="service-interval-table-scroll">
+              <table>
+                <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th id="service-interval-metric-heading">Projected count</th></tr></thead>
+                <tbody id="service-interval-body"></tbody>
+              </table>
+            </div>
+          </details>
           <section class="order-summary" id="order-summary" aria-label="Order price and balance">
             <div>
               <div class="order-price"><span id="order-total">0.850</span> <small id="order-currency">USDT</small></div>
@@ -1233,10 +1228,12 @@
       likes:[[0,0],[1,1]],
       comments:[[0,0],[1,1]],
       saves:[[0,0],[1,1]],
-      shares:[[0,0],[1,1]]
+      shares:[[0,0],[1,1]],
+      reposts:[[0,0],[1,1]]
     };
     const curves = JSON.parse(JSON.stringify(curveDefaults));
-    const curveColors = {views:"#d9cfc0",likes:"#e08a94",comments:"#93a9e8",shares:"#d9b476",saves:"#8ecfa4"};
+    let trajectoryRows = [];
+    const curveColors = {views:"#d9cfc0",likes:"#e08a94",comments:"#93a9e8",shares:"#d9b476",saves:"#8ecfa4",reposts:"#bc9bff"};
     const trajectoryRatioBands = {
       explosive:{likes:[.035,.06],comments:[.0015,.003],shares:[.010,.020],saves:[.004,.009]},
       steady:{likes:[.05,.08],comments:[.003,.006],shares:[.005,.010],saves:[.010,.020]},
@@ -1262,7 +1259,7 @@
       USDC:{network:"Base", address:"0x98e56Af262E9FDbe77616e9fF8638E65ceed5f01"},
       USDT:{network:"TRC20", address:"TSi3EAdmxqw1NsDHRpDJYJBK2gkntjGUzE"}
     };
-    let activeSeries = "views";
+    let activeSeries = "likes";
     let trajectoryMode = "explosive";
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
@@ -1684,7 +1681,7 @@
       const orderDisabled = orderSubmitting || walletCurrencyChanging || viewsInvalid || !validMetrics || walletBalanceMicros < cost;
       document.querySelector("#place-order").disabled = orderDisabled;
       document.querySelector("#compact-place-order").disabled = orderDisabled;
-      document.querySelector("#curve-legend").innerHTML = ["views","likes","comments","saves","shares"].map(key => {
+      document.querySelector("#curve-legend").innerHTML = ["views","likes","comments","saves","shares","reposts"].map(key => {
         const metric = metrics.find(item => item.key === key);
         return '<span class="legend-item"><i class="legend-dot ' + key + '"></i>' + metric.symbol + ' ' +
           metricQuantity(key).toLocaleString() + '</span>';
@@ -1760,7 +1757,7 @@
       return {label:"Organic", className:"organic"};
     }
     function trajectoryScore(delta, metrics, expectedMid, rolling) {
-      const engagementTotal = metrics.likes + metrics.comments + metrics.shares + metrics.saves;
+      const engagementTotal = metrics.likes + metrics.comments + metrics.shares + metrics.saves + metrics.reposts;
       const engagementRate = delta > 0 ? engagementTotal / delta : 0;
       rolling.push(delta);
       if (rolling.length > 4) rolling.shift();
@@ -1827,13 +1824,13 @@
         if (correctionIndex > steps * 50) break;
       }
       const bands = trajectoryRatioBands[mode];
-      const expectedMid = Object.values(bands).reduce((sum, band) => sum + trajectoryBandMid(band), 0);
+      const expectedMid = Object.values(bands).reduce((sum, band) => sum + trajectoryBandMid(band), metricQuantity("reposts") / totalViews);
       const metricCounts = {};
-      ["likes","comments","shares","saves"].forEach(key => {
+      ["likes","comments","shares","saves","reposts"].forEach(key => {
         const metric = metrics.find(item => item.key === key);
-        const metricWeights = deltas.map(delta => delta * trajectoryRandomRange(...bands[key]));
+        const metricWeights = key === "reposts" ? deltas : deltas.map(delta => delta * trajectoryRandomRange(...bands[key]));
         const rawTotal = metricWeights.reduce((sum, weight) => sum + Math.round(weight), 0);
-        const requestedTotal = targetTotals ? Number(targetTotals[key]) : rawTotal;
+        const requestedTotal = targetTotals && Number.isFinite(Number(targetTotals[key])) ? Number(targetTotals[key]) : rawTotal;
         const boundedTotal = Math.max(metric.min, Math.min(metric.max, Math.round(requestedTotal)));
         metricCounts[key] = distributeTrajectoryTotal(boundedTotal, metricWeights);
       });
@@ -1846,7 +1843,8 @@
           likes:metricCounts.likes[index],
           comments:metricCounts.comments[index],
           shares:metricCounts.shares[index],
-          saves:metricCounts.saves[index]
+          saves:metricCounts.saves[index],
+          reposts:metricCounts.reposts[index]
         };
         const score = trajectoryScore(delta, metricsForRow, expectedMid, rolling);
         const elapsedMinutes = (index + 1) * 30;
@@ -1860,6 +1858,7 @@
           comments:metricsForRow.comments,
           shares:metricsForRow.shares,
           saves:metricsForRow.saves,
+          reposts:metricsForRow.reposts,
           engRate:score.engagementRate,
           score:score.score,
           label:score.label,
@@ -1869,7 +1868,7 @@
       return rows;
     }
     function renderTrajectoryStats(rows, totalViews) {
-      const totalEngagement = rows.reduce((sum, row) => sum + row.likes + row.comments + row.shares + row.saves, 0);
+      const totalEngagement = rows.reduce((sum, row) => sum + row.likes + row.comments + row.shares + row.saves + row.reposts, 0);
       const peak = rows.reduce((maximum, row) => row.delta > maximum.delta ? row : maximum, rows[0]);
       const averageScore = Math.round(rows.reduce((sum, row) => sum + row.score, 0) / rows.length);
       const halfway = rows.find(row => row.cumulative >= totalViews * .5);
@@ -1903,28 +1902,22 @@
         '</td><td>' + row.elapsedLabel + '</td><td>+' + Math.round(row.delta).toLocaleString() +
         '</td><td>' + Math.round(row.cumulative).toLocaleString() + '</td><td>' + row.likes.toLocaleString() +
         '</td><td>' + row.comments.toLocaleString() + '</td><td>' + row.shares.toLocaleString() +
-        '</td><td>' + row.saves.toLocaleString() + '</td><td>' + (row.engRate * 100).toFixed(2) +
+        '</td><td>' + row.saves.toLocaleString() + '</td><td>' + row.reposts.toLocaleString() + '</td><td>' + (row.engRate * 100).toFixed(2) +
         '%</td><td class="signal-' + row.className + '">' + row.label + '</td></tr>'
       ).join("");
     }
     function trajectoryModeName(mode) {
       return mode === "explosive" ? "Explosive" : mode === "slow" ? "Slow burn" : "Steady";
     }
-    function renderLikesIntervals(rows, mode) {
-      const modeName = trajectoryModeName(mode);
-      document.querySelector("#trajectory-interval-mode").textContent = modeName + " · " + rows.length + " intervals · local time";
-      document.querySelector("#trajectory-likes-interval-body").innerHTML = rows.map(row =>
-        '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) + '</td><td>' + row.elapsedLabel +
-        '</td><td>' + row.likes.toLocaleString() + '</td></tr>'
-      ).join("");
-    }
     function renderServiceIntervals(rows, mode) {
-      document.querySelector("#service-interval-mode").textContent = trajectoryModeName(mode) + " · projected · local time";
+      if (!rows.length) return;
+      const metric = metrics.find(item => item.key === activeSeries);
+      const intervalCount = document.querySelector("#service-interval-metric-heading");
+      intervalCount.textContent = activeSeries === "views" ? "Views / 30 min" : metric.name + " / 30 min";
+      document.querySelector("#service-interval-mode").textContent = trajectoryModeName(mode) + " · " + metric.name + " · projected · local time";
       document.querySelector("#service-interval-body").innerHTML = rows.map(row =>
         '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) + '</td><td>' + row.elapsedLabel +
-        '</td><td>+' + row.delta.toLocaleString() + '</td><td>' + row.likes.toLocaleString() +
-        '</td><td>' + row.comments.toLocaleString() + '</td><td>' + row.shares.toLocaleString() +
-        '</td><td>' + row.saves.toLocaleString() + '</td></tr>'
+        '</td><td>' + (activeSeries === "views" ? row.delta : row[activeSeries]).toLocaleString() + '</td></tr>'
       ).join("");
     }
     function renderTrajectoryReadouts(rows, totalViews, mode) {
@@ -1932,8 +1925,6 @@
       renderTrajectoryStats(rows, totalViews);
       renderTrajectoryPulse(rows);
       renderTrajectoryTable(rows);
-      renderLikesIntervals(rows, mode);
-      renderServiceIntervals(rows, mode);
     }
     function curvePointsFromTrajectory(rows, series) {
       let cumulative = 0;
@@ -1963,7 +1954,7 @@
       });
     }
     function syncMainServiceQuantities(rows, totalViews) {
-      ["likes","comments","shares","saves"].forEach(key => {
+      ["likes","comments","shares","saves","reposts"].forEach(key => {
         const quantity = rows.reduce((sum, row) => sum + row[key], 0);
         engagementAmounts[key] = quantity;
         engagementRates[key] = quantity * 100 / totalViews;
@@ -1973,12 +1964,14 @@
       const mode = trajectoryMode;
       const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
       const duration = trajectoryDurationHours();
-      const targetTotals = syncServiceQuantities ? null : Object.fromEntries(
-        ["likes","comments","shares","saves"].map(key => [key, metricQuantity(key)])
+      const targetTotals = Object.fromEntries(
+        ["likes","comments","shares","saves","reposts"].map(key => [key, metricQuantity(key)])
       );
+      if (syncServiceQuantities) ["likes","comments","shares","saves"].forEach(key => { delete targetTotals[key]; });
       const rows = generateTrajectoryRows(totalViews, mode, duration, new Date(), targetTotals);
+      trajectoryRows = rows;
       if (syncServiceQuantities) syncMainServiceQuantities(rows, totalViews);
-      ["views","likes","comments","saves","shares"].forEach(series => {
+      ["views","likes","comments","saves","shares","reposts"].forEach(series => {
         curves[series] = curvePointsFromTrajectory(rows, series);
       });
       setTrajectoryModeButtons();
@@ -2018,6 +2011,8 @@
         const selected = button.dataset.series === activeSeries;
         button.classList.toggle("active", selected);
         button.setAttribute("aria-pressed", String(selected));
+        button.disabled = !selected;
+        button.setAttribute("aria-disabled", String(!selected));
       });
       document.querySelector("#graph-y-top").textContent = trajectoryCount(seriesTotal);
       document.querySelector("#graph-y-middle").textContent = trajectoryCount(seriesTotal / 2);
@@ -2025,6 +2020,7 @@
       document.querySelector("#graph-x-end").textContent = trajectoryHours(duration);
       graphSvg.setAttribute("aria-label", "Cumulative " + activeSeries + " growth curve over " + trajectoryHours(duration));
       renderSummary();
+      renderServiceIntervals(trajectoryRows, trajectoryMode);
     }
     document.querySelectorAll(".series-tab").forEach(button => button.addEventListener("click", () => {
       activeSeries = button.dataset.series;
@@ -2108,7 +2104,8 @@
         engagementMetrics.forEach(metric => { engagementRates[metric.key] = engagementAmounts[metric.key] / views * 100; });
         selectedServices.views = true;
       } else selectedServices[key] = !metricEnabled(key);
-      renderSummary();
+      activeSeries = key;
+      renderCurve(true);
       document.querySelector('[data-preview-metric="' + key + '"]')?.focus();
     });
     document.querySelector("#service-delivery-form").addEventListener("submit", event => {
