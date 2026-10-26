@@ -2010,8 +2010,8 @@
         const selected = button.dataset.series === activeSeries;
         button.classList.toggle("active", selected);
         button.setAttribute("aria-pressed", String(selected));
-        button.disabled = !selected;
-        button.setAttribute("aria-disabled", String(!selected));
+        button.disabled = !metricEnabled(button.dataset.series);
+        button.setAttribute("aria-disabled", String(button.disabled));
       });
       document.querySelector("#graph-y-top").textContent = trajectoryCount(seriesTotal);
       document.querySelector("#graph-y-middle").textContent = trajectoryCount(seriesTotal / 2);
@@ -2103,7 +2103,8 @@
         engagementMetrics.forEach(metric => { engagementRates[metric.key] = engagementAmounts[metric.key] / views * 100; });
         selectedServices.views = true;
       } else selectedServices[key] = !metricEnabled(key);
-      activeSeries = key;
+      if (metricEnabled(key)) activeSeries = key;
+      else if (activeSeries === key) activeSeries = metrics.find(metric => metricEnabled(metric.key))?.key || "views";
       renderCurve(true);
       document.querySelector('[data-preview-metric="' + key + '"]')?.focus();
     });
