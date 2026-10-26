@@ -47,7 +47,7 @@ METRIC_LIMITS = {
     "shares": (10, 100000),
     "reposts": (1, 1000000),
 }
-CURVE_SERIES = ("views", "likes", "comments", "saves", "shares")
+CURVE_SERIES = ("views", "likes", "comments", "saves", "shares", "reposts")
 
 
 def telegram_webhook_secret(token):
