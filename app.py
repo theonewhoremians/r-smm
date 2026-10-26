@@ -45,7 +45,7 @@ METRIC_LIMITS = {
     "comments": (1, 100000),
     "saves": (10, 500000),
     "shares": (10, 100000),
-    "reposts": (10, 1000000),
+    "reposts": (1, 1000000),
 }
 CURVE_SERIES = ("views", "likes", "saves", "shares")
 
