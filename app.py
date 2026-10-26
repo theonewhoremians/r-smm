@@ -381,16 +381,10 @@ def valid_order_settings(settings, views):
         return False
     trajectory_mode = settings.get("trajectory_mode", "steady")
     duration_hours = settings.get("trajectory_duration_hours", 24)
-    trajectory_anomalies = settings.get("trajectory_anomalies", False)
     if (not isinstance(trajectory_mode, str) or trajectory_mode not in {"custom", "explosive", "steady", "slow"}
             or isinstance(duration_hours, bool) or not isinstance(duration_hours, (int, float))
-            or not 1 <= duration_hours <= 336 or not isinstance(trajectory_anomalies, bool)):
+            or not 1 <= duration_hours <= 336):
         return False
-    if "trajectory_start_time" in settings:
-        start_time = settings["trajectory_start_time"]
-        if (not isinstance(start_time, str) or len(start_time) > 32
-                or (start_time and not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}", start_time))):
-            return False
     seen = set()
     for item in items:
         if not isinstance(item, dict):
@@ -435,7 +429,7 @@ def valid_order_settings(settings, views):
             last_x = point[0]
         if points[0][0] != 0 or points[-1][0] != 1:
             return False
-    return isinstance(settings.get("drawing_enabled"), bool)
+    return "drawing_enabled" not in settings or isinstance(settings.get("drawing_enabled"), bool)
 
 
 def order_amount_micros(settings, platform):
@@ -484,8 +478,7 @@ def api_order_payload(data):
                         "interval_minutes": interval, "delivery_time_hours": delivery_hours})
     return {"platform": data.get("platform"), "post_url": data.get("post_url"), "views": views,
             "settings": {"metrics": metrics,
-                         "curves": {kind: [[0, 0], [1, 1]] for kind in CURVE_SERIES},
-                         "drawing_enabled": False}}
+                         "curves": {kind: [[0, 0], [1, 1]] for kind in CURVE_SERIES}}}
 
 
 class App(BaseHTTPRequestHandler):

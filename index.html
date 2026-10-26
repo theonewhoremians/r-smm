@@ -168,13 +168,8 @@
     .delivery-fields input{width:140px;height:42px;margin:0;border:1px solid #d9e6de;border-radius:10px;background:#fff;padding:0 12px;color:#27342d;font-size:14px}
     .delivery-fields .interval-unit{color:#707781;font-size:12px;font-weight:600}
     .growth-card{padding-bottom:20px}
-    .growth-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-    .growth-heading{display:flex;align-items:center;gap:12px}
+    .growth-heading{display:flex;align-items:center;gap:12px;margin-bottom:14px}
     .growth-heading h2,.preview-heading h2{font-size:21px;letter-spacing:-.04em;color:#171923;margin:0}
-    .draw-badge{border:0;border-radius:99px;background:#0cba80;color:white;padding:6px 12px;font-size:11px;font-weight:750}
-    .draw-control{display:flex;align-items:center;gap:12px;color:#626775;font-size:14px}
-    .draw-control .switch{transform:scale(.96);transform-origin:right center}
-    .growth-instructions{color:#636775;font-size:14px;margin:10px 0 22px}
     .series-tabs{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:17px}
     .series-tab{display:flex;align-items:center;gap:9px;border:1px solid #ddd9d6;border-radius:99px;background:#fff;padding:10px 15px;color:#5f6571;font-size:13px;font-weight:700}
     .series-tab small{min-width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#f0eff2;color:#56606c;font-size:10px}
@@ -182,25 +177,13 @@
     .series-tab[data-series="likes"].active{outline-color:#4dcc8b;background:#e9fff2;color:#22ae68}
     .series-tab[data-series="saves"].active{outline-color:#f5b82e;background:#fff8e4;color:#cd9100}
     .series-tab[data-series="shares"].active{outline-color:#aa91ff;background:#f5f0ff;color:#8a70e9}
-    .growth-chart{height:360px;position:relative;overflow:hidden;border:1px solid #73dcb8;border-radius:17px;background-color:#f0f7f3;background-image:linear-gradient(#dce9e31f 1px,transparent 1px),linear-gradient(90deg,#dce9e31f 1px,transparent 1px);background-size:14px 14px;touch-action:none}
-    .growth-chart svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;cursor:crosshair}
-    .growth-chart.drawing-off svg{cursor:default}
+    .growth-chart{height:360px;position:relative;overflow:hidden;border:1px solid #73dcb8;border-radius:17px;background-color:#f0f7f3;background-image:linear-gradient(#dce9e31f 1px,transparent 1px),linear-gradient(90deg,#dce9e31f 1px,transparent 1px);background-size:14px 14px}
+    .growth-chart svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;cursor:default}
     .graph-baseline{fill:none;stroke:#ba9dbc;stroke-width:7;stroke-linecap:round;opacity:.72;pointer-events:none}
     .graph-line{fill:none;stroke:#5ba1f7;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;filter:drop-shadow(0 3px 4px #4a92dc24)}
-    .graph-point{fill:#fff;stroke:#5ba1f7;stroke-width:4;cursor:grab;touch-action:none}
-    .graph-point:focus-visible{stroke-width:7;outline:none}
-    .growth-chart.drawing-off .graph-point{cursor:default}
-    .graph-point:active{cursor:grabbing}
     .graph-label{position:absolute;z-index:1;color:#69717b;font-size:9px;pointer-events:none}
     .graph-label.y-top{left:5px;top:6px}.graph-label.y-middle{left:5px;top:49%}.graph-label.x-middle{left:49%;bottom:5px}.graph-label.x-end{right:5px;bottom:5px}
-    .curve-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:17px}
-    .curve-presets{display:flex;flex-wrap:wrap;gap:8px}
-    .curve-preset,.curve-reset{border:1px solid #dedbd8;border-radius:99px;background:white;padding:10px 14px;color:#292d37;font-size:12px;font-weight:650}
-    .curve-preset.active{border-color:#0cba80;box-shadow:0 0 0 2px #0cba8020}
-    .curve-reset{white-space:nowrap}
     .curve-legend{display:flex;flex-wrap:wrap;gap:18px;border-top:1px solid #e5e1df;margin-top:15px;padding-top:14px;color:#30333d;font-size:13px}
-    .growth-card.is-collapsed{padding-bottom:16px}
-    .growth-card.is-collapsed .growth-instructions,.growth-card.is-collapsed .series-tabs,.growth-card.is-collapsed .growth-chart,.growth-card.is-collapsed .curve-actions,.growth-card.is-collapsed .curve-legend{display:none}
     .legend-item{display:flex;align-items:center;gap:7px}
     .legend-dot{width:10px;height:10px;border-radius:50%}
     .legend-dot.views{background:#5ba1f7}.legend-dot.likes{background:#42d780}.legend-dot.saves{background:#ffbd29}.legend-dot.shares{background:#a385ff}
@@ -352,15 +335,11 @@
     .delivery-fields label{color:#66563c}
     .delivery-fields input{border-color:#ded1bc;background:#fffdf8;color:#211e18}
     .delivery-fields .interval-unit{color:#71695d}
-    .draw-badge{background:#191713;color:#f4ecdc}
     .series-tab{border-color:#ded5c6;background:#fbf8f2;color:#5f584d}
     .series-tab.active,.series-tab[data-series="likes"].active,.series-tab[data-series="saves"].active,.series-tab[data-series="shares"].active{outline-color:#b8a17a;border-color:#191713;background:#191713;color:#f4ecdc}
     .series-tab.active small{background:#d9c8a7;color:#242016}
     .growth-chart{border-color:#c7b48f;background-color:#f7f4ec;background-image:linear-gradient(#d4c8b51f 1px,transparent 1px),linear-gradient(90deg,#d4c8b51f 1px,transparent 1px)}
     .graph-baseline{stroke:#b9a47f}
-    .graph-point{fill:#fffdf8}
-    .curve-preset,.curve-reset{border-color:#ddd4c6;background:#fffdf8;color:#342e24}
-    .curve-preset.active{border-color:#9c8358;box-shadow:0 0 0 2px #9c83581c}
     .legend-dot.views{background:#191713}.legend-dot.likes{background:#a58c63}.legend-dot.saves{background:#d2c2a5}.legend-dot.shares{background:#776344}
     .preview-metric,.per-type-box{border-color:#ded5c6;background:#f7f4ed}
     .preview-metric strong,.per-type-box strong,.per-type-rows b{color:#211e18}
@@ -523,8 +502,7 @@
       .wallet-overview{gap:12px;min-width:0}
       .wallet-overview strong,.record-top>strong:last-child{overflow-wrap:anywhere}
       .record-top>div{min-width:0}
-      .growth-heading,.curve-actions{flex-wrap:wrap}
-      .curve-presets{flex:1 1 200px;min-width:0}
+      .growth-heading{flex-wrap:wrap}
       input,.auth-select,.deposit-form select{font-size:16px}
     }
     @media(max-width:430px){
@@ -532,7 +510,6 @@
       .metric-name-wrap{grid-column:1/-1}
       .metric-amount{grid-column:1;width:100%;text-align:left}
       .metric-top .switch{grid-column:2;grid-row:2;justify-self:end}
-      .curve-reset{margin-left:auto}
     }
 
     @media(max-width:760px){
@@ -550,16 +527,11 @@
     /* Trajectory simulator graph theme */
     .growth-card{background:radial-gradient(520px 260px at 8% -20%,#d9b4762e,transparent 62%),radial-gradient(480px 240px at 100% 0,#93a9e828,transparent 62%),linear-gradient(145deg,#08090b,#11141a);border-color:#ffffff1c;box-shadow:0 14px 36px #00000042,inset 0 1px 0 #ffffff1c}
     .growth-card .growth-heading h2{color:#f3f0ea}
-    .growth-card .growth-instructions,.growth-card .draw-control{color:#f3f0eaaa}
-    .growth-card .draw-badge{background:linear-gradient(135deg,#d9b476,#e08a94);color:#171613;box-shadow:0 4px 16px #d9b47638}
-    .growth-card .switch-track{background:#ffffff24;border:1px solid #ffffff22}
-    .growth-card .switch input:checked + .switch-track{background:linear-gradient(135deg,#e08a94,#d9b476)}
     .growth-card .growth-chart{border-color:#ffffff1c;background-color:#090b0e;background-image:radial-gradient(440px 230px at 15% 0,#d9b4761f,transparent 68%),radial-gradient(420px 240px at 100% 100%,#93a9e81c,transparent 68%),linear-gradient(#ffffff0c 1px,transparent 1px),linear-gradient(90deg,#ffffff0c 1px,transparent 1px);background-size:auto,auto,40px 40px,40px 40px;box-shadow:inset 0 1px 0 #ffffff12}
     .growth-card .graph-baseline{stroke:#d9b476;opacity:.55}
     .growth-card .graph-line{stroke-width:4;filter:drop-shadow(0 4px 8px #00000080)}
-    .growth-card .graph-point{fill:#0d1013;filter:drop-shadow(0 2px 4px #00000090)}
     .growth-card .graph-label{color:#f3f0ea80;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-    .growth-card .series-tab,.growth-card .curve-preset,.growth-card .curve-reset{border-color:#ffffff1c;background:#ffffff0b;color:#f3f0eacc}
+    .growth-card .series-tab{border-color:#ffffff1c;background:#ffffff0b;color:#f3f0eacc}
     .growth-card .series-tab.active{outline:none;color:#fffaf0}
     .growth-card .series-tab[data-series="views"].active{border-color:#d9cfc080;background:#d9cfc026}
     .growth-card .series-tab[data-series="likes"].active{border-color:#e08a9480;background:#e08a9426}
@@ -567,10 +539,9 @@
     .growth-card .series-tab[data-series="shares"].active{border-color:#d9b47680;background:#d9b47626}
     .growth-card .series-tab[data-series="saves"].active{border-color:#8ecfa480;background:#8ecfa426}
     .growth-card .series-tab.active small{background:#f3f0ead9;color:#191713}
-    .growth-card .curve-preset.active{border-color:#d9b476;box-shadow:0 0 0 2px #d9b47624}
     .growth-card .curve-legend{border-color:#ffffff1c;color:#f3f0eacc}
     .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
-    .growth-card .trajectory-controls{display:grid;grid-template-columns:minmax(230px,1.25fr) minmax(110px,.55fr) minmax(190px,1fr) auto;align-items:end;gap:12px;margin:0 0 10px;padding:14px;border:1px solid #ffffff1c;border-radius:16px;background:linear-gradient(135deg,#ffffff0b,#ffffff04)}
+    .growth-card .trajectory-controls{display:grid;grid-template-columns:minmax(230px,1.25fr) minmax(110px,.55fr) auto;align-items:end;gap:12px;margin:0 0 10px;padding:14px;border:1px solid #ffffff1c;border-radius:16px;background:linear-gradient(135deg,#ffffff0b,#ffffff04)}
     .growth-card .trajectory-mode-field,.growth-card .trajectory-field{display:grid;gap:7px;min-width:0}
     .growth-card .trajectory-field-label,.growth-card .trajectory-field{color:#f3f0eab0;font-size:11px;font-weight:650;letter-spacing:.04em}
     .growth-card .trajectory-modes{display:flex;gap:6px}
@@ -580,25 +551,12 @@
     .growth-card .trajectory-field input{width:100%;min-width:0;height:38px;padding:0 10px;border:1px solid #ffffff20;border-radius:10px;background:#080b10;color:#f3f0ea;font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color-scheme:dark}
     .growth-card .trajectory-input-wrap small{color:#f3f0ea77;font-size:10px}
     .growth-card .trajectory-generate{height:38px;padding:0 14px;border:1px solid #d9b47670;border-radius:11px;background:linear-gradient(110deg,#d9b476,#e08a94);color:#171613;font-size:11px;font-weight:750;white-space:nowrap;box-shadow:0 5px 16px #d9b47622}
-    .growth-card .trajectory-anomaly{grid-column:1/-1;display:flex;align-items:center;gap:8px;color:#f3f0ea9c;font-size:11px}
-    .growth-card .trajectory-anomaly input{accent-color:#e08a94}
     .growth-card .trajectory-note{margin:8px 2px 14px;color:#f3f0ea70;font-size:10px;line-height:1.45}
     .growth-card .trajectory-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 12px}
     .growth-card .trajectory-stat{min-width:0;padding:12px 13px;border:1px solid #ffffff14;border-radius:13px;background:#ffffff06}
     .growth-card .trajectory-stat-label{margin-bottom:6px;color:#f3f0ea70;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
     .growth-card .trajectory-stat-value{color:#f3f0ea;font:600 17px ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap}
     .growth-card .trajectory-stat-sub{margin-top:4px;color:#f3f0ea7a;font-size:10px;line-height:1.35}
-    .growth-card .trajectory-ideal{margin:0 0 16px;padding:14px;border:1px solid #ffffff14;border-radius:14px;background:#ffffff05}
-    .growth-card .trajectory-ideal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
-    .growth-card .trajectory-ideal-box{padding:10px 12px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff04}
-    .growth-card .trajectory-ideal-label{margin-bottom:5px;color:#f3f0ea72;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
-    .growth-card .trajectory-ideal-value{font:600 14px ui-monospace,SFMono-Regular,Consolas,monospace}
-    .growth-card .trajectory-ideal-value.fast{color:#93a9e8}.growth-card .trajectory-ideal-value.mid{color:#8ecfa4}.growth-card .trajectory-ideal-value.slow{color:#d9b476}
-    .growth-card .trajectory-gauge{position:relative;height:8px;margin:13px 3px 7px;border:1px solid #ffffff18;border-radius:99px;background:#0006}
-    .growth-card .trajectory-gauge-range{position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#8ecfa47a,#93a9e87a)}
-    .growth-card .trajectory-gauge-marker{position:absolute;top:50%;width:13px;height:13px;border:2px solid #08090b;border-radius:50%;background:#f3f0ea;box-shadow:0 0 0 1px #f3f0ea8a;transform:translate(-50%,-50%)}
-    .growth-card .trajectory-gauge-labels{display:flex;justify-content:space-between;color:#f3f0ea70;font:9px ui-monospace,SFMono-Regular,Consolas,monospace}
-    .growth-card .trajectory-verdict{margin:10px 0 0;color:#f3f0ea9c;font-size:10px;line-height:1.5}
     .growth-card .trajectory-subhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:17px 2px 9px}
     .growth-card .trajectory-subhead h3{margin:0;color:#f3f0ea;font-size:12px}
     .growth-card .trajectory-subhead span{color:#f3f0ea70;font-size:9px}
@@ -619,8 +577,8 @@
     .growth-card .trajectory-table-scroll th:first-child,.growth-card .trajectory-table-scroll td:first-child,.growth-card .trajectory-table-scroll th:nth-child(2),.growth-card .trajectory-table-scroll td:nth-child(2){text-align:left}
     .growth-card .trajectory-table-scroll tr:last-child td{border-bottom:0}
     .growth-card .signal-organic{color:#8ecfa4}.growth-card .signal-watch{color:#d9b476}.growth-card .signal-anomaly{color:#e08a94}
-    @media(max-width:760px){.growth-card .trajectory-controls{grid-template-columns:minmax(0,1fr) minmax(125px,.7fr)}.growth-card .trajectory-mode-field{grid-column:1/-1}.growth-card .trajectory-field[for="trajectory-start"]{grid-column:1/-1}.growth-card .trajectory-generate{justify-self:start}.growth-card .trajectory-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.growth-card .trajectory-ideal-grid{grid-template-columns:1fr}.growth-card .trajectory-ideal-box{display:flex;align-items:center;justify-content:space-between;gap:12px}.growth-card .trajectory-ideal-label{margin:0}}
-    @media(max-width:430px){.growth-card .trajectory-controls{grid-template-columns:1fr}.growth-card .trajectory-field[for="trajectory-start"],.growth-card .trajectory-mode-field{grid-column:auto}.growth-card .trajectory-modes{gap:4px}.growth-card .trajectory-mode{padding:9px 5px;font-size:10px}.growth-card .trajectory-anomaly{grid-column:auto}.growth-card .trajectory-generate{width:100%}.growth-card .trajectory-stat{padding:10px}.growth-card .trajectory-stat-value{font-size:14px}.growth-card .trajectory-subhead{align-items:flex-start;flex-direction:column;gap:4px}}
+    @media(max-width:760px){.growth-card .trajectory-controls{grid-template-columns:minmax(0,1fr) minmax(125px,.7fr)}.growth-card .trajectory-mode-field{grid-column:1/-1}.growth-card .trajectory-generate{justify-self:start}.growth-card .trajectory-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:430px){.growth-card .trajectory-controls{grid-template-columns:1fr}.growth-card .trajectory-mode-field{grid-column:auto}.growth-card .trajectory-modes{gap:4px}.growth-card .trajectory-mode{padding:9px 5px;font-size:10px}.growth-card .trajectory-generate{width:100%}.growth-card .trajectory-stat{padding:10px}.growth-card .trajectory-stat-value{font-size:14px}.growth-card .trajectory-subhead{align-items:flex-start;flex-direction:column;gap:4px}}
     .metric-list{gap:24px}
     .metric-card{transition:padding .18s ease,border-color .18s ease,box-shadow .18s ease}
     .metric-card.is-collapsed{padding:14px 18px;box-shadow:none;background:#f7f4ed}
@@ -816,9 +774,6 @@
       border-color:rgba(255,255,255,.12);box-shadow:0 14px 36px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.1)
     }
     .growth-card .growth-heading h2{color:#f3f0ea}
-    .growth-card .growth-instructions,.growth-card .draw-control{color:rgba(243,240,234,.68)}
-    .growth-card .draw-badge{color:#171613;background:linear-gradient(110deg,#d9b476,#e08a94)}
-    .growth-card .switch input:checked + .switch-track{background:linear-gradient(100deg,#e08a94,#d9b476)}
     .growth-card .growth-chart{
       border-color:rgba(255,255,255,.12);
       background-color:#090b0e;
@@ -827,9 +782,8 @@
     }
     .growth-card .graph-baseline{stroke:#d9b476;opacity:.55}
     .growth-card .graph-line{stroke:#d9cfc0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
-    .growth-card .graph-point{fill:#0d1013;stroke:#d9cfc0}
     .growth-card .graph-label{color:rgba(243,240,234,.52)}
-    .growth-card .series-tab,.growth-card .curve-preset,.growth-card .curve-reset{color:#d0d7e9;background:rgba(255,255,255,.045);border-color:rgba(207,220,255,.15)}
+    .growth-card .series-tab{color:#d0d7e9;background:rgba(255,255,255,.045);border-color:rgba(207,220,255,.15)}
     .growth-card .series-tab.active{outline:none;color:#fffaf0}
     .growth-card .series-tab[data-series="views"].active{border-color:#d9cfc080;background:#d9cfc026}
     .growth-card .series-tab[data-series="likes"].active{border-color:#e08a9480;background:#e08a9426}
@@ -837,7 +791,6 @@
     .growth-card .series-tab[data-series="shares"].active{border-color:#d9b47680;background:#d9b47626}
     .growth-card .series-tab[data-series="saves"].active{border-color:#8ecfa480;background:#8ecfa426}
     .growth-card .series-tab.active small{color:#191713;background:#f3f0ead9}
-    .growth-card .curve-preset.active{border-color:#d9b476;box-shadow:0 0 0 2px rgba(217,180,118,.14)}
     .growth-card .curve-legend{border-color:rgba(207,220,255,.15);color:#d5dcef}
     .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
     .preview-subtitle,.order-rate,.order-count{color:#a8b2c8}
@@ -1059,15 +1012,7 @@
               <div class="per-type-box"><strong>▦ &nbsp;Customization</strong><div class="per-type-rows" id="per-type-rows"></div></div>
             </section>
             <section class="form-card growth-card" aria-labelledby="growth-heading">
-              <div class="growth-top">
-                <div>
-                  <div class="growth-heading"><span aria-hidden="true">✎</span><h2 id="growth-heading">Draw Your Growth Curve</h2><span class="draw-badge" id="draw-badge">Draw Mode ON</span></div>
-                  <p class="growth-instructions">Click to add points • Drag to adjust • Double-click to remove</p>
-                </div>
-                <label class="draw-control">Drawing
-                  <span class="switch"><input id="drawing-toggle" type="checkbox" checked aria-label="Enable curve drawing"><span class="switch-track"></span></span>
-                </label>
-              </div>
+              <div class="growth-heading"><h2 id="growth-heading">Reel Growth Trajectory</h2></div>
               <div class="trajectory-controls">
                 <div class="trajectory-mode-field">
                   <span class="trajectory-field-label">Growth mode</span>
@@ -1080,15 +1025,10 @@
                 <label class="trajectory-field" for="trajectory-duration">Duration
                   <span class="trajectory-input-wrap"><input id="trajectory-duration" type="number" min="1" max="336" step="0.5" value="24"><small>hours</small></span>
                 </label>
-                <label class="trajectory-field" for="trajectory-start">Trajectory start
-                  <input id="trajectory-start" type="datetime-local" step="60">
-                </label>
                 <button class="trajectory-generate" id="generate-trajectory" type="button">Generate trajectory</button>
-                <label class="trajectory-anomaly"><input id="trajectory-anomalies" type="checkbox"><span>Inject bot-like anomalies</span></label>
               </div>
               <p class="trajectory-note">Uses Base Views Quantity and 30-minute intervals. Authenticity scores are heuristic, not a platform diagnosis. Estimates do not change your selected order quantities or price.</p>
               <div class="trajectory-stats" id="trajectory-stats" aria-live="polite"></div>
-              <div class="trajectory-ideal" id="trajectory-ideal"></div>
               <div class="series-tabs" role="group" aria-label="Choose a curve">
                 <button class="series-tab active" type="button" data-series="views" aria-pressed="true"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg> Views <small>5</small></button>
                 <button class="series-tab" type="button" data-series="likes" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg> Likes <small>2</small></button>
@@ -1099,20 +1039,10 @@
               <div class="growth-chart" id="growth-chart">
                 <span class="graph-label y-top" id="graph-y-top">10K</span><span class="graph-label y-middle" id="graph-y-middle">5K</span>
                 <span class="graph-label x-middle" id="graph-x-middle">12h</span><span class="graph-label x-end" id="graph-x-end">24h</span>
-                <svg id="growth-svg" viewBox="0 0 1000 320" preserveAspectRatio="none" role="application" aria-label="Editable growth curve">
+                <svg id="growth-svg" viewBox="0 0 1000 320" preserveAspectRatio="none" role="img" aria-label="Automatically generated growth curve">
                   <path class="graph-baseline" d="M0 320 H1000"></path>
                   <path class="graph-line" id="graph-line" d=""></path>
-                  <g id="graph-points"></g>
                 </svg>
-              </div>
-              <div class="curve-actions">
-                <div class="curve-presets" role="group" aria-label="Growth curve presets">
-                  <button class="curve-preset" type="button" data-preset="viral">🚀 Viral Spike</button>
-                  <button class="curve-preset" type="button" data-preset="steady">📈 Steady Growth</button>
-                  <button class="curve-preset" type="button" data-preset="s-curve">🌊 S-Curve</button>
-                  <button class="curve-preset active" type="button" data-preset="double-peak">🏔 Double Peak</button>
-                </div>
-                <button class="curve-reset" id="reset-curve" type="button">↶ &nbsp;Reset</button>
               </div>
               <div class="curve-legend" id="curve-legend"></div>
               <section class="trajectory-pulse-section" aria-labelledby="trajectory-pulse-heading">
@@ -1276,11 +1206,8 @@
       steady:{likes:[.05,.08],comments:[.003,.006],shares:[.005,.010],saves:[.010,.020]},
       slow:{likes:[.06,.09],comments:[.004,.008],shares:[.003,.008],saves:[.015,.030]}
     };
-    const suppressedRatioBands = {likes:[.002,.008],comments:[.00005,.0003],shares:[.0005,.002],saves:[.0002,.001]};
-    const idealGrowthAnchors = [[1000,4],[10000,12],[100000,48],[1000000,168],[10000000,480],[100000000,1200]];
     const graphSvg = document.querySelector("#growth-svg");
     const graphLine = document.querySelector("#graph-line");
-    const graphPoints = document.querySelector("#graph-points");
     let mode = "login";
     let toastTimer;
     let walletRequestVersion = 0;
@@ -1298,13 +1225,7 @@
       USDT:{network:"TRC20", address:"TSi3EAdmxqw1NsDHRpDJYJBK2gkntjGUzE"}
     };
     let activeSeries = "views";
-    let draggingPoint = null;
-    const activePreset = {views:"steady",likes:"steady",comments:"steady",saves:"steady",shares:"steady"};
     let trajectoryMode = "explosive";
-    let lastGeneratedMode = "explosive";
-    let trajectoryRows = [];
-    let trajectoryAnomalyIndexes = new Set();
-    let lastGeneratedCurves = JSON.parse(JSON.stringify(curveDefaults));
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
       '<div class="per-type-row"><span class="per-type-row-heading"><span class="per-type-name">' + metric.symbol + metric.name +
@@ -1442,11 +1363,11 @@
         const selectedTypes = new Set(active.map(item => item.type));
         const curves = settings.curves && typeof settings.curves === "object" ? Object.entries(settings.curves).filter(([type]) => selectedTypes.has(type)) : [];
         const curveHtml = curves.length ? '<p>Growth curves: ' + curves.map(([type, points]) => escapeHtml(type) + ' (' + (Array.isArray(points) ? points.length : 0) + ' points)').join(" · ") + '</p>' : "";
-        const curveDetails = curveHtml ? '<details class="order-details"><summary>Growth curve settings</summary>' + curveHtml + '<p>Curve drawing: ' + (settings.drawing_enabled ? "on" : "off") + '</p></details>' : "";
-        const modeNames = {explosive:"Explosive",steady:"Steady",slow:"Slow burn",custom:"Custom"};
+        const curveDetails = curveHtml ? '<details class="order-details"><summary>Growth curve settings</summary>' + curveHtml + '</details>' : "";
+        const modeNames = {explosive:"Explosive",steady:"Steady",slow:"Slow burn"};
         const trajectoryInfo = modeNames[settings.trajectory_mode] ?
           '<p>Trajectory model: ' + modeNames[settings.trajectory_mode] + ' · ' + Number(settings.trajectory_duration_hours || 24).toLocaleString() +
-          ' hours' + (settings.trajectory_anomalies ? ' · anomaly simulation on' : '') + '</p>' : "";
+          ' hours</p>' : "";
         return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div>' +
           (deliveryHtml ? '<div class="order-delivery">' + deliveryHtml + '</div>' : "") + curveDetails + trajectoryInfo;
       } catch (_) { return '<p>Order settings are unavailable.</p>'; }
@@ -1813,31 +1734,15 @@
       if (hours < 48) return hours.toFixed(1) + "h";
       return (hours / 24).toFixed(1) + "d";
     }
-    function localDateTimeValue(date) {
-      return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    }
-    function trajectoryStartDate() {
-      const value = document.querySelector("#trajectory-start").value;
-      const date = value ? new Date(value) : new Date();
-      return Number.isNaN(date.getTime()) ? new Date() : date;
-    }
     function trajectoryDurationHours() {
       const input = document.querySelector("#trajectory-duration");
       const duration = Math.max(1, Math.min(336, Number(input.value) || 24));
       input.value = duration;
       return duration;
     }
-    function generateTrajectoryRows(totalViews, mode, durationHours, injectAnomalies, startDate) {
+    function generateTrajectoryRows(totalViews, mode, durationHours, startDate) {
       const steps = Math.max(2, Math.round(durationHours * 2));
-      let weights = trajectoryWeights(mode, steps).map(weight => weight * trajectoryRandomRange(.86, 1.16));
-      const anomalyIndexes = new Set();
-      if (injectAnomalies) {
-        const anomalyCount = Math.max(1, Math.round(steps * .13));
-        while (anomalyIndexes.size < anomalyCount) {
-          anomalyIndexes.add(1 + Math.floor(Math.random() * (steps - 1)));
-        }
-        anomalyIndexes.forEach(index => { weights[index] *= trajectoryRandomRange(2.6, 4.8); });
-      }
+      const weights = trajectoryWeights(mode, steps).map(weight => weight * trajectoryRandomRange(.86, 1.16));
       const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
       const rawDeltas = weights.map(weight => weight / weightTotal * totalViews);
       const deltas = rawDeltas.map(Math.round);
@@ -1862,13 +1767,11 @@
       let cumulative = 0;
       deltas.forEach((delta, index) => {
         cumulative += delta;
-        const isAnomaly = anomalyIndexes.has(index);
-        const selectedBands = isAnomaly ? suppressedRatioBands : bands;
         const metricsForRow = {
-          likes:Math.round(delta * trajectoryRandomRange(...selectedBands.likes)),
-          comments:Math.round(delta * trajectoryRandomRange(...selectedBands.comments)),
-          shares:Math.round(delta * trajectoryRandomRange(...selectedBands.shares)),
-          saves:Math.round(delta * trajectoryRandomRange(...selectedBands.saves))
+          likes:Math.round(delta * trajectoryRandomRange(...bands.likes)),
+          comments:Math.round(delta * trajectoryRandomRange(...bands.comments)),
+          shares:Math.round(delta * trajectoryRandomRange(...bands.shares)),
+          saves:Math.round(delta * trajectoryRandomRange(...bands.saves))
         };
         const score = trajectoryScore(delta, metricsForRow, expectedMid, rolling);
         const elapsedMinutes = (index + 1) * 30;
@@ -1886,41 +1789,11 @@
           score:score.score,
           label:score.label,
           className:score.className,
-          isAnomaly
         });
       });
       return rows;
     }
-    function idealMidHours(totalViews) {
-      const viewTarget = Math.max(totalViews, 100);
-      const logViews = Math.log10(viewTarget);
-      const points = idealGrowthAnchors.map(anchor => [Math.log10(anchor[0]), Math.log10(anchor[1])]);
-      if (logViews <= points[0][0]) return Math.pow(10, points[0][1]);
-      if (logViews >= points[points.length - 1][0]) return Math.pow(10, points[points.length - 1][1]);
-      for (let index = 0; index < points.length - 1; index += 1) {
-        if (logViews >= points[index][0] && logViews <= points[index + 1][0]) {
-          const fraction = (logViews - points[index][0]) / (points[index + 1][0] - points[index][0]);
-          const logMid = points[index][1] + fraction * (points[index + 1][1] - points[index][1]);
-          return Math.pow(10, logMid);
-        }
-      }
-      return Math.pow(10, points[points.length - 1][1]);
-    }
-    function idealTrajectoryWindow(totalViews, mode) {
-      let midpoint = idealMidHours(totalViews);
-      let modeShift = 1;
-      let spread = [.55, 1.75];
-      if (mode === "explosive") {
-        modeShift = .45;
-        spread = [.5, 1.6];
-      } else if (mode === "slow") {
-        modeShift = 1.9;
-        spread = [.6, 1.8];
-      }
-      midpoint *= modeShift;
-      return {min:midpoint * spread[0], mid:midpoint, max:midpoint * spread[1]};
-    }
-    function renderTrajectoryStats(rows, totalViews, mode, customCurve) {
+    function renderTrajectoryStats(rows, totalViews) {
       const totalEngagement = rows.reduce((sum, row) => sum + row.likes + row.comments + row.shares + row.saves, 0);
       const peak = rows.reduce((maximum, row) => row.delta > maximum.delta ? row : maximum, rows[0]);
       const averageScore = Math.round(rows.reduce((sum, row) => sum + row.score, 0) / rows.length);
@@ -1936,32 +1809,6 @@
         '<article class="trajectory-stat"><div class="trajectory-stat-label">' + stat[0] +
         '</div><div class="trajectory-stat-value">' + stat[1] + '</div><div class="trajectory-stat-sub">' + stat[2] + '</div></article>'
       ).join("");
-      renderTrajectoryIdeal(totalViews, mode, customCurve);
-    }
-    function renderTrajectoryIdeal(totalViews, mode, customCurve) {
-      const duration = trajectoryDurationHours();
-      const window = idealTrajectoryWindow(totalViews, mode);
-      const gaugeMax = Math.max(window.max * 1.25, duration * 1.15);
-      const rangeLeft = window.min / gaugeMax * 100;
-      const rangeWidth = (window.max - window.min) / gaugeMax * 100;
-      const markerLeft = Math.min(100, duration / gaugeMax * 100);
-      let verdict;
-      if (duration < window.min * .75) {
-        verdict = "<strong>Faster than the typical organic window.</strong> This duration is quicker than the usual " + trajectoryHours(window.min) + "–" + trajectoryHours(window.max) + " range.";
-      } else if (duration > window.max * 1.3) {
-        verdict = "<strong>Slower than the typical organic window.</strong> This duration is longer than the usual " + trajectoryHours(window.min) + "–" + trajectoryHours(window.max) + " range.";
-      } else {
-        verdict = "<strong>Within the typical organic window.</strong> This duration sits inside the usual " + trajectoryHours(window.min) + "–" + trajectoryHours(window.max) + " range.";
-      }
-      const modeName = mode === "explosive" ? "Explosive" : mode === "slow" ? "Slow burn" : "Steady";
-      document.querySelector("#trajectory-ideal").innerHTML =
-        '<div class="trajectory-ideal-grid"><div class="trajectory-ideal-box"><span class="trajectory-ideal-label">Typical fastest</span><span class="trajectory-ideal-value fast">' + trajectoryHours(window.min) +
-        '</span></div><div class="trajectory-ideal-box"><span class="trajectory-ideal-label">Typical midpoint</span><span class="trajectory-ideal-value mid">' + trajectoryHours(window.mid) +
-        '</span></div><div class="trajectory-ideal-box"><span class="trajectory-ideal-label">Typical slowest</span><span class="trajectory-ideal-value slow">' + trajectoryHours(window.max) +
-        '</span></div></div><div class="trajectory-gauge"><span class="trajectory-gauge-range" style="left:' + rangeLeft +
-        '%;width:' + rangeWidth + '%"></span><i class="trajectory-gauge-marker" style="left:' + markerLeft + '%"></i></div><div class="trajectory-gauge-labels"><span>0h</span><span>' +
-        trajectoryHours(gaugeMax) + '</span></div><p class="trajectory-verdict">' + (customCurve ? "<strong>Custom drawn curve.</strong> " : "") +
-        verdict + ' <span>· ' + modeName + ' model</span></p>';
     }
     function renderTrajectoryPulse(rows) {
       const cells = rows.map(row => {
@@ -1977,7 +1824,7 @@
     function renderTrajectoryTable(rows) {
       document.querySelector("#trajectory-table-summary").textContent = "Interval breakdown · " + rows.length + " intervals at 30-minute resolution";
       document.querySelector("#trajectory-table-body").innerHTML = rows.map(row =>
-        '<tr><td>' + row.idx + (row.isAnomaly ? " · Anomaly" : "") + '</td><td>' + trajectoryClock(row.clock) +
+        '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) +
         '</td><td>' + row.elapsedLabel + '</td><td>+' + Math.round(row.delta).toLocaleString() +
         '</td><td>' + Math.round(row.cumulative).toLocaleString() + '</td><td>' + row.likes.toLocaleString() +
         '</td><td>' + row.comments.toLocaleString() + '</td><td>' + row.shares.toLocaleString() +
@@ -1985,65 +1832,11 @@
         '%</td><td class="signal-' + row.className + '">' + row.label + '</td></tr>'
       ).join("");
     }
-    function renderTrajectoryReadouts(rows, totalViews, mode, customCurve) {
+    function renderTrajectoryReadouts(rows, totalViews) {
       if (!rows.length) return;
-      renderTrajectoryStats(rows, totalViews, mode, customCurve);
+      renderTrajectoryStats(rows, totalViews);
       renderTrajectoryPulse(rows);
       renderTrajectoryTable(rows);
-    }
-    function curveValueAt(series, time) {
-      const points = curves[series];
-      if (time <= points[0][0]) return points[0][1];
-      for (let index = 1; index < points.length; index += 1) {
-        if (time <= points[index][0]) {
-          const before = points[index - 1];
-          const after = points[index];
-          const fraction = (time - before[0]) / (after[0] - before[0]);
-          return before[1] + fraction * (after[1] - before[1]);
-        }
-      }
-      return points[points.length - 1][1];
-    }
-    function rowsFromCurves(totalViews, durationHours, startDate, mode) {
-      const steps = Math.max(2, Math.round(durationHours * 2));
-      const totals = {likes:metricQuantity("likes"),comments:metricQuantity("comments"),shares:metricQuantity("shares"),saves:metricQuantity("saves")};
-      const expectedMid = Object.values(trajectoryRatioBands[mode]).reduce((sum, band) => sum + trajectoryBandMid(band), 0);
-      const rolling = [];
-      const previousTotals = {views:0,likes:0,comments:0,shares:0,saves:0};
-      const rows = [];
-      for (let index = 0; index < steps; index += 1) {
-        const time = (index + 1) / steps;
-        const cumulativeViews = index === steps - 1 ? totalViews :
-          Math.min(totalViews, Math.max(previousTotals.views, Math.round(curveValueAt("views", time) * totalViews)));
-        const delta = cumulativeViews - previousTotals.views;
-        const metricsForRow = {};
-        ["likes","comments","shares","saves"].forEach(key => {
-          const cumulative = index === steps - 1 ? totals[key] :
-            Math.min(totals[key], Math.max(previousTotals[key], Math.round(curveValueAt(key, time) * totals[key])));
-          metricsForRow[key] = cumulative - previousTotals[key];
-          previousTotals[key] = cumulative;
-        });
-        const score = trajectoryScore(delta, metricsForRow, expectedMid, rolling);
-        previousTotals.views = cumulativeViews;
-        const elapsedMinutes = (index + 1) * 30;
-        rows.push({
-          idx:index + 1,
-          clock:new Date(startDate.getTime() + elapsedMinutes * 60000),
-          elapsedLabel:trajectoryElapsed(elapsedMinutes),
-          delta,
-          cumulative:cumulativeViews,
-          likes:metricsForRow.likes,
-          comments:metricsForRow.comments,
-          shares:metricsForRow.shares,
-          saves:metricsForRow.saves,
-          engRate:score.engagementRate,
-          score:score.score,
-          label:score.label,
-          className:score.className,
-          isAnomaly:trajectoryAnomalyIndexes.has(index)
-        });
-      }
-      return rows;
     }
     function curvePointsFromTrajectory(rows, series) {
       let cumulative = 0;
@@ -2073,44 +1866,16 @@
       });
     }
     function runTrajectorySimulation() {
-      const mode = trajectoryMode === "custom" ? lastGeneratedMode : trajectoryMode;
+      const mode = trajectoryMode;
       const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
       const duration = trajectoryDurationHours();
-      const rows = generateTrajectoryRows(totalViews, mode, duration, document.querySelector("#trajectory-anomalies").checked, trajectoryStartDate());
-      trajectoryRows = rows;
-      trajectoryAnomalyIndexes = new Set(rows.filter(row => row.isAnomaly).map(row => row.idx - 1));
-      lastGeneratedMode = mode;
-      trajectoryMode = mode;
+      const rows = generateTrajectoryRows(totalViews, mode, duration, new Date());
       ["views","likes","comments","saves","shares"].forEach(series => {
         curves[series] = curvePointsFromTrajectory(rows, series);
-        activePreset[series] = "";
       });
-      lastGeneratedCurves = JSON.parse(JSON.stringify(curves));
       setTrajectoryModeButtons();
       renderCurve();
-      renderTrajectoryReadouts(rows, totalViews, mode, false);
-    }
-    function updateTrajectoryFromDrawing() {
-      const mode = trajectoryMode === "custom" ? lastGeneratedMode : trajectoryMode;
-      const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
-      const duration = trajectoryDurationHours();
-      trajectoryMode = "custom";
-      lastGeneratedMode = mode;
-      trajectoryRows = rowsFromCurves(totalViews, duration, trajectoryStartDate(), mode);
-      setTrajectoryModeButtons();
-      renderTrajectoryReadouts(trajectoryRows, totalViews, mode, true);
-    }
-    function refreshTrajectoryFromControls() {
-      if (trajectoryMode === "custom") {
-        renderCurve();
-        updateTrajectoryFromDrawing();
-      } else runTrajectorySimulation();
-    }
-    const trajectoryStartInput = document.querySelector("#trajectory-start");
-    if (!trajectoryStartInput.value) {
-      const startNow = new Date();
-      startNow.setSeconds(0, 0);
-      trajectoryStartInput.value = localDateTimeValue(startNow);
+      renderTrajectoryReadouts(rows, totalViews);
     }
     function renderCurve() {
       const points = curves[activeSeries];
@@ -2131,139 +1896,28 @@
       }
       graphLine.setAttribute("d", path);
       graphLine.style.stroke = curveColors[activeSeries];
-      graphPoints.innerHTML = svgPoints.map((point, index) =>
-        '<circle class="graph-point" data-index="' + index + '" cx="' + point[0] + '" cy="' + point[1] +
-        '" r="7" style="stroke:' + curveColors[activeSeries] + '" tabindex="0" role="slider" aria-orientation="vertical" aria-label="Curve point ' +
-        (index + 1) + ', ' + trajectoryHours(curves[activeSeries][index][0] * duration) + ', ' +
-        Math.round(curves[activeSeries][index][1] * seriesTotal).toLocaleString() + ' cumulative ' + activeSeries +
-        '" title="' + trajectoryHours(curves[activeSeries][index][0] * duration) + ' · ' +
-        Math.round(curves[activeSeries][index][1] * seriesTotal).toLocaleString() + ' ' + activeSeries +
-        '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(curves[activeSeries][index][1] * 100) + '"></circle>'
-      ).join("");
       document.querySelectorAll(".series-tab").forEach(button => {
         const selected = button.dataset.series === activeSeries;
         button.classList.toggle("active", selected);
         button.setAttribute("aria-pressed", String(selected));
       });
-      document.querySelectorAll(".curve-preset").forEach(button => {
-        button.classList.toggle("active", button.dataset.preset === activePreset[activeSeries]);
-      });
       document.querySelector("#graph-y-top").textContent = trajectoryCount(seriesTotal);
       document.querySelector("#graph-y-middle").textContent = trajectoryCount(seriesTotal / 2);
       document.querySelector("#graph-x-middle").textContent = trajectoryHours(duration / 2);
       document.querySelector("#graph-x-end").textContent = trajectoryHours(duration);
-      graphSvg.setAttribute("aria-label", "Editable cumulative " + activeSeries + " growth curve over " + trajectoryHours(duration));
-      const drawingEnabled = document.querySelector("#drawing-toggle").checked;
-      document.querySelector("#growth-chart").classList.toggle("drawing-off", !drawingEnabled);
-      document.querySelector(".growth-card").classList.toggle("is-collapsed", !drawingEnabled);
-      document.querySelector("#draw-badge").textContent = drawingEnabled ? "Draw Mode ON" : "Draw Mode OFF";
+      graphSvg.setAttribute("aria-label", "Cumulative " + activeSeries + " growth curve over " + trajectoryHours(duration));
       renderSummary();
     }
-    function graphPosition(event) {
-      const rect = graphSvg.getBoundingClientRect();
-      return [Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)),
-              Math.min(1, Math.max(0, 1 - (event.clientY - rect.top) / rect.height))];
-    }
-    function changePoint(index, position, focus = false) {
-      const points = curves[activeSeries];
-      if (index === 0) position = [0, 0];
-      else if (index === points.length - 1) position = [1, 1];
-      else {
-        position[0] = Math.min(points[index + 1][0] - .01, Math.max(points[index - 1][0] + .01, position[0]));
-        position[1] = Math.min(points[index + 1][1], Math.max(points[index - 1][1], position[1]));
-      }
-      points[index] = [position[0], position[1]];
-      activePreset[activeSeries] = "";
-      renderCurve();
-      updateTrajectoryFromDrawing();
-      if (focus) graphPoints.querySelector('[data-index="' + index + '"]')?.focus();
-    }
-    function applyPreset(preset) {
-      const presets = {
-        viral:[[0,0],[.08,.35],[.2,.82],[.42,.94],[1,1]],
-        steady:[[0,0],[1,1]],
-        "s-curve":[[0,0],[.22,.08],[.5,.5],[.78,.92],[1,1]],
-        "double-peak":[[0,0],[.12,.25],[.28,.32],[.44,.68],[.58,.73],[.78,.92],[1,1]]
-      };
-      curves[activeSeries] = presets[preset].map(point => point.slice());
-      activePreset[activeSeries] = preset;
-      trajectoryMode = "custom";
-      renderCurve();
-      updateTrajectoryFromDrawing();
-    }
-    graphSvg.addEventListener("pointerdown", event => {
-      if (!document.querySelector("#drawing-toggle").checked) return;
-      const handle = event.target.closest(".graph-point");
-      if (handle) {
-        draggingPoint = Number(handle.dataset.index);
-        graphSvg.setPointerCapture(event.pointerId);
-        event.preventDefault();
-      } else if (event.target === graphSvg && curves[activeSeries].length < 20) {
-        const point = graphPosition(event);
-        point[0] = Math.min(.99, Math.max(.01, point[0]));
-        if (curves[activeSeries].some(existing => Math.abs(existing[0] - point[0]) < .02)) return;
-        const before = curves[activeSeries].filter(existing => existing[0] < point[0]).pop();
-        const after = curves[activeSeries].find(existing => existing[0] > point[0]);
-        point[1] = Math.min(after[1], Math.max(before[1], point[1]));
-        curves[activeSeries].push(point);
-        curves[activeSeries].sort((a, b) => a[0] - b[0]);
-        activePreset[activeSeries] = "";
-        trajectoryMode = "custom";
-        renderCurve();
-        updateTrajectoryFromDrawing();
-      }
-    });
-    graphSvg.addEventListener("pointermove", event => {
-      if (draggingPoint !== null) changePoint(draggingPoint, graphPosition(event));
-    });
-    graphSvg.addEventListener("pointerup", () => { draggingPoint = null; });
-    graphSvg.addEventListener("pointercancel", () => { draggingPoint = null; });
-    graphSvg.addEventListener("dblclick", event => {
-      const index = Number(event.target.closest(".graph-point")?.dataset.index);
-      if (Number.isInteger(index) && index > 0 && index < curves[activeSeries].length - 1) {
-        curves[activeSeries].splice(index, 1);
-        activePreset[activeSeries] = "";
-        trajectoryMode = "custom";
-        renderCurve();
-        updateTrajectoryFromDrawing();
-      }
-    });
-    graphSvg.addEventListener("keydown", event => {
-      if (!document.querySelector("#drawing-toggle").checked) return;
-      const index = Number(event.target.closest(".graph-point")?.dataset.index);
-      if (!Number.isInteger(index) || !["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(event.key)) return;
-      const point = curves[activeSeries][index].slice();
-      if (event.key === "ArrowUp") point[1] = Math.min(1, point[1] + .02);
-      if (event.key === "ArrowDown") point[1] = Math.max(0, point[1] - .02);
-      if (event.key === "ArrowLeft" && index > 0 && index < curves[activeSeries].length - 1) point[0] -= .02;
-      if (event.key === "ArrowRight" && index > 0 && index < curves[activeSeries].length - 1) point[0] += .02;
-      changePoint(index, point, true);
-      event.preventDefault();
-    });
     document.querySelectorAll(".series-tab").forEach(button => button.addEventListener("click", () => {
       activeSeries = button.dataset.series;
       renderCurve();
     }));
-    document.querySelectorAll(".curve-preset").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
-    document.querySelector("#reset-curve").addEventListener("click", () => {
-      curves[activeSeries] = lastGeneratedCurves[activeSeries].map(point => point.slice());
-      activePreset[activeSeries] = "";
-      trajectoryMode = "custom";
-      renderCurve();
-      updateTrajectoryFromDrawing();
-    });
-    document.querySelector("#drawing-toggle").addEventListener("change", event => {
-      if (!event.currentTarget.checked) draggingPoint = null;
-      renderCurve();
-    });
     document.querySelectorAll("[data-trajectory-mode]").forEach(button => button.addEventListener("click", () => {
       trajectoryMode = button.dataset.trajectoryMode;
       setTrajectoryModeButtons();
       runTrajectorySimulation();
     }));
-    document.querySelector("#trajectory-duration").addEventListener("change", refreshTrajectoryFromControls);
-    document.querySelector("#trajectory-start").addEventListener("change", refreshTrajectoryFromControls);
-    document.querySelector("#trajectory-anomalies").addEventListener("change", runTrajectorySimulation);
+    document.querySelector("#trajectory-duration").addEventListener("change", runTrajectorySimulation);
     document.querySelector("#generate-trajectory").addEventListener("click", runTrajectorySimulation);
     document.querySelector("#mode-link").addEventListener("click", event => {
       event.preventDefault();
@@ -2287,9 +1941,9 @@
       document.querySelector("#post-link").placeholder = "https://www." + label + "/...";
       renderSummary();
     }));
-    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => { setQuantity(button.dataset.quantity); refreshTrajectoryFromControls(); }));
+    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => { setQuantity(button.dataset.quantity); runTrajectorySimulation(); }));
     document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));
-    document.querySelector("#custom-quantity").addEventListener("change", event => { setQuantity(event.currentTarget.value); refreshTrajectoryFromControls(); });
+    document.querySelector("#custom-quantity").addEventListener("change", event => { setQuantity(event.currentTarget.value); runTrajectorySimulation(); });
     const previewMetrics = document.querySelector("#preview-metrics");
     function cancelServicePress() {
       clearTimeout(servicePressTimer);
@@ -2337,7 +1991,6 @@
         selectedServices.views = true;
       } else selectedServices[key] = !metricEnabled(key);
       renderSummary();
-      if (trajectoryMode === "custom") updateTrajectoryFromDrawing();
       document.querySelector('[data-preview-metric="' + key + '"]')?.focus();
     });
     document.querySelector("#service-delivery-form").addEventListener("submit", event => {
@@ -2413,7 +2066,7 @@
       }
       if (rateInput || amountInput) {
         renderSummary();
-        if (trajectoryMode === "custom") updateTrajectoryFromDrawing();
+        runTrajectorySimulation();
       }
     });
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
@@ -2562,11 +2215,8 @@
                 };
               }),
               curves:curves,
-              drawing_enabled:document.querySelector("#drawing-toggle").checked,
               trajectory_mode:trajectoryMode,
-              trajectory_duration_hours:Number(document.querySelector("#trajectory-duration").value),
-              trajectory_start_time:document.querySelector("#trajectory-start").value,
-              trajectory_anomalies:document.querySelector("#trajectory-anomalies").checked
+              trajectory_duration_hours:Number(document.querySelector("#trajectory-duration").value)
             }
           })
         });
