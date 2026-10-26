@@ -10,6 +10,8 @@
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh}
     button,input{font:inherit}
+    input[type="number"]{-moz-appearance:textfield;appearance:textfield}
+    input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
     button{cursor:pointer}
     .shell{min-height:100vh;display:grid;grid-template-columns:minmax(380px,1fr) minmax(480px,1fr);padding:18px;gap:18px}
     .story{position:relative;overflow:hidden;min-height:calc(100vh - 36px);border-radius:24px;background:#173b36;color:#f5f5ec;padding:38px 42px;display:flex;flex-direction:column;justify-content:space-between}
