@@ -30,12 +30,12 @@ ORDER_RATE_MICROS = {
     "reposts": 2080,
 }
 TIKTOK_RATE_MICROS = {
-    "views": 300,
-    "likes": 120,
-    "comments": 200,
-    "saves": 120,
-    "shares": 150,
-    "reposts": 50,
+    "views": 330,
+    "likes": 132,
+    "comments": 220,
+    "saves": 132,
+    "shares": 165,
+    "reposts": 55,
 }
 ADMIN_EMAIL = "aryan793gupta@gmail.com"
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
