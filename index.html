@@ -463,6 +463,11 @@
     .admin-section-heading{margin-bottom:13px}
     .admin-section-heading h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}
     .admin-section-heading p{margin:0;color:#71695d;font-size:12px}
+    .balance-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
+    .balance-filters>label{display:flex;align-items:center;gap:9px;color:#625743;font-size:12px;font-weight:650}
+    .balance-filters select{min-height:38px;padding:0 11px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8;color:#191713;font:inherit}
+    .balance-zero-filter{min-height:38px;padding:0 12px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8}
+    .balance-zero-filter input{accent-color:#191713}
     .admin-actions{display:flex;gap:8px;margin-top:14px}
     .admin-action{min-height:38px;padding:0 13px;border:1px solid #191713;border-radius:10px;background:#191713;color:#f4ecdc;font-size:12px;font-weight:700}
     .admin-action.secondary{background:#fffdf8;color:#51493c;border-color:#ded5c6}
@@ -1195,7 +1200,7 @@
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Fulfilled orders</h2><p>Completed order history.</p></div></div><div class="record-list" id="admin-completed-orders"><div class="empty-state">No fulfilled orders yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="accounts" hidden>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="payments" hidden>
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer externally; approved USDC requests include a 10% bonus, capped at 200 USDC.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
@@ -1249,6 +1254,7 @@
     let walletCurrencyChanging = false;
     let orderSubmitting = false;
     let servicePressTimer = 0;
+    let adminAccounts = [];
     let pressedServiceButton = null;
     let suppressPreviewClick = "";
     let activeServiceDialog = null;
@@ -1490,6 +1496,26 @@
         return true;
       } catch (error) { showToast(error.message); return false; }
     }
+    function accountBalanceMicros(account) {
+      const wallets = Array.isArray(account.wallets) ? account.wallets : [];
+      return wallets.length
+        ? wallets.reduce((total, wallet) => total + Math.max(0, Number(wallet.balance_micros) || 0), 0)
+        : Math.max(0, Number(account.balance_micros) || 0);
+    }
+    function renderAdminAccounts() {
+      const balances = document.querySelector("#admin-balances");
+      const hideZeroBalances = document.querySelector("#hide-zero-balances").checked;
+      const sortOrder = document.querySelector("#admin-balance-sort").value;
+      const accounts = adminAccounts
+        .filter(account => !hideZeroBalances || accountBalanceMicros(account) > 0)
+        .sort((a, b) => {
+          const difference = accountBalanceMicros(a) - accountBalanceMicros(b);
+          return (sortOrder === "asc" ? difference : -difference) || a.email.localeCompare(b.email);
+        });
+      balances.innerHTML = accounts.length ? accounts.map(account =>
+        '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + (account.wallets || []).map(wallet => formatBalance(wallet.balance_micros) + ' ' + escapeHtml(wallet.currency)).join(' · ') + '</strong></div><p>Account type: ' + escapeHtml(account.role) + ' · balances saved to this sign-in email</p></article>'
+      ).join("") : '<div class="empty-state">' + (adminAccounts.length && hideZeroBalances ? 'No accounts with a balance.' : 'No accounts yet.') + '</div>';
+    }
     async function loadAdmin() {
       const requestVersion = accountViewVersion;
       try {
@@ -1497,10 +1523,8 @@
         if (requestVersion !== accountViewVersion) return false;
         document.querySelector("#admin-order-count").textContent = summary.pending_orders.length;
         document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
-        const balances = document.querySelector("#admin-balances");
-        balances.innerHTML = summary.accounts.length ? summary.accounts.map(account =>
-          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + (account.wallets || []).map(wallet => formatBalance(wallet.balance_micros) + ' ' + escapeHtml(wallet.currency)).join(' · ') + '</strong></div><p>Account type: ' + escapeHtml(account.role) + ' · balances saved to this sign-in email</p></article>'
-        ).join("") : '<div class="empty-state">No accounts yet.</div>';
+        adminAccounts = summary.accounts;
+        renderAdminAccounts();
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
@@ -2211,6 +2235,8 @@
       return results.every(Boolean);
     }));
     document.querySelector("#refresh-admin").addEventListener("click", event => runRefresh(event.currentTarget, loadAdmin));
+    document.querySelector("#admin-balance-sort").addEventListener("change", renderAdminAccounts);
+    document.querySelector("#hide-zero-balances").addEventListener("change", renderAdminAccounts);
     document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
       document.querySelectorAll("[data-admin-view]").forEach(tab => {
         const active = tab === button;
