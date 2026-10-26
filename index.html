@@ -464,12 +464,15 @@
     .admin-logout{width:auto;height:38px;margin:0;padding:0 12px;border:1px solid #e5ddcf;border-radius:10px;background:#fffdf8;font-size:12px}
     .admin-main{max-width:1380px;margin:0 auto;padding:34px clamp(18px,4vw,50px) 60px}
     .admin-main .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:600px}
+    .admin-main .overview-card{padding:17px 19px}
+    .admin-main .overview-card strong{margin:8px 0 0}
     .admin-tabs{display:flex;gap:8px;margin:24px 4px 4px;padding:5px;border:1px solid #ded5c6;border-radius:14px;background:#f7f2e8}
     .admin-tab{min-height:40px;padding:0 16px;border:0;border-radius:10px;background:transparent;color:#625743;font:inherit;font-size:13px;font-weight:700;white-space:nowrap}
     .admin-tab[aria-pressed="true"]{background:#191713;color:#f4ecdc}
     .admin-page[hidden]{display:none}
     .admin-section{margin:28px 4px}
     .admin-section-heading{margin-bottom:13px}
+    .admin-accounts-section .admin-section-heading{margin-bottom:8px}
     .admin-section-heading h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}
     .admin-section-heading p{margin:0;color:#71695d;font-size:12px}
     .balance-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
@@ -1214,7 +1217,7 @@
     <section id="admin-panel" class="admin-panel" hidden>
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>ADMIN CONSOLE</small></div></div><div class="admin-account"><span id="admin-email">aryan793gupta@gmail.com</span><button class="draft-pill refresh-button" id="refresh-admin" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="admin-logout" type="button">Sign out</button></div></header>
       <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>Admin panel</h1><p>Manage customer orders, balances, and payments.</p></div></header>
-        <div class="overview-grid"><article class="overview-card"><span>Open orders</span><strong id="admin-order-count">0</strong><small>Awaiting approval or completion</small></article><article class="overview-card"><span>Pending payments</span><strong id="admin-deposit-count">0</strong><small>Awaiting manual verification</small></article></div>
+        <div class="overview-grid"><article class="overview-card"><span>Open orders</span><strong id="admin-order-count">0</strong></article><article class="overview-card"><span>Pending payments</span><strong id="admin-deposit-count">0</strong></article></div>
         <nav class="admin-tabs" aria-label="Admin sections">
           <button class="admin-tab" type="button" data-admin-view="orders" aria-pressed="true">Order</button>
           <button class="admin-tab" type="button" data-admin-view="accounts" aria-pressed="false">Account and balances</button>
@@ -1226,7 +1229,7 @@
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Fulfilled orders</h2><p>Completed order history.</p></div></div><div class="record-list" id="admin-completed-orders"><div class="empty-state">No fulfilled orders yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="accounts" hidden>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2><p>Wallet balances are stored against each account’s sign-in email.</p></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
+          <section class="admin-section admin-accounts-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="payments" hidden>
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer externally; approved USDC requests include a 10% bonus, capped at 200 USDC.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
@@ -1573,7 +1576,7 @@
           return (sortOrder === "asc" ? difference : -difference) || a.email.localeCompare(b.email);
         });
       balances.innerHTML = accounts.length ? accounts.map(account =>
-        '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + (account.wallets || []).map(wallet => formatBalance(wallet.balance_micros) + ' ' + escapeHtml(wallet.currency)).join(' · ') + '</strong></div><p>Account type: ' + escapeHtml(account.role) + '</p></article>'
+        '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + (account.wallets || []).map(wallet => formatBalance(wallet.balance_micros) + ' ' + escapeHtml(wallet.currency)).join(' · ') + '</strong></div></article>'
       ).join("") : '<div class="empty-state">' + (adminAccounts.length && hideZeroBalances ? 'No accounts with a balance.' : 'No accounts yet.') + '</div>';
     }
     async function loadAdmin() {
