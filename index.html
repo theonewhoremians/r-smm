@@ -797,6 +797,16 @@
     .growth-card .curve-legend{border-color:rgba(207,220,255,.15);color:#d5dcef}
     .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
     .preview-subtitle,.order-rate,.order-count{color:#a8b2c8}
+    .service-intervals{margin:12px 0 16px;border-top:1px solid rgba(207,220,255,.12)}
+    .service-intervals summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px 4px;color:#d5dcef;font-size:11px;font-weight:650;cursor:pointer;list-style:none}
+    .service-intervals summary::-webkit-details-marker{display:none}
+    .service-intervals summary span:last-child{color:#e08a94;font-size:10px;font-weight:500;text-align:right}
+    .service-interval-table-scroll{overflow:auto;margin-top:8px;border:1px solid rgba(207,220,255,.12);border-radius:12px}
+    .service-interval-table-scroll table{width:100%;min-width:680px;border-collapse:collapse;color:#d5dcef;font-size:10px}
+    .service-interval-table-scroll th,.service-interval-table-scroll td{padding:8px 10px;border-bottom:1px solid rgba(207,220,255,.08);text-align:right;white-space:nowrap}
+    .service-interval-table-scroll th{position:sticky;top:0;background:#12151a;color:#aeb8ce;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+    .service-interval-table-scroll th:first-child,.service-interval-table-scroll td:first-child,.service-interval-table-scroll th:nth-child(2),.service-interval-table-scroll td:nth-child(2){text-align:left}
+    .service-interval-table-scroll tr:last-child td{border-bottom:0}
     .preview-metric{background:rgba(10,17,31,.48);border-color:rgba(207,220,255,.13)}
     .preview-heading-icon{color:#dcd6ff;background:linear-gradient(145deg,rgba(161,140,255,.22),rgba(108,230,220,.12));border-color:rgba(207,220,255,.13)}
     .preview-metric-icon{color:#c8d4ef}
@@ -1012,6 +1022,15 @@
               <div class="preview-heading"><span class="preview-heading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span><h2 id="preview-heading">Select Services</h2></div>
               <p class="preview-subtitle">Tap to select; press and hold for delivery settings.</p>
               <div class="preview-metrics" id="preview-metrics"></div>
+              <details class="service-intervals">
+                <summary><span>Interval</span><span id="service-interval-mode"></span></summary>
+                <div class="service-interval-table-scroll">
+                  <table>
+                    <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th>Views / 30 min</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th></tr></thead>
+                    <tbody id="service-interval-body"></tbody>
+                  </table>
+                </div>
+              </details>
               <div class="per-type-box"><strong>▦ &nbsp;Customization</strong><div class="per-type-rows" id="per-type-rows"></div></div>
             </section>
             <section class="form-card growth-card" aria-labelledby="growth-heading">
@@ -1753,7 +1772,17 @@
       input.value = duration;
       return duration;
     }
-    function generateTrajectoryRows(totalViews, mode, durationHours, startDate) {
+    function distributeTrajectoryTotal(total, weights) {
+      const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
+      const shares = weights.map(weight => total * (weightTotal > 0 ? weight / weightTotal : 1 / weights.length));
+      const counts = shares.map(Math.floor);
+      let remaining = total - counts.reduce((sum, count) => sum + count, 0);
+      const order = shares.map((share, index) => ({index, remainder:share - counts[index]}))
+        .sort((a, b) => b.remainder - a.remainder);
+      for (let index = 0; index < remaining; index += 1) counts[order[index % order.length].index] += 1;
+      return counts;
+    }
+    function generateTrajectoryRows(totalViews, mode, durationHours, startDate, targetTotals = null) {
       const steps = Math.max(2, Math.round(durationHours * 2));
       const weights = trajectoryWeights(mode, steps).map(weight => weight * trajectoryRandomRange(.86, 1.16));
       const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
@@ -1775,16 +1804,25 @@
       }
       const bands = trajectoryRatioBands[mode];
       const expectedMid = Object.values(bands).reduce((sum, band) => sum + trajectoryBandMid(band), 0);
+      const metricCounts = {};
+      ["likes","comments","shares","saves"].forEach(key => {
+        const metric = metrics.find(item => item.key === key);
+        const metricWeights = deltas.map(delta => delta * trajectoryRandomRange(...bands[key]));
+        const rawTotal = metricWeights.reduce((sum, weight) => sum + Math.round(weight), 0);
+        const requestedTotal = targetTotals ? Number(targetTotals[key]) : rawTotal;
+        const boundedTotal = Math.max(metric.min, Math.min(metric.max, Math.round(requestedTotal)));
+        metricCounts[key] = distributeTrajectoryTotal(boundedTotal, metricWeights);
+      });
       const rows = [];
       const rolling = [];
       let cumulative = 0;
       deltas.forEach((delta, index) => {
         cumulative += delta;
         const metricsForRow = {
-          likes:Math.round(delta * trajectoryRandomRange(...bands.likes)),
-          comments:Math.round(delta * trajectoryRandomRange(...bands.comments)),
-          shares:Math.round(delta * trajectoryRandomRange(...bands.shares)),
-          saves:Math.round(delta * trajectoryRandomRange(...bands.saves))
+          likes:metricCounts.likes[index],
+          comments:metricCounts.comments[index],
+          shares:metricCounts.shares[index],
+          saves:metricCounts.saves[index]
         };
         const score = trajectoryScore(delta, metricsForRow, expectedMid, rolling);
         const elapsedMinutes = (index + 1) * 30;
@@ -1845,12 +1883,24 @@
         '%</td><td class="signal-' + row.className + '">' + row.label + '</td></tr>'
       ).join("");
     }
+    function trajectoryModeName(mode) {
+      return mode === "explosive" ? "Explosive" : mode === "slow" ? "Slow burn" : "Steady";
+    }
     function renderLikesIntervals(rows, mode) {
-      const modeName = mode === "explosive" ? "Explosive" : mode === "slow" ? "Slow burn" : "Steady";
+      const modeName = trajectoryModeName(mode);
       document.querySelector("#trajectory-interval-mode").textContent = modeName + " · " + rows.length + " intervals · local time";
       document.querySelector("#trajectory-likes-interval-body").innerHTML = rows.map(row =>
         '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) + '</td><td>' + row.elapsedLabel +
         '</td><td>' + row.likes.toLocaleString() + '</td></tr>'
+      ).join("");
+    }
+    function renderServiceIntervals(rows, mode) {
+      document.querySelector("#service-interval-mode").textContent = trajectoryModeName(mode) + " · projected · local time";
+      document.querySelector("#service-interval-body").innerHTML = rows.map(row =>
+        '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) + '</td><td>' + row.elapsedLabel +
+        '</td><td>+' + row.delta.toLocaleString() + '</td><td>' + row.likes.toLocaleString() +
+        '</td><td>' + row.comments.toLocaleString() + '</td><td>' + row.shares.toLocaleString() +
+        '</td><td>' + row.saves.toLocaleString() + '</td></tr>'
       ).join("");
     }
     function renderTrajectoryReadouts(rows, totalViews, mode) {
@@ -1859,6 +1909,7 @@
       renderTrajectoryPulse(rows);
       renderTrajectoryTable(rows);
       renderLikesIntervals(rows, mode);
+      renderServiceIntervals(rows, mode);
     }
     function curvePointsFromTrajectory(rows, series) {
       let cumulative = 0;
@@ -1887,11 +1938,22 @@
         button.setAttribute("aria-pressed", String(selected));
       });
     }
-    function runTrajectorySimulation(animate = false) {
+    function syncMainServiceQuantities(rows, totalViews) {
+      ["likes","comments","shares","saves"].forEach(key => {
+        const quantity = rows.reduce((sum, row) => sum + row[key], 0);
+        engagementAmounts[key] = quantity;
+        engagementRates[key] = quantity * 100 / totalViews;
+      });
+    }
+    function runTrajectorySimulation(animate = false, syncServiceQuantities = false) {
       const mode = trajectoryMode;
       const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
       const duration = trajectoryDurationHours();
-      const rows = generateTrajectoryRows(totalViews, mode, duration, new Date());
+      const targetTotals = syncServiceQuantities ? null : Object.fromEntries(
+        ["likes","comments","shares","saves"].map(key => [key, metricQuantity(key)])
+      );
+      const rows = generateTrajectoryRows(totalViews, mode, duration, new Date(), targetTotals);
+      if (syncServiceQuantities) syncMainServiceQuantities(rows, totalViews);
       ["views","likes","comments","saves","shares"].forEach(series => {
         curves[series] = curvePointsFromTrajectory(rows, series);
       });
@@ -1947,10 +2009,10 @@
     document.querySelectorAll("[data-trajectory-mode]").forEach(button => button.addEventListener("click", () => {
       trajectoryMode = button.dataset.trajectoryMode;
       setTrajectoryModeButtons();
-      runTrajectorySimulation(true);
+      runTrajectorySimulation(true, true);
     }));
-    document.querySelector("#trajectory-duration").addEventListener("change", runTrajectorySimulation);
-    document.querySelector("#generate-trajectory").addEventListener("click", runTrajectorySimulation);
+    document.querySelector("#trajectory-duration").addEventListener("change", () => runTrajectorySimulation());
+    document.querySelector("#generate-trajectory").addEventListener("click", () => runTrajectorySimulation(false, true));
     document.querySelector("#mode-link").addEventListener("click", event => {
       event.preventDefault();
       setMode(mode === "login" ? "signup" : "login");
@@ -1973,9 +2035,9 @@
       document.querySelector("#post-link").placeholder = "https://www." + label + "/...";
       renderSummary();
     }));
-    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => { setQuantity(button.dataset.quantity); runTrajectorySimulation(); }));
+    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => { setQuantity(button.dataset.quantity); runTrajectorySimulation(false, true); }));
     document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));
-    document.querySelector("#custom-quantity").addEventListener("change", event => { setQuantity(event.currentTarget.value); runTrajectorySimulation(); });
+    document.querySelector("#custom-quantity").addEventListener("change", event => { setQuantity(event.currentTarget.value); runTrajectorySimulation(false, true); });
     const previewMetrics = document.querySelector("#preview-metrics");
     function cancelServicePress() {
       clearTimeout(servicePressTimer);
@@ -2345,7 +2407,7 @@
     }
     document.querySelector("#logout").addEventListener("click", signOut);
     document.querySelector("#admin-logout").addEventListener("click", signOut);
-    runTrajectorySimulation();
+    runTrajectorySimulation(false, true);
     fetch("/api/me", {credentials:"same-origin", cache:"no-store"}).then(response => response.json()).then(data => {
       if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role);
     }).catch(() => {});
