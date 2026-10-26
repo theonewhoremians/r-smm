@@ -554,17 +554,73 @@
     .growth-card .draw-badge{background:linear-gradient(135deg,#d9b476,#e08a94);color:#171613;box-shadow:0 4px 16px #d9b47638}
     .growth-card .switch-track{background:#ffffff24;border:1px solid #ffffff22}
     .growth-card .switch input:checked + .switch-track{background:linear-gradient(135deg,#e08a94,#d9b476)}
-    .growth-card .growth-chart{border-color:#ffffff1c;background-color:#090b0e;background-image:radial-gradient(440px 230px at 15% 0,#d9b4761f,transparent 68%),radial-gradient(420px 240px at 100% 100%,#93a9e81c,transparent 68%),linear-gradient(#ffffff0c 1px,transparent 1px),linear-gradient(90deg,#ffffff0c 1px,transparent 1px);background-size:auto,auto,30px 30px,30px 30px;box-shadow:inset 0 1px 0 #ffffff12}
+    .growth-card .growth-chart{border-color:#ffffff1c;background-color:#090b0e;background-image:radial-gradient(440px 230px at 15% 0,#d9b4761f,transparent 68%),radial-gradient(420px 240px at 100% 100%,#93a9e81c,transparent 68%),linear-gradient(#ffffff0c 1px,transparent 1px),linear-gradient(90deg,#ffffff0c 1px,transparent 1px);background-size:auto,auto,40px 40px,40px 40px;box-shadow:inset 0 1px 0 #ffffff12}
     .growth-card .graph-baseline{stroke:#d9b476;opacity:.55}
     .growth-card .graph-line{stroke-width:4;filter:drop-shadow(0 4px 8px #00000080)}
     .growth-card .graph-point{fill:#0d1013;filter:drop-shadow(0 2px 4px #00000090)}
     .growth-card .graph-label{color:#f3f0ea80;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
     .growth-card .series-tab,.growth-card .curve-preset,.growth-card .curve-reset{border-color:#ffffff1c;background:#ffffff0b;color:#f3f0eacc}
-    .growth-card .series-tab.active,.growth-card .series-tab[data-series="likes"].active,.growth-card .series-tab[data-series="saves"].active,.growth-card .series-tab[data-series="shares"].active{outline-color:#d9b476;border-color:#d9b47680;background:linear-gradient(135deg,#d9b47655,#e08a9448);color:#fffaf0}
+    .growth-card .series-tab.active{outline:none;color:#fffaf0}
+    .growth-card .series-tab[data-series="views"].active{border-color:#d9cfc080;background:#d9cfc026}
+    .growth-card .series-tab[data-series="likes"].active{border-color:#e08a9480;background:#e08a9426}
+    .growth-card .series-tab[data-series="comments"].active{border-color:#93a9e880;background:#93a9e826}
+    .growth-card .series-tab[data-series="shares"].active{border-color:#d9b47680;background:#d9b47626}
+    .growth-card .series-tab[data-series="saves"].active{border-color:#8ecfa480;background:#8ecfa426}
     .growth-card .series-tab.active small{background:#f3f0ead9;color:#191713}
     .growth-card .curve-preset.active{border-color:#d9b476;box-shadow:0 0 0 2px #d9b47624}
     .growth-card .curve-legend{border-color:#ffffff1c;color:#f3f0eacc}
-    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.saves{background:#d9b476}.growth-card .legend-dot.shares{background:#93a9e8}
+    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
+    .growth-card .trajectory-controls{display:grid;grid-template-columns:minmax(230px,1.25fr) minmax(110px,.55fr) minmax(190px,1fr) auto;align-items:end;gap:12px;margin:0 0 10px;padding:14px;border:1px solid #ffffff1c;border-radius:16px;background:linear-gradient(135deg,#ffffff0b,#ffffff04)}
+    .growth-card .trajectory-mode-field,.growth-card .trajectory-field{display:grid;gap:7px;min-width:0}
+    .growth-card .trajectory-field-label,.growth-card .trajectory-field{color:#f3f0eab0;font-size:11px;font-weight:650;letter-spacing:.04em}
+    .growth-card .trajectory-modes{display:flex;gap:6px}
+    .growth-card .trajectory-mode{flex:1;min-width:0;padding:9px 8px;border:1px solid #ffffff1c;border-radius:11px;background:#ffffff08;color:#f3f0eacc;font-size:11px;font-weight:650;white-space:nowrap}
+    .growth-card .trajectory-mode.active{border-color:#d9b47699;background:linear-gradient(120deg,#d9b47638,#e08a9430);color:#fffaf0;box-shadow:0 0 0 2px #d9b47618}
+    .growth-card .trajectory-input-wrap{display:flex;align-items:center;gap:8px}
+    .growth-card .trajectory-field input{width:100%;min-width:0;height:38px;padding:0 10px;border:1px solid #ffffff20;border-radius:10px;background:#080b10;color:#f3f0ea;font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color-scheme:dark}
+    .growth-card .trajectory-input-wrap small{color:#f3f0ea77;font-size:10px}
+    .growth-card .trajectory-generate{height:38px;padding:0 14px;border:1px solid #d9b47670;border-radius:11px;background:linear-gradient(110deg,#d9b476,#e08a94);color:#171613;font-size:11px;font-weight:750;white-space:nowrap;box-shadow:0 5px 16px #d9b47622}
+    .growth-card .trajectory-anomaly{grid-column:1/-1;display:flex;align-items:center;gap:8px;color:#f3f0ea9c;font-size:11px}
+    .growth-card .trajectory-anomaly input{accent-color:#e08a94}
+    .growth-card .trajectory-note{margin:8px 2px 14px;color:#f3f0ea70;font-size:10px;line-height:1.45}
+    .growth-card .trajectory-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 12px}
+    .growth-card .trajectory-stat{min-width:0;padding:12px 13px;border:1px solid #ffffff14;border-radius:13px;background:#ffffff06}
+    .growth-card .trajectory-stat-label{margin-bottom:6px;color:#f3f0ea70;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+    .growth-card .trajectory-stat-value{color:#f3f0ea;font:600 17px ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap}
+    .growth-card .trajectory-stat-sub{margin-top:4px;color:#f3f0ea7a;font-size:10px;line-height:1.35}
+    .growth-card .trajectory-ideal{margin:0 0 16px;padding:14px;border:1px solid #ffffff14;border-radius:14px;background:#ffffff05}
+    .growth-card .trajectory-ideal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+    .growth-card .trajectory-ideal-box{padding:10px 12px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff04}
+    .growth-card .trajectory-ideal-label{margin-bottom:5px;color:#f3f0ea72;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+    .growth-card .trajectory-ideal-value{font:600 14px ui-monospace,SFMono-Regular,Consolas,monospace}
+    .growth-card .trajectory-ideal-value.fast{color:#93a9e8}.growth-card .trajectory-ideal-value.mid{color:#8ecfa4}.growth-card .trajectory-ideal-value.slow{color:#d9b476}
+    .growth-card .trajectory-gauge{position:relative;height:8px;margin:13px 3px 7px;border:1px solid #ffffff18;border-radius:99px;background:#0006}
+    .growth-card .trajectory-gauge-range{position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#8ecfa47a,#93a9e87a)}
+    .growth-card .trajectory-gauge-marker{position:absolute;top:50%;width:13px;height:13px;border:2px solid #08090b;border-radius:50%;background:#f3f0ea;box-shadow:0 0 0 1px #f3f0ea8a;transform:translate(-50%,-50%)}
+    .growth-card .trajectory-gauge-labels{display:flex;justify-content:space-between;color:#f3f0ea70;font:9px ui-monospace,SFMono-Regular,Consolas,monospace}
+    .growth-card .trajectory-verdict{margin:10px 0 0;color:#f3f0ea9c;font-size:10px;line-height:1.5}
+    .growth-card .trajectory-subhead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:17px 2px 9px}
+    .growth-card .trajectory-subhead h3{margin:0;color:#f3f0ea;font-size:12px}
+    .growth-card .trajectory-subhead span{color:#f3f0ea70;font-size:9px}
+    .growth-card .trajectory-pulse{display:flex;gap:3px;overflow-x:auto;padding:4px 2px 9px;scrollbar-color:#ffffff26 transparent}
+    .growth-card .trajectory-pulse-cell{flex:0 0 9px;height:30px;border:0;border-radius:4px;opacity:.85;box-shadow:inset 0 1px #ffffff2b}
+    .growth-card .trajectory-pulse-cell.organic{background:#8ecfa4}.growth-card .trajectory-pulse-cell.watch{background:#d9b476}.growth-card .trajectory-pulse-cell.anomaly{background:#e08a94}
+    .growth-card .trajectory-pulse-legend{display:flex;flex-wrap:wrap;gap:13px;color:#f3f0ea80;font-size:9px}
+    .growth-card .trajectory-pulse-legend span{display:flex;align-items:center;gap:6px}
+    .growth-card .trajectory-pulse-legend i{width:8px;height:8px;border-radius:3px}
+    .growth-card .trajectory-pulse-legend .organic{background:#8ecfa4}.growth-card .trajectory-pulse-legend .watch{background:#d9b476}.growth-card .trajectory-pulse-legend .anomaly{background:#e08a94}
+    .growth-card .trajectory-breakdown{margin-top:14px;border-top:1px solid #ffffff15}
+    .growth-card .trajectory-breakdown summary{padding:12px 2px 4px;color:#f3f0eab0;font-size:11px;font-weight:650;cursor:pointer;list-style:none}
+    .growth-card .trajectory-breakdown summary::-webkit-details-marker{display:none}
+    .growth-card .trajectory-table-scroll{overflow:auto;margin-top:8px;border:1px solid #ffffff14;border-radius:12px}
+    .growth-card .trajectory-table-scroll table{width:100%;min-width:820px;border-collapse:collapse;color:#f3f0eab0;font-size:10px}
+    .growth-card .trajectory-table-scroll th,.growth-card .trajectory-table-scroll td{padding:8px 10px;border-bottom:1px solid #ffffff0d;text-align:right;white-space:nowrap}
+    .growth-card .trajectory-table-scroll th{position:sticky;top:0;background:#12151a;color:#f3f0ea96;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+    .growth-card .trajectory-table-scroll th:first-child,.growth-card .trajectory-table-scroll td:first-child,.growth-card .trajectory-table-scroll th:nth-child(2),.growth-card .trajectory-table-scroll td:nth-child(2){text-align:left}
+    .growth-card .trajectory-table-scroll tr:last-child td{border-bottom:0}
+    .growth-card .signal-organic{color:#8ecfa4}.growth-card .signal-watch{color:#d9b476}.growth-card .signal-anomaly{color:#e08a94}
+    @media(max-width:760px){.growth-card .trajectory-controls{grid-template-columns:minmax(0,1fr) minmax(125px,.7fr)}.growth-card .trajectory-mode-field{grid-column:1/-1}.growth-card .trajectory-field[for="trajectory-start"]{grid-column:1/-1}.growth-card .trajectory-generate{justify-self:start}.growth-card .trajectory-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.growth-card .trajectory-ideal-grid{grid-template-columns:1fr}.growth-card .trajectory-ideal-box{display:flex;align-items:center;justify-content:space-between;gap:12px}.growth-card .trajectory-ideal-label{margin:0}}
+    @media(max-width:430px){.growth-card .trajectory-controls{grid-template-columns:1fr}.growth-card .trajectory-field[for="trajectory-start"],.growth-card .trajectory-mode-field{grid-column:auto}.growth-card .trajectory-modes{gap:4px}.growth-card .trajectory-mode{padding:9px 5px;font-size:10px}.growth-card .trajectory-anomaly{grid-column:auto}.growth-card .trajectory-generate{width:100%}.growth-card .trajectory-stat{padding:10px}.growth-card .trajectory-stat-value{font-size:14px}.growth-card .trajectory-subhead{align-items:flex-start;flex-direction:column;gap:4px}}
     .metric-list{gap:24px}
     .metric-card{transition:padding .18s ease,border-color .18s ease,box-shadow .18s ease}
     .metric-card.is-collapsed{padding:14px 18px;box-shadow:none;background:#f7f4ed}
@@ -756,29 +812,34 @@
     .delivery-fields input{color:#f1f4ff;background:rgba(9,15,27,.7);border-color:rgba(207,220,255,.16)}
     .metric-card.is-collapsed{background:linear-gradient(145deg,rgba(26,35,56,.65),rgba(16,23,39,.67));border-color:rgba(207,220,255,.11)}
     .growth-card{
-      background:radial-gradient(560px 270px at 8% -20%,rgba(161,140,255,.2),transparent 62%),radial-gradient(500px 270px at 100% 0,rgba(108,230,220,.14),transparent 62%),linear-gradient(145deg,rgba(27,35,56,.88),rgba(14,21,37,.9));
-      border-color:rgba(207,220,255,.19)
+      background:radial-gradient(520px 260px at 8% -20%,rgba(217,180,118,.18),transparent 62%),radial-gradient(480px 240px at 100% 0,rgba(147,169,232,.14),transparent 62%),linear-gradient(145deg,#08090b,#11141a);
+      border-color:rgba(255,255,255,.12);box-shadow:0 14px 36px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.1)
     }
-    .growth-card .growth-heading h2{color:#f3f5ff}
-    .growth-card .growth-instructions,.growth-card .draw-control{color:#b6bfd4}
-    .growth-card .draw-badge{color:#0b1420;background:linear-gradient(110deg,#b2a0ff,#72e8dc)}
-    .growth-card .switch input:checked + .switch-track{background:linear-gradient(100deg,#9b85ff,#41d9c8)}
+    .growth-card .growth-heading h2{color:#f3f0ea}
+    .growth-card .growth-instructions,.growth-card .draw-control{color:rgba(243,240,234,.68)}
+    .growth-card .draw-badge{color:#171613;background:linear-gradient(110deg,#d9b476,#e08a94)}
+    .growth-card .switch input:checked + .switch-track{background:linear-gradient(100deg,#e08a94,#d9b476)}
     .growth-card .growth-chart{
-      border-color:rgba(108,230,220,.52);
-      background-color:rgba(8,15,29,.72);
-      background-image:radial-gradient(440px 230px at 15% 0,rgba(161,140,255,.13),transparent 68%),radial-gradient(420px 240px at 100% 100%,rgba(108,230,220,.1),transparent 68%),linear-gradient(rgba(223,231,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(223,231,255,.055) 1px,transparent 1px);
-      box-shadow:inset 0 1px rgba(255,255,255,.07)
+      border-color:rgba(255,255,255,.12);
+      background-color:#090b0e;
+      background-image:radial-gradient(440px 230px at 15% 0,rgba(217,180,118,.12),transparent 68%),radial-gradient(420px 240px at 100% 100%,rgba(147,169,232,.1),transparent 68%),linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+      background-size:auto,auto,40px 40px,40px 40px;box-shadow:inset 0 1px rgba(255,255,255,.07)
     }
-    .growth-card .graph-baseline{stroke:#a18cff;opacity:.72}
-    .growth-card .graph-line{stroke:#72c9ff;filter:drop-shadow(0 0 8px rgba(114,201,255,.28))}
-    .growth-card .graph-point{fill:#121b2c;stroke:#9dcbff}
-    .growth-card .graph-label{color:#aab5cd}
+    .growth-card .graph-baseline{stroke:#d9b476;opacity:.55}
+    .growth-card .graph-line{stroke:#d9cfc0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+    .growth-card .graph-point{fill:#0d1013;stroke:#d9cfc0}
+    .growth-card .graph-label{color:rgba(243,240,234,.52)}
     .growth-card .series-tab,.growth-card .curve-preset,.growth-card .curve-reset{color:#d0d7e9;background:rgba(255,255,255,.045);border-color:rgba(207,220,255,.15)}
-    .growth-card .series-tab.active,.growth-card .series-tab[data-series="likes"].active,.growth-card .series-tab[data-series="saves"].active,.growth-card .series-tab[data-series="shares"].active{outline-color:#8eafff;border-color:rgba(156,178,255,.54);background:linear-gradient(115deg,rgba(161,140,255,.3),rgba(108,230,220,.17));color:#fff}
-    .growth-card .series-tab.active small{color:#101522;background:#b7c2ff}
-    .growth-card .curve-preset.active{border-color:#6ce6dc;box-shadow:0 0 0 2px rgba(108,230,220,.13)}
+    .growth-card .series-tab.active{outline:none;color:#fffaf0}
+    .growth-card .series-tab[data-series="views"].active{border-color:#d9cfc080;background:#d9cfc026}
+    .growth-card .series-tab[data-series="likes"].active{border-color:#e08a9480;background:#e08a9426}
+    .growth-card .series-tab[data-series="comments"].active{border-color:#93a9e880;background:#93a9e826}
+    .growth-card .series-tab[data-series="shares"].active{border-color:#d9b47680;background:#d9b47626}
+    .growth-card .series-tab[data-series="saves"].active{border-color:#8ecfa480;background:#8ecfa426}
+    .growth-card .series-tab.active small{color:#191713;background:#f3f0ead9}
+    .growth-card .curve-preset.active{border-color:#d9b476;box-shadow:0 0 0 2px rgba(217,180,118,.14)}
     .growth-card .curve-legend{border-color:rgba(207,220,255,.15);color:#d5dcef}
-    .growth-card .legend-dot.views{background:#72c9ff}.growth-card .legend-dot.likes{background:#62e4ad}.growth-card .legend-dot.saves{background:#ffc76e}.growth-card .legend-dot.shares{background:#ae96ff}
+    .growth-card .legend-dot.views{background:#d9cfc0}.growth-card .legend-dot.likes{background:#e08a94}.growth-card .legend-dot.comments{background:#93a9e8}.growth-card .legend-dot.shares{background:#d9b476}.growth-card .legend-dot.saves{background:#8ecfa4}
     .preview-subtitle,.order-rate,.order-count{color:#a8b2c8}
     .preview-metric{background:rgba(10,17,31,.48);border-color:rgba(207,220,255,.13)}
     .preview-heading-icon{color:#dcd6ff;background:linear-gradient(145deg,rgba(161,140,255,.22),rgba(108,230,220,.12));border-color:rgba(207,220,255,.13)}
@@ -885,7 +946,7 @@
       <aside class="social-card" aria-hidden="true">
         <div class="social-head"><span class="avatar">R</span><span>riverandrow · Instagram</span></div>
         <div class="social-visual"></div>
-        <div class="social-meta"><span>Draft post · Today</span><span>♡ &nbsp;↗</span></div>
+        <div class="social-meta"><span>Draft post · Today</span><span>♡</span></div>
       </aside>
       <div class="story-foot"><i></i> A little more in sync, every day</div>
     </section>
@@ -958,14 +1019,14 @@
             <div class="page-heading-actions"><span class="draft-pill">● &nbsp; New order</span><button class="draft-pill refresh-button" type="button" id="refresh-main">↻ &nbsp; Refresh</button></div>
           </header>
           <section class="form-card" aria-labelledby="platform-heading">
-            <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↗</span><h2 id="platform-heading">Select Platform</h2></div><span class="pick-label">PICK ONE</span></div>
+            <div class="section-head"><div class="section-title"><h2 id="platform-heading">Select Platform</h2></div><span class="pick-label">PICK ONE</span></div>
             <div class="platform-options" role="group" aria-label="Choose a platform">
               <button class="platform-button selected" data-platform="instagram" type="button" aria-pressed="true"><span class="platform-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.7" cy="6.5" r=".8" fill="currentColor" stroke="none"/></svg></span>Instagram</button>
               <button class="platform-button" data-platform="tiktok" type="button" aria-pressed="false"><span class="platform-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4v11.5a4 4 0 1 1-3.2-3.9"/><path d="M14 4c.5 2.4 2.2 4.1 4.5 4.6"/></svg></span>TikTok</button>
             </div>
           </section>
           <section class="form-card" aria-labelledby="link-heading">
-            <div class="section-head"><div class="section-title"><span class="section-icon" aria-hidden="true">↗</span><h2 id="link-heading">Video/Post Link</h2></div></div>
+            <div class="section-head"><div class="section-title"><h2 id="link-heading">Video/Post Link</h2></div></div>
             <input class="link-input" id="post-link" type="url" placeholder="https://instagram.com/..." aria-label="Video or post link" required>
           </section>
           <section class="form-card" aria-labelledby="quantity-heading">
@@ -1007,17 +1068,39 @@
                   <span class="switch"><input id="drawing-toggle" type="checkbox" checked aria-label="Enable curve drawing"><span class="switch-track"></span></span>
                 </label>
               </div>
+              <div class="trajectory-controls">
+                <div class="trajectory-mode-field">
+                  <span class="trajectory-field-label">Growth mode</span>
+                  <div class="trajectory-modes" id="trajectory-modes" role="group" aria-label="Select a trajectory growth mode">
+                    <button class="trajectory-mode active" type="button" data-trajectory-mode="explosive" aria-pressed="true">Explosive</button>
+                    <button class="trajectory-mode" type="button" data-trajectory-mode="steady" aria-pressed="false">Steady</button>
+                    <button class="trajectory-mode" type="button" data-trajectory-mode="slow" aria-pressed="false">Slow burn</button>
+                  </div>
+                </div>
+                <label class="trajectory-field" for="trajectory-duration">Duration
+                  <span class="trajectory-input-wrap"><input id="trajectory-duration" type="number" min="1" max="336" step="0.5" value="24"><small>hours</small></span>
+                </label>
+                <label class="trajectory-field" for="trajectory-start">Trajectory start
+                  <input id="trajectory-start" type="datetime-local" step="60">
+                </label>
+                <button class="trajectory-generate" id="generate-trajectory" type="button">Generate trajectory</button>
+                <label class="trajectory-anomaly"><input id="trajectory-anomalies" type="checkbox"><span>Inject bot-like anomalies</span></label>
+              </div>
+              <p class="trajectory-note">Uses Base Views Quantity and 30-minute intervals. Authenticity scores are heuristic, not a platform diagnosis. Estimates do not change your selected order quantities or price.</p>
+              <div class="trajectory-stats" id="trajectory-stats" aria-live="polite"></div>
+              <div class="trajectory-ideal" id="trajectory-ideal"></div>
               <div class="series-tabs" role="group" aria-label="Choose a curve">
                 <button class="series-tab active" type="button" data-series="views" aria-pressed="true"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg> Views <small>5</small></button>
                 <button class="series-tab" type="button" data-series="likes" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg> Likes <small>2</small></button>
+                <button class="series-tab" type="button" data-series="comments" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v12H9l-5 4v-16Z"/><path d="M8 9h8M8 12.5h5"/></svg> Comments <small>2</small></button>
                 <button class="series-tab" type="button" data-series="saves" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12v17l-6-4-6 4v-17Z"/></svg> Saves <small>2</small></button>
                 <button class="series-tab" type="button" data-series="shares" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.5 6.6-4M8.7 13.5l6.6 4"/></svg> Shares <small>2</small></button>
               </div>
               <div class="growth-chart" id="growth-chart">
-                <span class="graph-label y-top">100%</span><span class="graph-label y-middle">50%</span>
-                <span class="graph-label x-middle">50%</span><span class="graph-label x-end">100%</span>
+                <span class="graph-label y-top" id="graph-y-top">10K</span><span class="graph-label y-middle" id="graph-y-middle">5K</span>
+                <span class="graph-label x-middle" id="graph-x-middle">12h</span><span class="graph-label x-end" id="graph-x-end">24h</span>
                 <svg id="growth-svg" viewBox="0 0 1000 320" preserveAspectRatio="none" role="application" aria-label="Editable growth curve">
-                  <path class="graph-baseline" d="M0 320 L1000 0"></path>
+                  <path class="graph-baseline" d="M0 320 H1000"></path>
                   <path class="graph-line" id="graph-line" d=""></path>
                   <g id="graph-points"></g>
                 </svg>
@@ -1032,6 +1115,20 @@
                 <button class="curve-reset" id="reset-curve" type="button">↶ &nbsp;Reset</button>
               </div>
               <div class="curve-legend" id="curve-legend"></div>
+              <section class="trajectory-pulse-section" aria-labelledby="trajectory-pulse-heading">
+                <div class="trajectory-subhead"><h3 id="trajectory-pulse-heading">Authenticity pulse</h3><span>One bar per 30-minute interval</span></div>
+                <div class="trajectory-pulse" id="trajectory-pulse" role="list" aria-label="Interval authenticity scores"></div>
+                <div class="trajectory-pulse-legend"><span><i class="organic"></i>Organic 75–100</span><span><i class="watch"></i>Watch 50–74</span><span><i class="anomaly"></i>Low score under 50</span></div>
+              </section>
+              <details class="trajectory-breakdown">
+                <summary id="trajectory-table-summary">Interval breakdown</summary>
+                <div class="trajectory-table-scroll">
+                  <table>
+                    <thead><tr><th>#</th><th>Clock time</th><th>Elapsed</th><th>Views (+)</th><th>Cumulative</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Saves</th><th>Eng. rate</th><th>Signal</th></tr></thead>
+                    <tbody id="trajectory-table-body"></tbody>
+                  </table>
+                </div>
+              </details>
             </section>
           </section>
           <section class="order-summary" id="order-summary" aria-label="Order price and balance">
@@ -1166,13 +1263,21 @@
     const selectedServices = Object.fromEntries(metrics.map(metric => [metric.key, !metric.base]));
     engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
     const curveDefaults = {
-      views:[[0,0],[.27,.52],[.43,.31],[.68,.78],[1,1]],
+      views:[[0,0],[1,1]],
       likes:[[0,0],[1,1]],
+      comments:[[0,0],[1,1]],
       saves:[[0,0],[1,1]],
       shares:[[0,0],[1,1]]
     };
     const curves = JSON.parse(JSON.stringify(curveDefaults));
-    const curveColors = {views:"#d9cfc0",likes:"#e08a94",saves:"#d9b476",shares:"#93a9e8"};
+    const curveColors = {views:"#d9cfc0",likes:"#e08a94",comments:"#93a9e8",shares:"#d9b476",saves:"#8ecfa4"};
+    const trajectoryRatioBands = {
+      explosive:{likes:[.035,.06],comments:[.0015,.003],shares:[.010,.020],saves:[.004,.009]},
+      steady:{likes:[.05,.08],comments:[.003,.006],shares:[.005,.010],saves:[.010,.020]},
+      slow:{likes:[.06,.09],comments:[.004,.008],shares:[.003,.008],saves:[.015,.030]}
+    };
+    const suppressedRatioBands = {likes:[.002,.008],comments:[.00005,.0003],shares:[.0005,.002],saves:[.0002,.001]};
+    const idealGrowthAnchors = [[1000,4],[10000,12],[100000,48],[1000000,168],[10000000,480],[100000000,1200]];
     const graphSvg = document.querySelector("#growth-svg");
     const graphLine = document.querySelector("#graph-line");
     const graphPoints = document.querySelector("#graph-points");
@@ -1194,7 +1299,12 @@
     };
     let activeSeries = "views";
     let draggingPoint = null;
-    const activePreset = {views:"double-peak",likes:"steady",saves:"steady",shares:"steady"};
+    const activePreset = {views:"steady",likes:"steady",comments:"steady",saves:"steady",shares:"steady"};
+    let trajectoryMode = "explosive";
+    let lastGeneratedMode = "explosive";
+    let trajectoryRows = [];
+    let trajectoryAnomalyIndexes = new Set();
+    let lastGeneratedCurves = JSON.parse(JSON.stringify(curveDefaults));
     const perTypeRows = document.querySelector("#per-type-rows");
     perTypeRows.innerHTML = engagementMetrics.map(metric =>
       '<div class="per-type-row"><span class="per-type-row-heading"><span class="per-type-name">' + metric.symbol + metric.name +
@@ -1333,7 +1443,12 @@
         const curves = settings.curves && typeof settings.curves === "object" ? Object.entries(settings.curves).filter(([type]) => selectedTypes.has(type)) : [];
         const curveHtml = curves.length ? '<p>Growth curves: ' + curves.map(([type, points]) => escapeHtml(type) + ' (' + (Array.isArray(points) ? points.length : 0) + ' points)').join(" · ") + '</p>' : "";
         const curveDetails = curveHtml ? '<details class="order-details"><summary>Growth curve settings</summary>' + curveHtml + '<p>Curve drawing: ' + (settings.drawing_enabled ? "on" : "off") + '</p></details>' : "";
-        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div>' + (deliveryHtml ? '<div class="order-delivery">' + deliveryHtml + '</div>' : "") + curveDetails;
+        const modeNames = {explosive:"Explosive",steady:"Steady",slow:"Slow burn",custom:"Custom"};
+        const trajectoryInfo = modeNames[settings.trajectory_mode] ?
+          '<p>Trajectory model: ' + modeNames[settings.trajectory_mode] + ' · ' + Number(settings.trajectory_duration_hours || 24).toLocaleString() +
+          ' hours' + (settings.trajectory_anomalies ? ' · anomaly simulation on' : '') + '</p>' : "";
+        return '<div class="order-plan">' + (metricsHtml || '<span class="order-chip">No active metrics</span>') + '</div>' +
+          (deliveryHtml ? '<div class="order-delivery">' + deliveryHtml + '</div>' : "") + curveDetails + trajectoryInfo;
       } catch (_) { return '<p>Order settings are unavailable.</p>'; }
     }
     async function requestJson(url, options = {}) {
@@ -1401,7 +1516,7 @@
         document.querySelector("#overview-orders").textContent = orders.length;
         list.innerHTML = orders.length ? orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + '</strong><span class="status-badge ' + escapeHtml(order.status) + '">' + escapeHtml(order.status) + '</span>' + (order.status === "rejected" && order.rejection_reason ? '<details class="order-rejection"><summary>Reason</summary><p>' + escapeHtml(order.rejection_reason) + '</p></details>' : "") + '</div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' views · ' + formatDate(order.created_at) + '</p><a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open post ↗</a></article>'
+          '<p>' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' views · ' + formatDate(order.created_at) + '</p><a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open post</a></article>'
         ).join("") : '<div class="empty-state">No orders yet. Start with an Engagement order.</div>';
         return true;
       } catch (error) { showToast(error.message); return false; }
@@ -1436,11 +1551,11 @@
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a><div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '">Reject &amp; refund</button></div></article>'
+          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post</a><div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '">Reject &amp; refund</button></div></article>'
         ).join("") : '<div class="empty-state">No pending orders.</div>';
         const completedList = document.querySelector("#admin-completed-orders");
         completedList.innerHTML = summary.completed_orders.length ? summary.completed_orders.map(order =>
-          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div><p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + ' · <span class="status-badge completed">completed</span></p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post ↗</a></article>'
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div><p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + ' · <span class="status-badge completed">completed</span></p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post</a></article>'
         ).join("") : '<div class="empty-state">No fulfilled orders yet.</div>';
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
@@ -1592,7 +1707,7 @@
       const orderDisabled = orderSubmitting || walletCurrencyChanging || viewsInvalid || !validMetrics || walletBalanceMicros < cost;
       document.querySelector("#place-order").disabled = orderDisabled;
       document.querySelector("#compact-place-order").disabled = orderDisabled;
-      document.querySelector("#curve-legend").innerHTML = ["views","likes","saves","shares"].map(key => {
+      document.querySelector("#curve-legend").innerHTML = ["views","likes","comments","saves","shares"].map(key => {
         const metric = metrics.find(item => item.key === key);
         return '<span class="legend-item"><i class="legend-dot ' + key + '"></i>' + metric.symbol + ' ' +
           metricQuantity(key).toLocaleString() + '</span>';
@@ -1628,9 +1743,380 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { toast.hidden = true; }, 3200);
     }
+    function trajectoryRandomRange(minimum, maximum) {
+      return minimum + Math.random() * (maximum - minimum);
+    }
+    function trajectoryBandMid(band) {
+      return (band[0] + band[1]) / 2;
+    }
+    function explosiveTrajectoryWeights(count) {
+      return Array.from({length:count}, (_, index) => {
+        const t = index / (count - 1);
+        const primary = Math.exp(-Math.pow(t - .035, 2) / (2 * .018 * .018));
+        const secondary = .22 * Math.exp(-Math.pow(t - .16, 2) / (2 * .06 * .06));
+        const tail = .12 * Math.exp(-t * 3.2);
+        return primary + secondary + tail + .006;
+      });
+    }
+    function steadyTrajectoryWeights(count) {
+      return Array.from({length:count}, (_, index) => {
+        const t = index / (count - 1);
+        const ramp = 1 / (1 + Math.exp(-10 * (t - .12)));
+        const wobble = 1 + .12 * Math.sin(t * Math.PI * 3.2);
+        return Math.max(.05, ramp * wobble);
+      });
+    }
+    function slowTrajectoryWeights(count) {
+      return Array.from({length:count}, (_, index) => {
+        const t = index / (count - 1);
+        return 1 / (1 + Math.exp(-8 * (t - .58))) + .02;
+      });
+    }
+    function trajectoryWeights(mode, count) {
+      if (mode === "explosive") return explosiveTrajectoryWeights(count);
+      if (mode === "slow") return slowTrajectoryWeights(count);
+      return steadyTrajectoryWeights(count);
+    }
+    function trajectorySignal(score) {
+      if (score < 50) return {label:"Bot pattern", className:"anomaly"};
+      if (score < 75) return {label:"Watch", className:"watch"};
+      return {label:"Organic", className:"organic"};
+    }
+    function trajectoryScore(delta, metrics, expectedMid, rolling) {
+      const engagementTotal = metrics.likes + metrics.comments + metrics.shares + metrics.saves;
+      const engagementRate = delta > 0 ? engagementTotal / delta : 0;
+      rolling.push(delta);
+      if (rolling.length > 4) rolling.shift();
+      const previous = rolling.slice(0, -1);
+      const rollingAverage = previous.length ? previous.reduce((sum, value) => sum + value, 0) / previous.length : delta;
+      const spikeFactor = rollingAverage > 0 ? delta / rollingAverage : 1;
+      const ratioDeviation = expectedMid > 0 ? Math.abs(engagementRate - expectedMid) / expectedMid : 0;
+      let penalty = Math.min(60, ratioDeviation * 55);
+      if (spikeFactor > 2.2) penalty += Math.min(40, (spikeFactor - 2.2) * 18);
+      const score = Math.max(0, Math.min(100, Math.round(100 - penalty)));
+      const signal = trajectorySignal(score);
+      return {engagementTotal, engagementRate, score, label:signal.label, className:signal.className};
+    }
+    function trajectoryElapsed(minutes) {
+      return Math.floor(minutes / 60) + "h " + (minutes % 60) + "m";
+    }
+    function trajectoryClock(date) {
+      return date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    }
+    function trajectoryCount(value) {
+      if (value >= 1000000) return (value / 1000000).toFixed(2) + "M";
+      if (value >= 1000) return (value / 1000).toFixed(1) + "K";
+      return Math.round(value).toLocaleString();
+    }
+    function trajectoryHours(hours) {
+      if (hours < 1) return Math.round(hours * 60) + "m";
+      if (hours < 48) return hours.toFixed(1) + "h";
+      return (hours / 24).toFixed(1) + "d";
+    }
+    function localDateTimeValue(date) {
+      return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    }
+    function trajectoryStartDate() {
+      const value = document.querySelector("#trajectory-start").value;
+      const date = value ? new Date(value) : new Date();
+      return Number.isNaN(date.getTime()) ? new Date() : date;
+    }
+    function trajectoryDurationHours() {
+      const input = document.querySelector("#trajectory-duration");
+      const duration = Math.max(1, Math.min(336, Number(input.value) || 24));
+      input.value = duration;
+      return duration;
+    }
+    function generateTrajectoryRows(totalViews, mode, durationHours, injectAnomalies, startDate) {
+      const steps = Math.max(2, Math.round(durationHours * 2));
+      let weights = trajectoryWeights(mode, steps).map(weight => weight * trajectoryRandomRange(.86, 1.16));
+      const anomalyIndexes = new Set();
+      if (injectAnomalies) {
+        const anomalyCount = Math.max(1, Math.round(steps * .13));
+        while (anomalyIndexes.size < anomalyCount) {
+          anomalyIndexes.add(1 + Math.floor(Math.random() * (steps - 1)));
+        }
+        anomalyIndexes.forEach(index => { weights[index] *= trajectoryRandomRange(2.6, 4.8); });
+      }
+      const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
+      const rawDeltas = weights.map(weight => weight / weightTotal * totalViews);
+      const deltas = rawDeltas.map(Math.round);
+      let difference = totalViews - deltas.reduce((sum, delta) => sum + delta, 0);
+      let correctionIndex = 0;
+      while (difference !== 0 && deltas.length) {
+        const index = correctionIndex % deltas.length;
+        if (difference > 0) {
+          deltas[index] += 1;
+          difference -= 1;
+        } else if (deltas[index] > 0) {
+          deltas[index] -= 1;
+          difference += 1;
+        }
+        correctionIndex += 1;
+        if (correctionIndex > steps * 50) break;
+      }
+      const bands = trajectoryRatioBands[mode];
+      const expectedMid = Object.values(bands).reduce((sum, band) => sum + trajectoryBandMid(band), 0);
+      const rows = [];
+      const rolling = [];
+      let cumulative = 0;
+      deltas.forEach((delta, index) => {
+        cumulative += delta;
+        const isAnomaly = anomalyIndexes.has(index);
+        const selectedBands = isAnomaly ? suppressedRatioBands : bands;
+        const metricsForRow = {
+          likes:Math.round(delta * trajectoryRandomRange(...selectedBands.likes)),
+          comments:Math.round(delta * trajectoryRandomRange(...selectedBands.comments)),
+          shares:Math.round(delta * trajectoryRandomRange(...selectedBands.shares)),
+          saves:Math.round(delta * trajectoryRandomRange(...selectedBands.saves))
+        };
+        const score = trajectoryScore(delta, metricsForRow, expectedMid, rolling);
+        const elapsedMinutes = (index + 1) * 30;
+        rows.push({
+          idx:index + 1,
+          clock:new Date(startDate.getTime() + elapsedMinutes * 60000),
+          elapsedLabel:trajectoryElapsed(elapsedMinutes),
+          delta,
+          cumulative,
+          likes:metricsForRow.likes,
+          comments:metricsForRow.comments,
+          shares:metricsForRow.shares,
+          saves:metricsForRow.saves,
+          engRate:score.engagementRate,
+          score:score.score,
+          label:score.label,
+          className:score.className,
+          isAnomaly
+        });
+      });
+      return rows;
+    }
+    function idealMidHours(totalViews) {
+      const viewTarget = Math.max(totalViews, 100);
+      const logViews = Math.log10(viewTarget);
+      const points = idealGrowthAnchors.map(anchor => [Math.log10(anchor[0]), Math.log10(anchor[1])]);
+      if (logViews <= points[0][0]) return Math.pow(10, points[0][1]);
+      if (logViews >= points[points.length - 1][0]) return Math.pow(10, points[points.length - 1][1]);
+      for (let index = 0; index < points.length - 1; index += 1) {
+        if (logViews >= points[index][0] && logViews <= points[index + 1][0]) {
+          const fraction = (logViews - points[index][0]) / (points[index + 1][0] - points[index][0]);
+          const logMid = points[index][1] + fraction * (points[index + 1][1] - points[index][1]);
+          return Math.pow(10, logMid);
+        }
+      }
+      return Math.pow(10, points[points.length - 1][1]);
+    }
+    function idealTrajectoryWindow(totalViews, mode) {
+      let midpoint = idealMidHours(totalViews);
+      let modeShift = 1;
+      let spread = [.55, 1.75];
+      if (mode === "explosive") {
+        modeShift = .45;
+        spread = [.5, 1.6];
+      } else if (mode === "slow") {
+        modeShift = 1.9;
+        spread = [.6, 1.8];
+      }
+      midpoint *= modeShift;
+      return {min:midpoint * spread[0], mid:midpoint, max:midpoint * spread[1]};
+    }
+    function renderTrajectoryStats(rows, totalViews, mode, customCurve) {
+      const totalEngagement = rows.reduce((sum, row) => sum + row.likes + row.comments + row.shares + row.saves, 0);
+      const peak = rows.reduce((maximum, row) => row.delta > maximum.delta ? row : maximum, rows[0]);
+      const averageScore = Math.round(rows.reduce((sum, row) => sum + row.score, 0) / rows.length);
+      const halfway = rows.find(row => row.cumulative >= totalViews * .5);
+      const organicSummary = averageScore >= 75 ? "Looks organic" : averageScore >= 50 ? "Mixed signals" : "Bot pattern likely";
+      const stats = [
+        ["Peak velocity", trajectoryCount(peak.delta) + " /30m", "Interval #" + peak.idx + " · " + trajectoryClock(peak.clock)],
+        ["Total engagement", trajectoryCount(totalEngagement), ((totalEngagement / totalViews) * 100).toFixed(2) + "% of views"],
+        ["Authenticity score", averageScore + " / 100", organicSummary],
+        ["Time to 50% of views", halfway ? halfway.elapsedLabel : "—", halfway ? "by " + trajectoryClock(halfway.clock) : ""]
+      ];
+      document.querySelector("#trajectory-stats").innerHTML = stats.map(stat =>
+        '<article class="trajectory-stat"><div class="trajectory-stat-label">' + stat[0] +
+        '</div><div class="trajectory-stat-value">' + stat[1] + '</div><div class="trajectory-stat-sub">' + stat[2] + '</div></article>'
+      ).join("");
+      renderTrajectoryIdeal(totalViews, mode, customCurve);
+    }
+    function renderTrajectoryIdeal(totalViews, mode, customCurve) {
+      const duration = trajectoryDurationHours();
+      const window = idealTrajectoryWindow(totalViews, mode);
+      const gaugeMax = Math.max(window.max * 1.25, duration * 1.15);
+      const rangeLeft = window.min / gaugeMax * 100;
+      const rangeWidth = (window.max - window.min) / gaugeMax * 100;
+      const markerLeft = Math.min(100, duration / gaugeMax * 100);
+      let verdict;
+      if (duration < window.min * .75) {
+        verdict = "<strong>Faster than the typical organic window.</strong> This duration is quicker than the usual " + trajectoryHours(window.min) + "–" + trajectoryHours(window.max) + " range.";
+      } else if (duration > window.max * 1.3) {
+        verdict = "<strong>Slower than the typical organic window.</strong> This duration is longer than the usual " + trajectoryHours(window.min) + "–" + trajectoryHours(window.max) + " range.";
+      } else {
+        verdict = "<strong>Within the typical organic window.</strong> This duration sits inside the usual " + trajectoryHours(window.min) + "–" + trajectoryHours(window.max) + " range.";
+      }
+      const modeName = mode === "explosive" ? "Explosive" : mode === "slow" ? "Slow burn" : "Steady";
+      document.querySelector("#trajectory-ideal").innerHTML =
+        '<div class="trajectory-ideal-grid"><div class="trajectory-ideal-box"><span class="trajectory-ideal-label">Typical fastest</span><span class="trajectory-ideal-value fast">' + trajectoryHours(window.min) +
+        '</span></div><div class="trajectory-ideal-box"><span class="trajectory-ideal-label">Typical midpoint</span><span class="trajectory-ideal-value mid">' + trajectoryHours(window.mid) +
+        '</span></div><div class="trajectory-ideal-box"><span class="trajectory-ideal-label">Typical slowest</span><span class="trajectory-ideal-value slow">' + trajectoryHours(window.max) +
+        '</span></div></div><div class="trajectory-gauge"><span class="trajectory-gauge-range" style="left:' + rangeLeft +
+        '%;width:' + rangeWidth + '%"></span><i class="trajectory-gauge-marker" style="left:' + markerLeft + '%"></i></div><div class="trajectory-gauge-labels"><span>0h</span><span>' +
+        trajectoryHours(gaugeMax) + '</span></div><p class="trajectory-verdict">' + (customCurve ? "<strong>Custom drawn curve.</strong> " : "") +
+        verdict + ' <span>· ' + modeName + ' model</span></p>';
+    }
+    function renderTrajectoryPulse(rows) {
+      const cells = rows.map(row => {
+        const title = "Interval #" + row.idx + " · " + trajectoryClock(row.clock) + " · Views +" + Math.round(row.delta).toLocaleString() +
+          " (" + Math.round(row.cumulative).toLocaleString() + " total) · Engagement " + (row.engRate * 100).toFixed(2) +
+          "% · Score " + row.score + "/100 — " + row.label;
+        const opacity = (.3 + row.score / 100 * .6).toFixed(2);
+        return '<span class="trajectory-pulse-cell ' + row.className + '" role="listitem" title="' + title + '" aria-label="' + title +
+          '" style="opacity:' + opacity + '"></span>';
+      }).join("");
+      document.querySelector("#trajectory-pulse").innerHTML = cells;
+    }
+    function renderTrajectoryTable(rows) {
+      document.querySelector("#trajectory-table-summary").textContent = "Interval breakdown · " + rows.length + " intervals at 30-minute resolution";
+      document.querySelector("#trajectory-table-body").innerHTML = rows.map(row =>
+        '<tr><td>' + row.idx + (row.isAnomaly ? " · Anomaly" : "") + '</td><td>' + trajectoryClock(row.clock) +
+        '</td><td>' + row.elapsedLabel + '</td><td>+' + Math.round(row.delta).toLocaleString() +
+        '</td><td>' + Math.round(row.cumulative).toLocaleString() + '</td><td>' + row.likes.toLocaleString() +
+        '</td><td>' + row.comments.toLocaleString() + '</td><td>' + row.shares.toLocaleString() +
+        '</td><td>' + row.saves.toLocaleString() + '</td><td>' + (row.engRate * 100).toFixed(2) +
+        '%</td><td class="signal-' + row.className + '">' + row.label + '</td></tr>'
+      ).join("");
+    }
+    function renderTrajectoryReadouts(rows, totalViews, mode, customCurve) {
+      if (!rows.length) return;
+      renderTrajectoryStats(rows, totalViews, mode, customCurve);
+      renderTrajectoryPulse(rows);
+      renderTrajectoryTable(rows);
+    }
+    function curveValueAt(series, time) {
+      const points = curves[series];
+      if (time <= points[0][0]) return points[0][1];
+      for (let index = 1; index < points.length; index += 1) {
+        if (time <= points[index][0]) {
+          const before = points[index - 1];
+          const after = points[index];
+          const fraction = (time - before[0]) / (after[0] - before[0]);
+          return before[1] + fraction * (after[1] - before[1]);
+        }
+      }
+      return points[points.length - 1][1];
+    }
+    function rowsFromCurves(totalViews, durationHours, startDate, mode) {
+      const steps = Math.max(2, Math.round(durationHours * 2));
+      const totals = {likes:metricQuantity("likes"),comments:metricQuantity("comments"),shares:metricQuantity("shares"),saves:metricQuantity("saves")};
+      const expectedMid = Object.values(trajectoryRatioBands[mode]).reduce((sum, band) => sum + trajectoryBandMid(band), 0);
+      const rolling = [];
+      const previousTotals = {views:0,likes:0,comments:0,shares:0,saves:0};
+      const rows = [];
+      for (let index = 0; index < steps; index += 1) {
+        const time = (index + 1) / steps;
+        const cumulativeViews = index === steps - 1 ? totalViews :
+          Math.min(totalViews, Math.max(previousTotals.views, Math.round(curveValueAt("views", time) * totalViews)));
+        const delta = cumulativeViews - previousTotals.views;
+        const metricsForRow = {};
+        ["likes","comments","shares","saves"].forEach(key => {
+          const cumulative = index === steps - 1 ? totals[key] :
+            Math.min(totals[key], Math.max(previousTotals[key], Math.round(curveValueAt(key, time) * totals[key])));
+          metricsForRow[key] = cumulative - previousTotals[key];
+          previousTotals[key] = cumulative;
+        });
+        const score = trajectoryScore(delta, metricsForRow, expectedMid, rolling);
+        previousTotals.views = cumulativeViews;
+        const elapsedMinutes = (index + 1) * 30;
+        rows.push({
+          idx:index + 1,
+          clock:new Date(startDate.getTime() + elapsedMinutes * 60000),
+          elapsedLabel:trajectoryElapsed(elapsedMinutes),
+          delta,
+          cumulative:cumulativeViews,
+          likes:metricsForRow.likes,
+          comments:metricsForRow.comments,
+          shares:metricsForRow.shares,
+          saves:metricsForRow.saves,
+          engRate:score.engagementRate,
+          score:score.score,
+          label:score.label,
+          className:score.className,
+          isAnomaly:trajectoryAnomalyIndexes.has(index)
+        });
+      }
+      return rows;
+    }
+    function curvePointsFromTrajectory(rows, series) {
+      let cumulative = 0;
+      const values = rows.map(row => {
+        cumulative = series === "views" ? row.cumulative : cumulative + row[series];
+        return cumulative;
+      });
+      const total = values[values.length - 1] || 0;
+      const points = [[0, 0]];
+      const sampleCount = Math.min(18, values.length - 1);
+      let previousIndex = -1;
+      for (let sample = 1; sample <= sampleCount; sample += 1) {
+        const index = Math.round(sample * values.length / (sampleCount + 1)) - 1;
+        if (index <= previousIndex || index >= values.length - 1) continue;
+        const y = total > 0 ? values[index] / total : (index + 1) / values.length;
+        points.push([(index + 1) / values.length, y]);
+        previousIndex = index;
+      }
+      points.push([1, 1]);
+      return points;
+    }
+    function setTrajectoryModeButtons() {
+      document.querySelectorAll("[data-trajectory-mode]").forEach(button => {
+        const selected = button.dataset.trajectoryMode === trajectoryMode;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+    }
+    function runTrajectorySimulation() {
+      const mode = trajectoryMode === "custom" ? lastGeneratedMode : trajectoryMode;
+      const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
+      const duration = trajectoryDurationHours();
+      const rows = generateTrajectoryRows(totalViews, mode, duration, document.querySelector("#trajectory-anomalies").checked, trajectoryStartDate());
+      trajectoryRows = rows;
+      trajectoryAnomalyIndexes = new Set(rows.filter(row => row.isAnomaly).map(row => row.idx - 1));
+      lastGeneratedMode = mode;
+      trajectoryMode = mode;
+      ["views","likes","comments","saves","shares"].forEach(series => {
+        curves[series] = curvePointsFromTrajectory(rows, series);
+        activePreset[series] = "";
+      });
+      lastGeneratedCurves = JSON.parse(JSON.stringify(curves));
+      setTrajectoryModeButtons();
+      renderCurve();
+      renderTrajectoryReadouts(rows, totalViews, mode, false);
+    }
+    function updateTrajectoryFromDrawing() {
+      const mode = trajectoryMode === "custom" ? lastGeneratedMode : trajectoryMode;
+      const totalViews = Math.max(100, Math.min(10000000, Math.floor(metricQuantity("views"))));
+      const duration = trajectoryDurationHours();
+      trajectoryMode = "custom";
+      lastGeneratedMode = mode;
+      trajectoryRows = rowsFromCurves(totalViews, duration, trajectoryStartDate(), mode);
+      setTrajectoryModeButtons();
+      renderTrajectoryReadouts(trajectoryRows, totalViews, mode, true);
+    }
+    function refreshTrajectoryFromControls() {
+      if (trajectoryMode === "custom") {
+        renderCurve();
+        updateTrajectoryFromDrawing();
+      } else runTrajectorySimulation();
+    }
+    const trajectoryStartInput = document.querySelector("#trajectory-start");
+    if (!trajectoryStartInput.value) {
+      const startNow = new Date();
+      startNow.setSeconds(0, 0);
+      trajectoryStartInput.value = localDateTimeValue(startNow);
+    }
     function renderCurve() {
       const points = curves[activeSeries];
       const svgPoints = points.map(point => [point[0] * 1000, (1 - point[1]) * 320]);
+      const duration = trajectoryDurationHours();
+      const seriesTotal = Math.max(0, metricQuantity(activeSeries));
       let path = "M " + svgPoints[0][0] + " " + svgPoints[0][1];
       for (let i = 0; i < svgPoints.length - 1; i++) {
         const before = svgPoints[Math.max(0, i - 1)];
@@ -1647,8 +2133,12 @@
       graphLine.style.stroke = curveColors[activeSeries];
       graphPoints.innerHTML = svgPoints.map((point, index) =>
         '<circle class="graph-point" data-index="' + index + '" cx="' + point[0] + '" cy="' + point[1] +
-        '" r="8" style="stroke:' + curveColors[activeSeries] + '" tabindex="0" role="slider" aria-orientation="vertical" aria-label="Curve point ' +
-        (index + 1) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(curves[activeSeries][index][1] * 100) + '"></circle>'
+        '" r="7" style="stroke:' + curveColors[activeSeries] + '" tabindex="0" role="slider" aria-orientation="vertical" aria-label="Curve point ' +
+        (index + 1) + ', ' + trajectoryHours(curves[activeSeries][index][0] * duration) + ', ' +
+        Math.round(curves[activeSeries][index][1] * seriesTotal).toLocaleString() + ' cumulative ' + activeSeries +
+        '" title="' + trajectoryHours(curves[activeSeries][index][0] * duration) + ' · ' +
+        Math.round(curves[activeSeries][index][1] * seriesTotal).toLocaleString() + ' ' + activeSeries +
+        '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(curves[activeSeries][index][1] * 100) + '"></circle>'
       ).join("");
       document.querySelectorAll(".series-tab").forEach(button => {
         const selected = button.dataset.series === activeSeries;
@@ -1658,6 +2148,11 @@
       document.querySelectorAll(".curve-preset").forEach(button => {
         button.classList.toggle("active", button.dataset.preset === activePreset[activeSeries]);
       });
+      document.querySelector("#graph-y-top").textContent = trajectoryCount(seriesTotal);
+      document.querySelector("#graph-y-middle").textContent = trajectoryCount(seriesTotal / 2);
+      document.querySelector("#graph-x-middle").textContent = trajectoryHours(duration / 2);
+      document.querySelector("#graph-x-end").textContent = trajectoryHours(duration);
+      graphSvg.setAttribute("aria-label", "Editable cumulative " + activeSeries + " growth curve over " + trajectoryHours(duration));
       const drawingEnabled = document.querySelector("#drawing-toggle").checked;
       document.querySelector("#growth-chart").classList.toggle("drawing-off", !drawingEnabled);
       document.querySelector(".growth-card").classList.toggle("is-collapsed", !drawingEnabled);
@@ -1671,12 +2166,16 @@
     }
     function changePoint(index, position, focus = false) {
       const points = curves[activeSeries];
-      if (index === 0) position[0] = 0;
-      else if (index === points.length - 1) position[0] = 1;
-      else position[0] = Math.min(points[index + 1][0] - .01, Math.max(points[index - 1][0] + .01, position[0]));
+      if (index === 0) position = [0, 0];
+      else if (index === points.length - 1) position = [1, 1];
+      else {
+        position[0] = Math.min(points[index + 1][0] - .01, Math.max(points[index - 1][0] + .01, position[0]));
+        position[1] = Math.min(points[index + 1][1], Math.max(points[index - 1][1], position[1]));
+      }
       points[index] = [position[0], position[1]];
       activePreset[activeSeries] = "";
       renderCurve();
+      updateTrajectoryFromDrawing();
       if (focus) graphPoints.querySelector('[data-index="' + index + '"]')?.focus();
     }
     function applyPreset(preset) {
@@ -1684,11 +2183,13 @@
         viral:[[0,0],[.08,.35],[.2,.82],[.42,.94],[1,1]],
         steady:[[0,0],[1,1]],
         "s-curve":[[0,0],[.22,.08],[.5,.5],[.78,.92],[1,1]],
-        "double-peak":[[0,0],[.27,.52],[.43,.31],[.68,.78],[1,1]]
+        "double-peak":[[0,0],[.12,.25],[.28,.32],[.44,.68],[.58,.73],[.78,.92],[1,1]]
       };
       curves[activeSeries] = presets[preset].map(point => point.slice());
       activePreset[activeSeries] = preset;
+      trajectoryMode = "custom";
       renderCurve();
+      updateTrajectoryFromDrawing();
     }
     graphSvg.addEventListener("pointerdown", event => {
       if (!document.querySelector("#drawing-toggle").checked) return;
@@ -1701,10 +2202,15 @@
         const point = graphPosition(event);
         point[0] = Math.min(.99, Math.max(.01, point[0]));
         if (curves[activeSeries].some(existing => Math.abs(existing[0] - point[0]) < .02)) return;
+        const before = curves[activeSeries].filter(existing => existing[0] < point[0]).pop();
+        const after = curves[activeSeries].find(existing => existing[0] > point[0]);
+        point[1] = Math.min(after[1], Math.max(before[1], point[1]));
         curves[activeSeries].push(point);
         curves[activeSeries].sort((a, b) => a[0] - b[0]);
         activePreset[activeSeries] = "";
+        trajectoryMode = "custom";
         renderCurve();
+        updateTrajectoryFromDrawing();
       }
     });
     graphSvg.addEventListener("pointermove", event => {
@@ -1717,7 +2223,9 @@
       if (Number.isInteger(index) && index > 0 && index < curves[activeSeries].length - 1) {
         curves[activeSeries].splice(index, 1);
         activePreset[activeSeries] = "";
+        trajectoryMode = "custom";
         renderCurve();
+        updateTrajectoryFromDrawing();
       }
     });
     graphSvg.addEventListener("keydown", event => {
@@ -1738,14 +2246,25 @@
     }));
     document.querySelectorAll(".curve-preset").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
     document.querySelector("#reset-curve").addEventListener("click", () => {
-      curves[activeSeries] = curveDefaults[activeSeries].map(point => point.slice());
-      activePreset[activeSeries] = activeSeries === "views" ? "double-peak" : "steady";
+      curves[activeSeries] = lastGeneratedCurves[activeSeries].map(point => point.slice());
+      activePreset[activeSeries] = "";
+      trajectoryMode = "custom";
       renderCurve();
+      updateTrajectoryFromDrawing();
     });
     document.querySelector("#drawing-toggle").addEventListener("change", event => {
       if (!event.currentTarget.checked) draggingPoint = null;
       renderCurve();
     });
+    document.querySelectorAll("[data-trajectory-mode]").forEach(button => button.addEventListener("click", () => {
+      trajectoryMode = button.dataset.trajectoryMode;
+      setTrajectoryModeButtons();
+      runTrajectorySimulation();
+    }));
+    document.querySelector("#trajectory-duration").addEventListener("change", refreshTrajectoryFromControls);
+    document.querySelector("#trajectory-start").addEventListener("change", refreshTrajectoryFromControls);
+    document.querySelector("#trajectory-anomalies").addEventListener("change", runTrajectorySimulation);
+    document.querySelector("#generate-trajectory").addEventListener("click", runTrajectorySimulation);
     document.querySelector("#mode-link").addEventListener("click", event => {
       event.preventDefault();
       setMode(mode === "login" ? "signup" : "login");
@@ -1768,9 +2287,9 @@
       document.querySelector("#post-link").placeholder = "https://www." + label + "/...";
       renderSummary();
     }));
-    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => setQuantity(button.dataset.quantity)));
+    document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => { setQuantity(button.dataset.quantity); refreshTrajectoryFromControls(); }));
     document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));
-    document.querySelector("#custom-quantity").addEventListener("change", event => setQuantity(event.currentTarget.value));
+    document.querySelector("#custom-quantity").addEventListener("change", event => { setQuantity(event.currentTarget.value); refreshTrajectoryFromControls(); });
     const previewMetrics = document.querySelector("#preview-metrics");
     function cancelServicePress() {
       clearTimeout(servicePressTimer);
@@ -1818,6 +2337,7 @@
         selectedServices.views = true;
       } else selectedServices[key] = !metricEnabled(key);
       renderSummary();
+      if (trajectoryMode === "custom") updateTrajectoryFromDrawing();
       document.querySelector('[data-preview-metric="' + key + '"]')?.focus();
     });
     document.querySelector("#service-delivery-form").addEventListener("submit", event => {
@@ -1891,7 +2411,10 @@
           amountInput.value = quantity;
         }
       }
-      if (rateInput || amountInput) renderSummary();
+      if (rateInput || amountInput) {
+        renderSummary();
+        if (trajectoryMode === "custom") updateTrajectoryFromDrawing();
+      }
     });
     document.querySelectorAll(".nav-item[data-view]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.view)));
     document.querySelectorAll("[data-go]").forEach(button => button.addEventListener("click", () => showCustomerPage(button.dataset.go)));
@@ -2039,7 +2562,11 @@
                 };
               }),
               curves:curves,
-              drawing_enabled:document.querySelector("#drawing-toggle").checked
+              drawing_enabled:document.querySelector("#drawing-toggle").checked,
+              trajectory_mode:trajectoryMode,
+              trajectory_duration_hours:Number(document.querySelector("#trajectory-duration").value),
+              trajectory_start_time:document.querySelector("#trajectory-start").value,
+              trajectory_anomalies:document.querySelector("#trajectory-anomalies").checked
             }
           })
         });
@@ -2136,6 +2663,7 @@
     }
     document.querySelector("#logout").addEventListener("click", signOut);
     document.querySelector("#admin-logout").addEventListener("click", signOut);
+    runTrajectorySimulation();
     fetch("/api/me", {credentials:"same-origin", cache:"no-store"}).then(response => response.json()).then(data => {
       if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role);
     }).catch(() => {});

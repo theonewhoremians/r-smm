@@ -47,7 +47,7 @@ METRIC_LIMITS = {
     "shares": (10, 100000),
     "reposts": (1, 1000000),
 }
-CURVE_SERIES = ("views", "likes", "saves", "shares")
+CURVE_SERIES = ("views", "likes", "comments", "saves", "shares")
 
 
 def telegram_webhook_secret(token):
@@ -379,6 +379,18 @@ def valid_order_settings(settings, views):
     curves = settings.get("curves")
     if not isinstance(items, list) or len(items) != len(METRIC_LIMITS) or not isinstance(curves, dict):
         return False
+    trajectory_mode = settings.get("trajectory_mode", "steady")
+    duration_hours = settings.get("trajectory_duration_hours", 24)
+    trajectory_anomalies = settings.get("trajectory_anomalies", False)
+    if (not isinstance(trajectory_mode, str) or trajectory_mode not in {"custom", "explosive", "steady", "slow"}
+            or isinstance(duration_hours, bool) or not isinstance(duration_hours, (int, float))
+            or not 1 <= duration_hours <= 336 or not isinstance(trajectory_anomalies, bool)):
+        return False
+    if "trajectory_start_time" in settings:
+        start_time = settings["trajectory_start_time"]
+        if (not isinstance(start_time, str) or len(start_time) > 32
+                or (start_time and not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}", start_time))):
+            return False
     seen = set()
     for item in items:
         if not isinstance(item, dict):
@@ -406,7 +418,9 @@ def valid_order_settings(settings, views):
         if kind == "views" and quantity != views:
             return False
         seen.add(kind)
-    if seen != set(METRIC_LIMITS) or not any(item["enabled"] for item in items) or set(curves) != set(CURVE_SERIES):
+    curve_types = set(curves)
+    if (seen != set(METRIC_LIMITS) or not any(item["enabled"] for item in items)
+            or curve_types not in (set(CURVE_SERIES), set(CURVE_SERIES) - {"comments"})):
         return False
     for points in curves.values():
         if not isinstance(points, list) or not 2 <= len(points) <= 20:
