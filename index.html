@@ -1087,7 +1087,7 @@
             <summary><span>Interval</span><span id="service-interval-mode"></span></summary>
             <div class="service-interval-table-scroll">
               <table>
-                <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th id="service-interval-metric-heading">Projected count</th></tr></thead>
+                <thead><tr><th>#</th><th>Time (local)</th><th>Elapsed</th><th id="service-interval-metric-heading">Likes / 30 min</th></tr></thead>
                 <tbody id="service-interval-body"></tbody>
               </table>
             </div>
@@ -1910,13 +1910,11 @@
     }
     function renderServiceIntervals(rows, mode) {
       if (!rows.length) return;
-      const metric = metrics.find(item => item.key === activeSeries);
-      const intervalCount = document.querySelector("#service-interval-metric-heading");
-      intervalCount.textContent = activeSeries === "views" ? "Views / 30 min" : metric.name + " / 30 min";
-      document.querySelector("#service-interval-mode").textContent = trajectoryModeName(mode) + " · " + metric.name + " · projected · local time";
+      document.querySelector("#service-interval-metric-heading").textContent = "Likes / 30 min";
+      document.querySelector("#service-interval-mode").textContent = trajectoryModeName(mode) + " · Likes · projected · local time";
       document.querySelector("#service-interval-body").innerHTML = rows.map(row =>
         '<tr><td>' + row.idx + '</td><td>' + trajectoryClock(row.clock) + '</td><td>' + row.elapsedLabel +
-        '</td><td>' + (activeSeries === "views" ? row.delta : row[activeSeries]).toLocaleString() + '</td></tr>'
+        '</td><td>' + row.likes.toLocaleString() + '</td></tr>'
       ).join("");
     }
     function renderTrajectoryReadouts(rows, totalViews, mode) {
