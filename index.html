@@ -1683,7 +1683,7 @@
       document.querySelector("#curve-legend").innerHTML = ["views","likes","comments","saves","shares","reposts"].map(key => {
         const metric = metrics.find(item => item.key === key);
         return '<span class="legend-item"><i class="legend-dot ' + key + '"></i>' + metric.symbol + ' ' +
-          metricQuantity(key).toLocaleString() + '</span>';
+          (metricEnabled(key) ? metricQuantity(key) : 0).toLocaleString() + '</span>';
       }).join("");
     }
     function setQuantity(value) {
