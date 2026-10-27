@@ -483,6 +483,14 @@
     .admin-actions{display:flex;gap:8px;margin-top:14px}
     .admin-action{min-height:38px;padding:0 13px;border:1px solid #191713;border-radius:10px;background:#191713;color:#f4ecdc;font-size:12px;font-weight:700}
     .admin-action.secondary{background:#fffdf8;color:#51493c;border-color:#ded5c6}
+    .admin-order-link{display:flex;align-items:center;gap:12px;min-width:0;margin-top:10px;padding:10px 12px;border:1px solid rgba(207,220,255,.12);border-radius:12px;background:rgba(9,15,27,.34)}
+    .admin-order-link-copy{display:grid;flex:1;gap:4px;min-width:0}
+    .admin-order-link-copy strong{color:#a4aec5;font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+    .admin-order-link-copy a{display:block;overflow:hidden;color:#83e5dd;font-size:12px;font-weight:600;text-overflow:ellipsis;text-decoration:none;white-space:nowrap}
+    .admin-order-link-copy a:hover{text-decoration:underline}
+    .admin-copy-link{flex:none;min-height:34px;padding:0 11px;border:1px solid rgba(108,230,220,.28);border-radius:9px;background:rgba(108,230,220,.08);color:#9ceee7;font:inherit;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .15s,border-color .15s}
+    .admin-copy-link:hover{background:rgba(108,230,220,.16);border-color:rgba(108,230,220,.45)}
+    .admin-copy-link:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
     #admin-toast{bottom:24px;right:24px}
     @media(max-width:1050px){.deposit-form{grid-template-columns:repeat(2,minmax(0,1fr))}.deposit-form .place-order{width:100%}}
     @media(max-width:760px){.nav-item:not(.current){display:flex}.nav-item{flex:none}.overview-grid{grid-template-columns:1fr;gap:9px}.overview-card{padding:16px}.overview-card strong{font-size:23px}.quick-start{align-items:flex-start;flex-direction:column}.quick-start .place-order{width:100%}.wallet-overview{padding:20px}.wallet-overview strong{font-size:30px}.wallet-emblem{width:48px;height:48px}.deposit-form{grid-template-columns:1fr}.deposit-form .place-order{width:100%}.admin-topbar{align-items:flex-start;flex-wrap:wrap}.admin-account{width:100%;justify-content:space-between}.admin-main{padding-top:24px}.admin-main .overview-grid{grid-template-columns:1fr}.record-card{padding:14px}.record-top{font-size:12px}}
@@ -1452,6 +1460,11 @@
         return Number.isFinite(trajectoryDuration) && trajectoryDuration >= 1 && trajectoryDuration <= 336 ? trajectoryDuration : 24;
       } catch (_) { return 24; }
     }
+    function adminOrderLinkHtml(order) {
+      const postUrl = escapeHtml(order.post_url);
+      const orderId = escapeHtml(order.id);
+      return '<div class="admin-order-link"><div class="admin-order-link-copy"><strong>Post link</strong><a href="' + postUrl + '" target="_blank" rel="noopener" title="' + postUrl + '" aria-label="Open post for order #' + orderId + '">' + postUrl + '</a></div><button class="admin-copy-link" type="button" data-copy-order-link="' + postUrl + '" aria-label="Copy post link for order #' + orderId + '">Copy link</button></div>';
+    }
     function orderProgressHtml(order) {
       if (order.status === "rejected") return "";
       const durationHours = orderDurationHours(order.settings_json);
@@ -1591,16 +1604,16 @@
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post</a><div class="admin-actions"><button class="admin-action" type="button" data-approve-order="' + order.id + '">Approve &amp; start</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '">Reject &amp; refund</button></div></article>'
+          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + adminOrderLinkHtml(order) + '<div class="admin-actions"><button class="admin-action" type="button" data-approve-order="' + order.id + '">Approve &amp; start</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '">Reject &amp; refund</button></div></article>'
         ).join("") : '<div class="empty-state">No orders awaiting approval.</div>';
         const processingList = document.querySelector("#admin-processing-orders");
         processingList.innerHTML = summary.processing_orders.length ? summary.processing_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span><span class="status-badge processing">in progress</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · Approved ' + formatDate(order.approved_at) + '</p>' + orderSettingsHtml(order.settings_json) + orderProgressHtml(order) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post</a><div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></div></article>'
+          '<p>' + escapeHtml(order.platform) + ' · Approved ' + formatDate(order.approved_at) + '</p>' + orderSettingsHtml(order.settings_json) + orderProgressHtml(order) + adminOrderLinkHtml(order) + '<div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></div></article>'
         ).join("") : '<div class="empty-state">No orders in progress.</div>';
         const completedList = document.querySelector("#admin-completed-orders");
         completedList.innerHTML = summary.completed_orders.length ? summary.completed_orders.map(order =>
-          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div><p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + ' · <span class="status-badge completed">completed</span></p>' + orderSettingsHtml(order.settings_json) + '<a href="' + escapeHtml(order.post_url) + '" target="_blank" rel="noopener">Open customer post</a></article>'
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div><p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + ' · <span class="status-badge completed">completed</span></p>' + orderSettingsHtml(order.settings_json) + adminOrderLinkHtml(order) + '</article>'
         ).join("") : '<div class="empty-state">No fulfilled orders yet.</div>';
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
@@ -2316,6 +2329,27 @@
       return results.every(Boolean);
     }));
     document.querySelector("#refresh-admin").addEventListener("click", event => runRefresh(event.currentTarget, loadAdmin));
+    document.querySelector("#admin-panel").addEventListener("click", async event => {
+      const button = event.target.closest("[data-copy-order-link]");
+      if (!button) return;
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(button.dataset.copyOrderLink);
+        else throw new Error("Clipboard unavailable");
+      } catch (_) {
+        const field = document.createElement("textarea");
+        field.value = button.dataset.copyOrderLink;
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        const copied = document.execCommand("copy");
+        field.remove();
+        if (!copied) { showToast("Could not copy the post link. Please try again."); return; }
+      }
+      button.textContent = "Copied";
+      showToast("Order post link copied.");
+      setTimeout(() => { button.textContent = "Copy link"; }, 1400);
+    });
     document.querySelector("#admin-balance-sort").addEventListener("change", renderAdminAccounts);
     document.querySelector("#hide-zero-balances").addEventListener("change", renderAdminAccounts);
     document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
