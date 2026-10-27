@@ -812,6 +812,7 @@
     .growth-card .graph-label{color:rgba(243,240,234,.52)}
     .growth-card .series-tab{color:#d0d7e9;background:rgba(255,255,255,.045);border-color:rgba(207,220,255,.15)}
     .growth-card .series-tab.active{outline:none;color:#fffaf0}
+    .growth-card .series-tab[data-series="all"].active{border-color:#a18cff80;background:linear-gradient(110deg,#a18cff30,#6ce6dc24)}
     .growth-card .series-tab[data-series="views"].active{border-color:#d9cfc080;background:#d9cfc026}
     .growth-card .series-tab[data-series="likes"].active{border-color:#e08a9480;background:#e08a9426}
     .growth-card .series-tab[data-series="comments"].active{border-color:#93a9e880;background:#93a9e826}
@@ -1091,6 +1092,7 @@
               </div>
               <div class="trajectory-stats" id="trajectory-stats" aria-live="polite"></div>
               <div class="series-tabs" role="group" aria-label="Choose a curve">
+                <button class="series-tab" type="button" data-series="all" aria-pressed="false">All</button>
                 <button class="series-tab active" type="button" data-series="views" aria-pressed="true"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.25 12s3.5-6 9.75-6 9.75 6 9.75 6-3.5 6-9.75 6-9.75-6-9.75-6Z"/><circle cx="12" cy="12" r="2.75"/></svg> Views <small>5</small></button>
                 <button class="series-tab" type="button" data-series="likes" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg> Likes <small>2</small></button>
                 <button class="series-tab" type="button" data-series="comments" aria-pressed="false"><svg class="metric-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v12H9l-5 4v-16Z"/><path d="M8 9h8M8 12.5h5"/></svg> Comments <small>2</small></button>
@@ -1105,6 +1107,7 @@
                   <path class="graph-baseline" d="M0 320 H1000"></path>
                   <path class="graph-line graph-line-previous" id="graph-line-previous" d="" aria-hidden="true"></path>
                   <path class="graph-line" id="graph-line" d=""></path>
+                  <g id="graph-lines-extra" aria-hidden="true"></g>
                 </svg>
               </div>
               <div class="curve-legend" id="curve-legend"></div>
@@ -1284,6 +1287,7 @@
     const graphSvg = document.querySelector("#growth-svg");
     const graphLine = document.querySelector("#graph-line");
     const graphPreviousLine = document.querySelector("#graph-line-previous");
+    const graphLinesExtra = document.querySelector("#graph-lines-extra");
     let mode = "login";
     let toastTimer;
     let walletRequestVersion = 0;
@@ -1731,7 +1735,8 @@
       document.querySelector("#order-count").textContent = total.toLocaleString() + " engagements • " + active.length + " types";
       document.querySelector("#active-count").textContent = active.length;
       document.querySelectorAll(".series-tab").forEach(button => {
-        button.querySelector("small").textContent = metricQuantity(button.dataset.series).toLocaleString();
+        const count = button.querySelector("small");
+        if (count) count.textContent = metricQuantity(button.dataset.series).toLocaleString();
       });
       const preview = document.querySelector("#preview-metrics");
       preview.innerHTML = metrics.map(metric => {
@@ -2067,13 +2072,10 @@
       renderCurve(animate);
       renderTrajectoryReadouts(rows, totalViews, mode);
     }
-    function renderCurve(animate = false) {
-      const points = curves[activeSeries];
+    function curveSvgPath(series) {
+      const points = curves[series] || [];
+      if (!points.length) return "";
       const svgPoints = points.map(point => [point[0] * 1000, (1 - point[1]) * 320]);
-      const duration = trajectoryDurationHours();
-      const seriesTotal = Math.max(0, metricQuantity(activeSeries));
-      const previousPath = graphLine.getAttribute("d");
-      const previousColor = graphLine.style.stroke || curveColors[activeSeries];
       let path = "M " + svgPoints[0][0] + " " + svgPoints[0][1];
       for (let i = 0; i < svgPoints.length - 1; i++) {
         const before = svgPoints[Math.max(0, i - 1)];
@@ -2086,12 +2088,34 @@
         const c2y = end[1] - (after[1] - start[1]) / 6;
         path += " C " + c1x + " " + c1y + ", " + c2x + " " + c2y + ", " + end[0] + " " + end[1];
       }
+      return path;
+    }
+    function renderCurve(animate = false) {
+      const showAll = activeSeries === "all";
+      const seriesKeys = showAll ? ["views","likes","comments","saves","shares","reposts"].filter(metricEnabled) : [activeSeries];
+      const firstSeries = seriesKeys[0];
+      const duration = trajectoryDurationHours();
+      const previousPath = graphLine.getAttribute("d");
+      const previousColor = graphLine.style.stroke || curveColors[activeSeries] || curveColors.likes;
       if (animate && previousPath && typeof graphLine.animate === "function") {
         graphPreviousLine.setAttribute("d", previousPath);
         graphPreviousLine.style.stroke = previousColor;
+      } else {
+        graphPreviousLine.setAttribute("d", "");
       }
-      graphLine.setAttribute("d", path);
-      graphLine.style.stroke = curveColors[activeSeries];
+      graphLinesExtra.replaceChildren();
+      graphLine.setAttribute("d", firstSeries ? curveSvgPath(firstSeries) : "");
+      graphLine.style.stroke = firstSeries ? curveColors[firstSeries] : "";
+      graphLine.style.opacity = showAll ? ".86" : "1";
+      seriesKeys.slice(1).forEach(series => {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("class", "graph-line");
+        line.setAttribute("d", curveSvgPath(series));
+        line.style.stroke = curveColors[series];
+        line.style.opacity = ".86";
+        graphLinesExtra.appendChild(line);
+        if (animate && typeof line.animate === "function") line.animate([{opacity:0},{opacity:.86}], {duration:400,easing:"ease-out"});
+      });
       if (animate && previousPath && typeof graphLine.animate === "function") {
         graphPreviousLine.animate([{opacity:1},{opacity:0}], {duration:400,easing:"ease-out"});
         graphLine.animate([{opacity:0},{opacity:1}], {duration:400,easing:"ease-out"});
@@ -2100,20 +2124,21 @@
         const selected = button.dataset.series === activeSeries;
         button.classList.toggle("active", selected);
         button.setAttribute("aria-pressed", String(selected));
-        button.disabled = !metricEnabled(button.dataset.series);
+        button.disabled = button.dataset.series !== "all" && !metricEnabled(button.dataset.series);
         button.setAttribute("aria-disabled", String(button.disabled));
       });
-      document.querySelector("#graph-y-top").textContent = trajectoryCount(seriesTotal);
-      document.querySelector("#graph-y-middle").textContent = trajectoryCount(seriesTotal / 2);
+      const seriesTotal = showAll ? 100 : Math.max(0, metricQuantity(activeSeries));
+      document.querySelector("#graph-y-top").textContent = showAll ? "100%" : trajectoryCount(seriesTotal);
+      document.querySelector("#graph-y-middle").textContent = showAll ? "50%" : trajectoryCount(seriesTotal / 2);
       document.querySelector("#graph-x-middle").textContent = trajectoryHours(duration / 2);
       document.querySelector("#graph-x-end").textContent = trajectoryHours(duration);
-      graphSvg.setAttribute("aria-label", "Cumulative " + activeSeries + " growth curve over " + trajectoryHours(duration));
+      graphSvg.setAttribute("aria-label", (showAll ? "All selected service growth curves, normalized per service" : "Cumulative " + activeSeries + " growth curve") + " over " + trajectoryHours(duration));
       renderSummary();
       renderServiceIntervals(trajectoryRows, trajectoryMode);
     }
     document.querySelectorAll(".series-tab").forEach(button => button.addEventListener("click", () => {
       activeSeries = button.dataset.series;
-      renderCurve();
+      renderCurve(true);
     }));
     document.querySelectorAll("[data-trajectory-mode]").forEach(button => button.addEventListener("click", () => {
       trajectoryMode = button.dataset.trajectoryMode;
@@ -2193,8 +2218,10 @@
         engagementMetrics.forEach(metric => { engagementRates[metric.key] = engagementAmounts[metric.key] / views * 100; });
         selectedServices.views = true;
       } else selectedServices[key] = !metricEnabled(key);
-      if (metricEnabled(key)) activeSeries = key;
-      else if (activeSeries === key) activeSeries = metrics.find(metric => metricEnabled(metric.key))?.key || "views";
+      if (activeSeries !== "all") {
+        if (metricEnabled(key)) activeSeries = key;
+        else if (activeSeries === key) activeSeries = metrics.find(metric => metricEnabled(metric.key))?.key || "views";
+      }
       renderCurve(true);
       document.querySelector('[data-preview-metric="' + key + '"]')?.focus();
     });
