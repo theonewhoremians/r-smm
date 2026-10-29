@@ -949,10 +949,17 @@
       .admin-main .balance-zero-filter{min-height:36px;padding:0 10px;white-space:nowrap}
       .admin-main .record-card{padding:13px 14px;border-radius:14px}
     }
+    .session-restore{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0,rgba(104,91,198,.17),transparent 48%),linear-gradient(145deg,#090d18,#0d1221 55%,#0a1120);color:#f4f6ff}
+    .session-restore[hidden]{display:none}
+    .session-restore-content{display:grid;justify-items:center;gap:14px;color:#a4aec5;font-size:13px}
+    .session-restore-mark{width:42px;height:42px;border:1px solid rgba(108,230,220,.34);border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(161,140,255,.22),rgba(108,230,220,.12));color:#d9d4ff;font-size:19px;font-weight:800}
+    .session-restore-spinner{width:19px;height:19px;border:2px solid rgba(207,220,255,.17);border-top-color:#6ce6dc;border-radius:50%;animation:session-spin .75s linear infinite}
+    @keyframes session-spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
-  <main class="shell" id="auth-screen">
+  <div class="session-restore" id="session-restore" role="status" aria-live="polite"><div class="session-restore-content"><span class="session-restore-mark" aria-hidden="true">R</span><span>Restoring your session…</span><span class="session-restore-spinner" aria-hidden="true"></span></div></div>
+  <main class="shell" id="auth-screen" hidden>
     <section class="story" aria-label="Welcome to R-SMM">
       <article class="story-copy">
         <div class="eyebrow">Your social studio</div>
@@ -1346,6 +1353,7 @@
       walletRequestVersion++;
       document.querySelector("#api-key-result").hidden = true;
       document.querySelector("#api-key-value").textContent = "";
+      document.querySelector("#session-restore").hidden = true;
       document.querySelector("#auth-screen").hidden = true;
       document.querySelector("#workspace").hidden = false;
       const isAdmin = role === "admin";
@@ -2548,6 +2556,7 @@
       } catch (_) {}
       accountViewVersion++;
       walletRequestVersion++;
+      document.querySelector("#session-restore").hidden = true;
       document.querySelector("#workspace").hidden = true;
       document.querySelector("#admin-panel").hidden = true;
       document.querySelector("#customer-shell").hidden = false;
@@ -2577,9 +2586,19 @@
     document.querySelector("#logout").addEventListener("click", signOut);
     document.querySelector("#admin-logout").addEventListener("click", signOut);
     runTrajectorySimulation(false, true);
-    fetch("/api/me", {credentials:"same-origin", cache:"no-store"}).then(response => response.json()).then(data => {
+    fetch("/api/me", {credentials:"same-origin", cache:"no-store"}).then(response => {
+      if (!response.ok) throw new Error("Could not restore session.");
+      return response.json();
+    }).then(data => {
       if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role);
-    }).catch(() => {});
+      else {
+        document.querySelector("#session-restore").hidden = true;
+        document.querySelector("#auth-screen").hidden = false;
+      }
+    }).catch(() => {
+      document.querySelector("#session-restore").hidden = true;
+      document.querySelector("#auth-screen").hidden = false;
+    });
   </script>
 </body>
 </html>

@@ -20,7 +20,7 @@ _DB_READY = False
 _TELEGRAM_WEBHOOK_READY = False
 PASSWORD_ROUNDS = 310_000
 LOCK_SECONDS = 6 * 60 * 60
-SESSION_SECONDS = 7 * 24 * 60 * 60
+SESSION_SECONDS = 365 * 24 * 60 * 60
 ORDER_RATE_MICROS = {
     "views": 85,
     "likes": 5210,
@@ -518,6 +518,22 @@ class App(BaseHTTPRequestHandler):
                 WHERE sessions.token_hash = ? AND sessions.expires > ?
             """, (digest, int(time.time()))).fetchone()
 
+    def renew_session(self):
+        cookies = self.headers.get("Cookie", "")
+        token = next((part.split("=", 1)[1] for part in cookies.split("; ")
+                      if part.startswith("session=")), None)
+        if not token:
+            return None
+        now = int(time.time())
+        digest = hashlib.sha256(token.encode()).hexdigest()
+        with connect() as db:
+            row_count = db.execute("UPDATE sessions SET expires = ? WHERE token_hash = ? AND expires > ?",
+                                   (now + SESSION_SECONDS, digest, now)).rowcount
+        if row_count != 1:
+            return None
+        secure = "; Secure" if os.environ.get("VERCEL") else ""
+        return f"session={token}; Path=/; HttpOnly; SameSite=Lax{secure}; Max-Age={SESSION_SECONDS}"
+
     def create_session(self, email):
         token = secrets.token_urlsafe(32)
         with connect() as db:
@@ -540,11 +556,12 @@ class App(BaseHTTPRequestHandler):
             self.wfile.write(page)
         elif self.path == "/api/me":
             user = self.session_user()
+            cookie = self.renew_session() if user else None
             self.respond(200, {"authenticated": bool(user), "name": user["name"] if user else "",
                                "email": user["email"] if user else "",
                                "role": user["role"] if user else "customer",
                                "currency": user["currency"] if user else "USDT",
-                               "balance_micros": user["balance_micros"] if user else 0})
+                               "balance_micros": user["balance_micros"] if user else 0}, cookie)
         elif self.path == "/api/admin/summary":
             self.admin_summary()
         elif self.path == "/api/orders":
