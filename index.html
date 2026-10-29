@@ -263,7 +263,7 @@
     @media(max-width:760px){.app-shell{display:block}.sidebar{height:auto;position:static;padding:12px 14px 0;border-right:0;border-bottom:1px solid #e9ece8}.side-brand{padding-bottom:8px}.logo-badge{width:38px;height:38px;border-radius:12px}.logo-badge span{width:25px;height:25px}.account-card{margin:0 0 10px;padding:8px 10px}.account-avatar{width:32px;height:32px}.wallet-card,.menu-caption,.side-bottom .currency-pill,.telegram-card{display:none}.side-menu ul{display:flex;overflow:auto;padding:0 0 9px;gap:5px}.nav-item{width:auto;min-height:38px;white-space:nowrap;padding:0 11px;font-size:12px}.nav-item:not(.current){display:none}.side-bottom{position:absolute;right:14px;top:13px;margin:0}.logout-button{width:auto;height:37px;margin:0;border:0;padding:0 10px;border-radius:10px;font-size:12px}.dashboard{padding:24px 16px 48px}#engagement-page{padding-bottom:calc(132px + env(safe-area-inset-bottom))}.page-heading{align-items:flex-start}.page-heading h1{font-size:28px}.draft-pill{font-size:10px;padding:8px}.form-card{padding:18px 16px 20px;margin-bottom:20px}.section-icon{width:42px;height:42px;border-radius:13px}.section-title h2{font-size:18px}.pick-label{font-size:9px}.link-input{height:58px;font-size:14px}.quantity-preset{min-width:70px;height:49px;font-size:15px}.custom-quantity{width:140px;height:48px}.engagement-head{align-items:flex-start}.engagement-head h2{font-size:19px}.engagement-head p{font-size:12px}.engagement-actions{gap:6px}.how-details summary{font-size:11px;padding:10px}.active-count{padding:11px 12px;font-size:11px}.metric-list{gap:13px}.metric-card{padding:15px 12px 12px}.metric-top{grid-template-columns:minmax(0,1fr) auto auto;gap:9px}.metric-name-wrap{gap:6px}.metric-title{font-size:14px}.metric-range{font-size:10px}.metric-amount{width:75px;height:36px;font-size:13px}.switch,.switch-track{width:48px}.switch-track:after{width:20px;height:20px;top:4px;left:3px}.switch input:checked + .switch-track:after{transform:translateX(22px)}.delivery summary{padding:9px;gap:8px}.delivery-icon{width:34px;height:34px}.delivery-copy{font-size:11px}.delivery-copy small{font-size:10px}.delivery-fields{grid-template-columns:repeat(2,minmax(0,1fr));padding:2px 10px 12px}.floating-support{width:52px;height:52px;right:14px;bottom:14px;font-size:23px}.growth-chart{height:260px}.growth-heading h2,.preview-heading h2{font-size:17px}.growth-top{gap:10px}.growth-instructions{font-size:12px}.series-tabs{gap:6px}.series-tab{padding:8px 10px;font-size:11px}.curve-presets{gap:5px}.curve-preset,.curve-reset{font-size:10px;padding:9px}.curve-actions{align-items:flex-start}.curve-legend{gap:9px;font-size:11px}.preview-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px 0 14px}.preview-metric{min-height:92px}.per-type-rows{grid-template-columns:repeat(2,minmax(0,1fr))}.order-summary{display:block;padding:16px;margin-top:18px}.order-price{font-size:32px}.order-actions{margin-top:14px;justify-content:space-between}.balance-pill{padding:11px;font-size:11px}.place-order{flex:1;min-height:48px;font-size:12px}.compact-order-bar{bottom:calc(82px + env(safe-area-inset-bottom));padding:9px 10px;border-radius:15px}.compact-order-total{font-size:20px}.compact-order-bar .place-order{min-height:42px;padding:0 13px;font-size:12px}.draw-control{font-size:12px}.draw-badge{padding:5px 8px;font-size:9px}}
     @media(max-width:760px){.per-type-rows{grid-template-columns:1fr}}
     @media(max-width:430px){.page-heading{display:block}.draft-pill{display:inline-block;margin-top:12px}.section-head{align-items:flex-start}.pick-label{padding-top:8px}.platform-button{padding:8px 11px}.quantity-preset{min-width:calc(33.3% - 7px);flex:1}.custom-row{gap:7px;font-size:12px}.custom-quantity{width:120px}.engagement-head{display:block}.engagement-actions{margin-top:12px}.metric-amount{width:67px}.delivery-copy small{max-width:200px}.growth-top{display:block}.draw-control{margin-top:13px;justify-content:flex-end}.growth-heading{gap:8px}.growth-heading h2{font-size:16px}.curve-preset{padding:8px 7px;font-size:9px}.curve-reset{padding:8px 9px}.curve-actions{gap:6px}.order-actions{display:grid;grid-template-columns:1fr 1.4fr}.balance-pill{white-space:normal}.service-dialog-fields{grid-template-columns:1fr}.service-dialog-form{padding:21px}}
-    @media(prefers-reduced-motion:reduce){.compact-order-bar{transition:none}}
+    @media(prefers-reduced-motion:reduce){.compact-order-bar{transition:none}.bonus-banner{animation:none}}
 
     /* R-SMM black and beige palette */
     :root{color:#191713;background:#f5f0e6;font-synthesis:none}
@@ -478,6 +478,12 @@
     .balance-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
     .balance-filters>label{display:flex;align-items:center;gap:9px;color:#625743;font-size:12px;font-weight:650}
     .balance-filters select{min-height:38px;padding:0 11px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8;color:#191713;font:inherit}
+    .admin-credit-card{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(150px,1.5fr) minmax(110px,1fr) auto;align-items:end;gap:11px;margin:0 0 14px;padding:14px;border:1px solid var(--glass-border);border-radius:15px;background:rgba(255,255,255,.035)}
+    .admin-credit-intro{grid-column:1/-1;display:grid;gap:4px}.admin-credit-intro strong{color:var(--text);font-size:13px}.admin-credit-intro small{color:var(--muted);font-size:11px;line-height:1.45}
+    .admin-credit-card label{display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:650}
+    .admin-credit-card input,.admin-credit-card select{width:100%;min-width:0;min-height:38px;padding:0 10px;border:1px solid var(--glass-border);border-radius:10px;color:#eef1ff;background:rgba(9,15,27,.62);font:inherit}
+    .admin-credit-card select option{color:#f1f4ff;background:#151c2d}
+    .admin-credit-card .admin-action{min-height:38px;white-space:nowrap}
     .balance-zero-filter{min-height:38px;padding:0 12px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8}
     .balance-zero-filter input{flex:none;width:16px;height:16px;margin:0;padding:0;border:1px solid var(--glass-border);border-radius:4px;background:transparent;box-shadow:none;accent-color:var(--aqua)}
     .admin-actions{display:flex;gap:8px;margin-top:14px}
@@ -856,6 +862,11 @@
     .balance-pill{color:#dce3f5;background:rgba(255,255,255,.07)}
     .balance-pill strong{color:#f3f5ff}
     .dashboard-toast{color:#f4f6ff;background:rgba(24,31,50,.94);border:1px solid var(--glass-border);box-shadow:0 14px 38px rgba(0,0,0,.3);backdrop-filter:blur(18px)}
+    .bonus-banner{position:fixed;top:calc(18px + env(safe-area-inset-top));left:50%;z-index:60;display:flex;align-items:center;gap:12px;width:min(470px,calc(100vw - 30px));padding:15px 48px 15px 16px;border:1px solid rgba(108,230,220,.32);border-radius:16px;background:linear-gradient(125deg,rgba(31,40,63,.98),rgba(16,33,43,.98));box-shadow:0 18px 48px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.1);color:#f3f5ff;transform:translateX(-50%);animation:bonus-banner-in .24s ease-out}
+    .bonus-banner-icon{width:38px;height:38px;flex:none;display:grid;place-items:center;border:1px solid rgba(108,230,220,.22);border-radius:12px;background:linear-gradient(145deg,rgba(161,140,255,.2),rgba(108,230,220,.16));font-size:19px}
+    .bonus-banner-copy{display:grid;gap:4px;min-width:0}.bonus-banner-copy strong{font-size:14px}.bonus-banner-copy span{color:#b8c5df;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+    .bonus-banner-dismiss{position:absolute;top:8px;right:9px;width:30px;height:30px;border:0;border-radius:9px;background:transparent;color:#b8c5df;font-size:21px;cursor:pointer}.bonus-banner-dismiss:hover{background:rgba(255,255,255,.08);color:#fff}
+    @keyframes bonus-banner-in{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
     .floating-support{color:#07131d;background:linear-gradient(145deg,#78dcf2,#729eff);border-color:rgba(239,247,255,.8);box-shadow:0 12px 32px rgba(76,165,230,.3)}
     .floating-support:hover{background:linear-gradient(145deg,#9ae9f7,#8eafff)}
     .overview-card span,.wallet-overview span,.overview-card small,.wallet-overview small{color:#aab5ca}
@@ -948,6 +959,7 @@
       .admin-main .balance-filters select{min-height:36px;padding:0 9px;font-size:12px}
       .admin-main .balance-zero-filter{min-height:36px;padding:0 10px;white-space:nowrap}
       .admin-main .record-card{padding:13px 14px;border-radius:14px}
+      .admin-credit-card{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px}.admin-credit-intro{grid-column:1/-1}.admin-credit-card label:first-of-type{grid-column:1/-1}.admin-credit-card .admin-action{width:100%}
     }
     .session-restore{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0,rgba(104,91,198,.17),transparent 48%),linear-gradient(145deg,#090d18,#0d1221 55%,#0a1120);color:#f4f6ff}
     .session-restore[hidden]{display:none}
@@ -1007,6 +1019,11 @@
     </section>
   </main>
   <main class="workspace" id="workspace" hidden>
+    <div class="bonus-banner" id="bonus-banner" role="status" aria-live="polite" hidden>
+      <span class="bonus-banner-icon" aria-hidden="true">🎉</span>
+      <span class="bonus-banner-copy"><strong>Congratulations!</strong><span id="bonus-banner-message"></span></span>
+      <button class="bonus-banner-dismiss" id="bonus-banner-dismiss" type="button" aria-label="Dismiss bonus notice">×</button>
+    </div>
     <div class="app-shell" id="customer-shell">
       <aside class="sidebar">
         <div class="account-card">
@@ -1247,7 +1264,7 @@
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Fulfilled orders</h2><p>Completed order history.</p></div></div><div class="record-list" id="admin-completed-orders"><div class="empty-state">No fulfilled orders yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="accounts" hidden>
-          <section class="admin-section admin-accounts-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
+          <section class="admin-section admin-accounts-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><form class="admin-credit-card" id="admin-credit-form"><div class="admin-credit-intro"><strong>Credit a bonus</strong><small>The amount is added to the selected wallet. The account holder will see a one-time congratulations banner the next time they open their account.</small></div><label for="admin-credit-account">Account<select id="admin-credit-account" required></select></label><label for="admin-credit-amount">Amount<input id="admin-credit-amount" type="number" min="0.001" step="0.001" inputmode="decimal" placeholder="0.000" required></label><label for="admin-credit-currency">Currency<select id="admin-credit-currency"><option value="USDT">USDT</option><option value="USDC">USDC</option></select></label><button class="admin-action" id="admin-credit-submit" type="submit">Credit bonus</button></form><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="payments" hidden>
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer externally; approved USDC requests include a 10% bonus, capped at 200 USDC.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
@@ -1297,6 +1314,8 @@
     const graphLinesExtra = document.querySelector("#graph-lines-extra");
     let mode = "login";
     let toastTimer;
+    let bonusBannerTimer;
+    let bonusNotificationQueue = [];
     let walletRequestVersion = 0;
     let accountViewVersion = 0;
     let walletCurrency = "USDT";
@@ -1348,7 +1367,7 @@
       notice.textContent = "";
       notice.className = "notice";
     }
-    function enterWorkspace(name, email, currency, balanceMicros, role = "customer") {
+    function enterWorkspace(name, email, currency, balanceMicros, role = "customer", bonusNotifications = []) {
       accountViewVersion++;
       walletRequestVersion++;
       document.querySelector("#api-key-result").hidden = true;
@@ -1374,6 +1393,7 @@
       showCustomerPage("dashboard");
       loadCustomerOrders();
       loadCustomerWallet();
+      queueBonusNotifications(bonusNotifications);
     }
     function formatPrice(micros) {
       return (Number(micros) / 1000000).toFixed(3).replace(/(?:\.0+|(\.\d*?[1-9])0+)$/, "$1");
@@ -1578,7 +1598,7 @@
         depositList.innerHTML = deposits.length ? deposits.map(customerDepositHtml).join("") : '<div class="empty-state">No deposit requests yet.</div>';
         const transactionList = document.querySelector("#wallet-transactions");
         transactionList.innerHTML = transactions.length ? transactions.map(item =>
-          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "deposit" ? "Deposit credited" : item.amount_micros > 0 ? "Order refund" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + (item.kind === "deposit" ? formatDepositAmount(Math.abs(item.amount_micros)) : formatPrice(Math.abs(item.amount_micros))) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
+          '<article class="record-card compact-record"><div class="record-top"><div><strong>' + escapeHtml(item.kind === "admin_bonus" ? "Admin bonus" : item.kind === "deposit" ? "Deposit credited" : item.amount_micros > 0 ? "Order refund" : "Order charge") + '</strong><span>' + formatDate(item.created_at) + '</span></div><strong class="' + (item.amount_micros < 0 ? "debit" : "credit") + '">' + (item.amount_micros > 0 ? "+" : "−") + (item.kind === "deposit" ? formatDepositAmount(Math.abs(item.amount_micros)) : formatPrice(Math.abs(item.amount_micros))) + ' ' + escapeHtml(item.currency) + '</strong></div></article>'
         ).join("") : '<div class="empty-state">No wallet activity yet.</div>';
         document.querySelector("#overview-deposits").textContent = deposits.filter(item => item.status === "pending").length;
         return true;
@@ -1603,6 +1623,16 @@
       balances.innerHTML = accounts.length ? accounts.map(account =>
         '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(account.name) + '</strong><span>' + escapeHtml(account.email) + '</span></div><strong>' + (account.wallets || []).map(wallet => formatBalance(wallet.balance_micros) + ' ' + escapeHtml(wallet.currency)).join(' · ') + '</strong></div></article>'
       ).join("") : '<div class="empty-state">' + (adminAccounts.length && hideZeroBalances ? 'No accounts with a balance.' : 'No accounts yet.') + '</div>';
+      const accountSelector = document.querySelector("#admin-credit-account");
+      const selectedEmail = accountSelector.value;
+      accountSelector.innerHTML = adminAccounts.length ? adminAccounts.map(account =>
+        '<option value="' + escapeHtml(account.email) + '">' + escapeHtml(account.name) + ' · ' + escapeHtml(account.email) + '</option>'
+      ).join("") : '<option value="">No accounts available</option>';
+      accountSelector.disabled = !adminAccounts.length;
+      if (adminAccounts.some(account => account.email === selectedEmail)) accountSelector.value = selectedEmail;
+      else if (adminAccounts.length) accountSelector.value = adminAccounts[0].email;
+      const selectedAccount = adminAccounts.find(account => account.email === accountSelector.value);
+      if (selectedAccount) document.querySelector("#admin-credit-currency").value = selectedAccount.currency === "USDC" ? "USDC" : "USDT";
     }
     async function loadAdmin() {
       const requestVersion = accountViewVersion;
@@ -1820,6 +1850,28 @@
       toast.hidden = false;
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { toast.hidden = true; }, 3200);
+    }
+    function queueBonusNotifications(notifications) {
+      if (!Array.isArray(notifications)) return;
+      bonusNotificationQueue.push(...notifications.filter(item =>
+        item && (item.currency === "USDT" || item.currency === "USDC") && Number(item.amount_micros) > 0
+      ));
+      if (bonusNotificationQueue.length && document.querySelector("#bonus-banner").hidden) showNextBonusNotification();
+    }
+    function showNextBonusNotification() {
+      const banner = document.querySelector("#bonus-banner");
+      const next = bonusNotificationQueue.shift();
+      if (!next) { banner.hidden = true; return; }
+      document.querySelector("#bonus-banner-message").textContent =
+        "You’ve received a bonus of " + formatPrice(next.amount_micros) + " " + next.currency + ".";
+      banner.hidden = false;
+      clearTimeout(bonusBannerTimer);
+      bonusBannerTimer = setTimeout(dismissBonusNotification, 8000);
+    }
+    function dismissBonusNotification() {
+      document.querySelector("#bonus-banner").hidden = true;
+      clearTimeout(bonusBannerTimer);
+      if (bonusNotificationQueue.length) showNextBonusNotification();
     }
     function trajectoryRandomRange(minimum, maximum) {
       return minimum + Math.random() * (maximum - minimum);
@@ -2387,6 +2439,33 @@
     });
     document.querySelector("#admin-balance-sort").addEventListener("change", renderAdminAccounts);
     document.querySelector("#hide-zero-balances").addEventListener("change", renderAdminAccounts);
+    document.querySelector("#bonus-banner-dismiss").addEventListener("click", dismissBonusNotification);
+    document.querySelector("#admin-credit-account").addEventListener("change", event => {
+      const account = adminAccounts.find(item => item.email === event.currentTarget.value);
+      if (account) document.querySelector("#admin-credit-currency").value = account.currency === "USDC" ? "USDC" : "USDT";
+    });
+    document.querySelector("#admin-credit-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const submit = document.querySelector("#admin-credit-submit");
+      const amount = document.querySelector("#admin-credit-amount").value;
+      submit.disabled = true;
+      submit.textContent = "Crediting…";
+      try {
+        const result = await requestJson("/api/admin/accounts/bonus", {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({email:document.querySelector("#admin-credit-account").value,
+            amount, currency:document.querySelector("#admin-credit-currency").value})
+        });
+        document.querySelector("#admin-credit-amount").value = "";
+        showToast("Bonus of " + formatPrice(result.amount_micros) + " " + result.currency + " credited to " + result.email + ".");
+        await loadAdmin();
+      } catch (error) {
+        showToast(error.message || "Could not credit the bonus.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Credit bonus";
+      }
+    });
     document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
       document.querySelectorAll("[data-admin-view]").forEach(tab => {
         const active = tab === button;
@@ -2516,6 +2595,7 @@
         if (requestVersion !== accountViewVersion) return false;
         if (!account.authenticated) throw new Error("Your session has expired. Please sign in again.");
         if (account.role === "admin") return await loadAdmin();
+        queueBonusNotifications(account.bonus_notifications);
         updateWallet(account.currency, account.balance_micros);
         return true;
       } catch (error) {
@@ -2543,7 +2623,7 @@
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "Something went wrong. Please try again.");
         await enterWorkspace(result.name || payload.name || "", result.email || payload.email || "",
-                             result.currency, result.balance_micros, result.role);
+                             result.currency, result.balance_micros, result.role, result.bonus_notifications);
       } catch (error) {
         showNotice(error instanceof TypeError ? "Cannot reach R-SMM. Make sure app.py is running, then try again." : error.message || "Could not connect. Please try again.");
         submit.disabled = false;
@@ -2590,7 +2670,7 @@
       if (!response.ok) throw new Error("Could not restore session.");
       return response.json();
     }).then(data => {
-      if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role);
+      if (data.authenticated) enterWorkspace(data.name, data.email, data.currency, data.balance_micros, data.role, data.bonus_notifications);
       else {
         document.querySelector("#session-restore").hidden = true;
         document.querySelector("#auth-screen").hidden = false;
