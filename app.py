@@ -1212,21 +1212,24 @@ class App(BaseHTTPRequestHandler):
             if not worker:
                 return
             pending_orders = db.execute("""
-                SELECT o.id, o.post_url, u.name
+                SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
+                       o.amount_micros, o.settings_json, u.name
                 FROM orders o JOIN users u ON u.email = o.email
                 LEFT JOIN worker_order_claims c ON c.order_id = o.id
                 WHERE o.status = 'pending' AND c.order_id IS NULL
                 ORDER BY o.created_at ASC, o.id ASC
             """).fetchall()
-            approved_orders = db.execute("""
-                SELECT o.id, o.post_url, u.name, c.claimed_at
+            in_progress_orders = db.execute("""
+                SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
+                       o.amount_micros, o.settings_json, o.approved_at, u.name, c.claimed_at
                 FROM orders o JOIN users u ON u.email = o.email
                 LEFT JOIN worker_order_claims c ON c.order_id = o.id
                 WHERE o.status = 'processing' AND (c.order_id IS NULL OR c.worker_email = ?)
                 ORDER BY o.approved_at ASC, o.id ASC
             """, (worker["email"],)).fetchall()
             completed_orders = db.execute("""
-                SELECT o.id, o.post_url, u.name, c.completed_at
+                SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
+                       o.amount_micros, o.settings_json, u.name, c.completed_at
                 FROM worker_order_completions c
                 JOIN orders o ON o.id = c.order_id
                 JOIN users u ON u.email = o.email
@@ -1235,7 +1238,7 @@ class App(BaseHTTPRequestHandler):
             """, (worker["email"],)).fetchall()
             completed_count = len(completed_orders)
         self.respond(200, {"pending_orders": [dict(row) for row in pending_orders],
-                           "approved_orders": [dict(row) for row in approved_orders],
+                           "in_progress_orders": [dict(row) for row in in_progress_orders],
                            "completed_orders": [dict(row) for row in completed_orders],
                            "completed_count": completed_count})
 
@@ -1251,7 +1254,7 @@ class App(BaseHTTPRequestHandler):
                 db.execute("BEGIN IMMEDIATE")
             order_id = int(self.path.split("/")[4])
             order = db.execute(row_lock("SELECT status FROM orders WHERE id = ?"), (order_id,)).fetchone()
-            if not order or order["status"] != "processing":
+            if not order or order["status"] not in ("pending", "processing"):
                 db.rollback()
                 self.respond(409, {"error": "This order is no longer available to approve."})
                 return
@@ -1265,6 +1268,8 @@ class App(BaseHTTPRequestHandler):
                     self.respond(409, {"error": "Another worker has already approved this order."})
                 return
             claimed_at = int(time.time())
+            db.execute("UPDATE orders SET status = 'processing', approved_at = COALESCE(approved_at, ?) WHERE id = ?",
+                       (claimed_at, order_id))
             db.execute("INSERT INTO worker_order_claims (order_id, worker_email, claimed_at) VALUES (?, ?, ?)",
                        (order_id, worker["email"], claimed_at))
             db.commit()

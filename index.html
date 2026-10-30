@@ -496,7 +496,7 @@
     .worker-order-tab-count{display:grid;min-width:22px;height:22px;place-items:center;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.13);font-size:11px}
     .worker-order-tab[aria-selected="true"] .worker-order-tab-count{background:rgba(12,18,32,.16)}
     .worker-order-section[hidden]{display:none}
-    .worker-order-card{display:grid;gap:12px}.worker-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.worker-order-heading strong{color:var(--text);font-size:14px}.worker-order-heading span{color:var(--muted);font-size:12px;text-align:right}.worker-order-link{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--aqua);font-size:12px;text-decoration:none}.worker-order-actions{display:flex;gap:8px;flex-wrap:wrap}.worker-order-actions button{min-height:36px;padding:0 12px}
+    .worker-order-card{display:grid;gap:12px}.worker-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.worker-order-heading strong{color:var(--text);font-size:14px}.worker-order-heading span{color:var(--muted);font-size:12px;text-align:right}.worker-order-meta{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.worker-order-link{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--aqua);font-size:12px;text-decoration:none}.worker-order-actions{display:flex;gap:8px;flex-wrap:wrap}.worker-order-actions button{min-height:36px;padding:0 12px}
     .balance-zero-filter{min-height:38px;padding:0 12px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8}
     .balance-zero-filter input{flex:none;width:16px;height:16px;margin:0;padding:0;border:1px solid var(--glass-border);border-radius:4px;background:transparent;box-shadow:none;accent-color:var(--aqua)}
     .admin-actions{display:flex;gap:8px;margin-top:14px}
@@ -1302,12 +1302,12 @@
       <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
         <nav class="worker-order-tabs" role="tablist" aria-label="Worker order status">
-          <button class="worker-order-tab" id="worker-tab-pending" type="button" role="tab" aria-selected="false" aria-controls="worker-section-pending" data-worker-view="pending">Pending <span class="worker-order-tab-count" id="worker-pending-count">0</span></button>
-          <button class="worker-order-tab" id="worker-tab-approved" type="button" role="tab" aria-selected="true" aria-controls="worker-section-approved" data-worker-view="approved">Approved <span class="worker-order-tab-count" id="worker-approved-count">0</span></button>
+          <button class="worker-order-tab" id="worker-tab-pending" type="button" role="tab" aria-selected="true" aria-controls="worker-section-pending" data-worker-view="pending">Pending <span class="worker-order-tab-count" id="worker-pending-count">0</span></button>
+          <button class="worker-order-tab" id="worker-tab-in-progress" type="button" role="tab" aria-selected="false" aria-controls="worker-section-in-progress" data-worker-view="in-progress" tabindex="-1">In Progress <span class="worker-order-tab-count" id="worker-in-progress-count">0</span></button>
           <button class="worker-order-tab" id="worker-tab-completed" type="button" role="tab" aria-selected="false" aria-controls="worker-section-completed" data-worker-view="completed">Completed <span class="worker-order-tab-count" id="worker-completed-section-count">0</span></button>
         </nav>
-        <section class="admin-section worker-order-section" id="worker-section-pending" role="tabpanel" aria-labelledby="worker-tab-pending" data-worker-section="pending" hidden><div class="record-list" id="worker-pending-orders"><div class="empty-state">No pending orders.</div></div></section>
-        <section class="admin-section worker-order-section" id="worker-section-approved" role="tabpanel" aria-labelledby="worker-tab-approved" data-worker-section="approved"><div class="record-list" id="worker-approved-orders"><div class="empty-state">No approved orders.</div></div></section>
+        <section class="admin-section worker-order-section" id="worker-section-pending" role="tabpanel" aria-labelledby="worker-tab-pending" data-worker-section="pending"><div class="record-list" id="worker-pending-orders"><div class="empty-state">No pending orders.</div></div></section>
+        <section class="admin-section worker-order-section" id="worker-section-in-progress" role="tabpanel" aria-labelledby="worker-tab-in-progress" data-worker-section="in-progress" hidden><div class="record-list" id="worker-in-progress-orders"><div class="empty-state">No orders in progress.</div></div></section>
         <section class="admin-section worker-order-section" id="worker-section-completed" role="tabpanel" aria-labelledby="worker-tab-completed" data-worker-section="completed" hidden><div class="record-list" id="worker-completed-orders"><div class="empty-state">No completed orders yet.</div></div></section>
       </div>
       <div class="dashboard-toast" id="worker-toast" role="status" hidden></div>
@@ -1428,7 +1428,7 @@
       }
       if (isWorker) {
         workerQueueVersion++;
-        setWorkerOrderView("approved");
+        setWorkerOrderView("pending");
         document.querySelector("#worker-email").textContent = email;
         loadWorkerPortal();
         return;
@@ -1777,13 +1777,15 @@
       const orderId = Number(order.id);
       const postUrl = escapeHtml(order.post_url);
       const action = state === "pending"
-        ? '<span class="status-badge pending">awaiting admin approval</span>'
-        : state === "approved"
+        ? '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve &amp; take order</button>'
+        : state === "in-progress"
           ? order.claimed_at
             ? '<button class="admin-action" type="button" data-complete-worker-order="' + orderId + '">Mark completed</button>'
-            : '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve &amp; take order</button>'
+            : '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Take order</button>'
           : '<span class="status-badge completed">completed · ' + formatDate(order.completed_at) + '</span>';
+      const orderMeta = '<p class="worker-order-meta">' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' base views · ' + orderDurationHours(order.settings_json).toLocaleString() + 'h duration · ' + formatDate(order.created_at) + ' · ' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</p>';
       return '<article class="record-card worker-order-card" data-worker-order-id="' + orderId + '"><div class="worker-order-heading"><strong>Order #' + orderId + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
+        orderMeta + orderSettingsHtml(order.settings_json) +
         '<a class="worker-order-link" href="' + postUrl + '" target="_blank" rel="noopener">' + postUrl + '</a>' +
         '<div class="worker-order-actions"><button class="admin-action secondary" type="button" data-copy-worker-link="' + postUrl + '">Copy link</button>' + action + '</div></article>';
     }
@@ -1813,13 +1815,13 @@
         if (requestVersion !== accountViewVersion || queueVersion !== workerQueueVersion) return false;
         document.querySelector("#worker-completed-count").textContent = Number(summary.completed_count).toLocaleString();
         document.querySelector("#worker-pending-count").textContent = summary.pending_orders.length.toLocaleString();
-        document.querySelector("#worker-approved-count").textContent = summary.approved_orders.length.toLocaleString();
+        document.querySelector("#worker-in-progress-count").textContent = summary.in_progress_orders.length.toLocaleString();
         document.querySelector("#worker-completed-section-count").textContent = summary.completed_orders.length.toLocaleString();
         const pending = document.querySelector("#worker-pending-orders");
-        const approved = document.querySelector("#worker-approved-orders");
+        const inProgress = document.querySelector("#worker-in-progress-orders");
         const completed = document.querySelector("#worker-completed-orders");
         pending.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order => workerOrderCard(order, "pending")).join("") : '<div class="empty-state">No pending orders.</div>';
-        approved.innerHTML = summary.approved_orders.length ? summary.approved_orders.map(order => workerOrderCard(order, "approved")).join("") : '<div class="empty-state">No approved orders.</div>';
+        inProgress.innerHTML = summary.in_progress_orders.length ? summary.in_progress_orders.map(order => workerOrderCard(order, "in-progress")).join("") : '<div class="empty-state">No orders in progress.</div>';
         completed.innerHTML = summary.completed_orders.length ? summary.completed_orders.map(order => workerOrderCard(order, "completed")).join("") : '<div class="empty-state">No completed orders yet.</div>';
         return true;
       } catch (error) {
@@ -1831,8 +1833,9 @@
       }
     }
     async function approveWorkerOrder(orderId, button) {
+      const originalLabel = button.textContent;
       button.disabled = true;
-      button.textContent = "Approving…";
+      button.textContent = originalLabel === "Take order" ? "Taking…" : "Approving…";
       try {
         await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/approve", {
           method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
@@ -1840,28 +1843,34 @@
         workerQueueVersion++;
         const card = button.closest(".worker-order-card");
         if (card) {
+          const wasPending = Boolean(card.closest("#worker-pending-orders"));
           button.removeAttribute("data-approve-worker-order");
           button.setAttribute("data-complete-worker-order", String(orderId));
           button.textContent = "Mark completed";
           button.disabled = false;
-          const approved = document.querySelector("#worker-approved-orders");
-          clearWorkerListEmpty(approved);
-          approved.prepend(card);
+          const inProgress = document.querySelector("#worker-in-progress-orders");
+          clearWorkerListEmpty(inProgress);
+          inProgress.prepend(card);
+          if (wasPending) {
+            document.querySelector("#worker-pending-count").textContent = Math.max(0, Number(document.querySelector("#worker-pending-count").textContent) - 1).toLocaleString();
+            document.querySelector("#worker-in-progress-count").textContent = (Number(document.querySelector("#worker-in-progress-count").textContent) + 1).toLocaleString();
+          }
           setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
         } else {
           loadWorkerPortal();
         }
-        showToast("Order #" + orderId + " approved and assigned to you.");
+        showToast("Order #" + orderId + " assigned to you.");
       } catch (error) {
         showToast(error.message || "Could not approve this order.");
         if (error.status === 409) {
           workerQueueVersion++;
           button.closest(".worker-order-card")?.remove();
-          setWorkerListEmpty(document.querySelector("#worker-approved-orders"), "No approved orders.");
+          setWorkerListEmpty(document.querySelector("#worker-in-progress-orders"), "No orders in progress.");
+          setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
           loadWorkerPortal();
         } else {
           button.disabled = false;
-          button.textContent = "Approve & take order";
+          button.textContent = originalLabel;
         }
       }
     }
@@ -1875,17 +1884,17 @@
         workerQueueVersion++;
         const card = button.closest(".worker-order-card");
         if (card) {
-          const order = {
-            id:Number(orderId),
-            name:card.querySelector(".worker-order-heading span").textContent.replace(/^Placed by\s*/, ""),
-            post_url:card.querySelector(".worker-order-link").href,
-            completed_at:result.completed_at
-          };
+          const badge = document.createElement("span");
+          badge.className = "status-badge completed";
+          badge.textContent = "completed · " + formatDate(result.completed_at);
+          button.replaceWith(badge);
           card.remove();
           const completed = document.querySelector("#worker-completed-orders");
           clearWorkerListEmpty(completed);
-          completed.insertAdjacentHTML("afterbegin", workerOrderCard(order, "completed"));
-          setWorkerListEmpty(document.querySelector("#worker-approved-orders"), "No approved orders.");
+          completed.prepend(card);
+          document.querySelector("#worker-in-progress-count").textContent = Math.max(0, Number(document.querySelector("#worker-in-progress-count").textContent) - 1).toLocaleString();
+          document.querySelector("#worker-completed-section-count").textContent = (Number(document.querySelector("#worker-completed-section-count").textContent) + 1).toLocaleString();
+          setWorkerListEmpty(document.querySelector("#worker-in-progress-orders"), "No orders in progress.");
         }
         const count = document.querySelector("#worker-completed-count");
         count.textContent = (Number(count.textContent.replace(/,/g, "")) + 1).toLocaleString();
@@ -2974,11 +2983,11 @@
       document.querySelector("#admin-deposits").innerHTML = '<div class="empty-state">No pending payments.</div>';
       document.querySelector("#admin-approved-deposits").innerHTML = '<div class="empty-state">No approved deposits yet.</div>';
       document.querySelector("#worker-pending-orders").innerHTML = '<div class="empty-state">No pending orders.</div>';
-      document.querySelector("#worker-approved-orders").innerHTML = '<div class="empty-state">No approved orders.</div>';
+      document.querySelector("#worker-in-progress-orders").innerHTML = '<div class="empty-state">No orders in progress.</div>';
       document.querySelector("#worker-completed-orders").innerHTML = '<div class="empty-state">No completed orders yet.</div>';
       document.querySelector("#worker-completed-count").textContent = "0";
       document.querySelector("#worker-pending-count").textContent = "0";
-      document.querySelector("#worker-approved-count").textContent = "0";
+      document.querySelector("#worker-in-progress-count").textContent = "0";
       document.querySelector("#worker-completed-section-count").textContent = "0";
       document.querySelector("#generated-worker-email").textContent = "";
       document.querySelector("#generated-worker-password").textContent = "";
