@@ -462,24 +462,24 @@
     .admin-topbar .side-brand{padding:0}
     .admin-account{display:flex;align-items:center;gap:12px;color:#51493c;font-size:12px}
     .admin-logout{width:auto;height:38px;margin:0;padding:0 12px;border:1px solid #e5ddcf;border-radius:10px;background:#fffdf8;font-size:12px}
-    .admin-main{max-width:1380px;margin:0 auto;padding:34px clamp(18px,4vw,50px) 60px}
-    .admin-main .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:600px}
+    .admin-main{max-width:1380px;margin:0 auto;padding:34px clamp(18px,4vw,50px) 40px}
+    .admin-main .page-heading{margin-bottom:16px}
+    .admin-main .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:600px;margin-bottom:16px}
     .admin-main .overview-card{padding:17px 19px}
     .admin-main .overview-card strong{margin:8px 0 0}
-    .admin-tabs{display:flex;gap:8px;margin:24px 4px 4px;padding:5px;border:1px solid #ded5c6;border-radius:14px;background:#f7f2e8}
+    .admin-tabs{display:flex;gap:8px;margin:16px 4px 4px;padding:5px;border:1px solid #ded5c6;border-radius:14px;background:#f7f2e8}
     .admin-tab{min-height:40px;padding:0 16px;border:0;border-radius:10px;background:transparent;color:#625743;font:inherit;font-size:13px;font-weight:700;white-space:nowrap}
     .admin-tab[aria-pressed="true"]{background:#191713;color:#f4ecdc}
     .admin-page[hidden]{display:none}
-    .admin-section{margin:28px 4px}
-    .admin-section-heading{margin-bottom:13px}
+    .admin-section{margin:22px 4px}
+    .admin-section-heading{margin-bottom:10px}
     .admin-accounts-section .admin-section-heading{margin-bottom:8px}
-    .admin-section-heading h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}
-    .admin-section-heading p{margin:0;color:#71695d;font-size:12px}
+    .admin-section-heading h2{margin:0;font-size:20px;letter-spacing:-.03em}
     .balance-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-2px 0 14px}
     .balance-filters>label{display:flex;align-items:center;gap:9px;color:#625743;font-size:12px;font-weight:650}
     .balance-filters select{min-height:38px;padding:0 11px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8;color:#191713;font:inherit}
     .admin-credit-card{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(150px,1.5fr) minmax(110px,1fr) auto;align-items:end;gap:11px;margin:0 0 14px;padding:14px;border:1px solid var(--glass-border);border-radius:15px;background:rgba(255,255,255,.035)}
-    .admin-credit-intro{grid-column:1/-1;display:grid;gap:4px}.admin-credit-intro strong{color:var(--text);font-size:13px}.admin-credit-intro small{color:var(--muted);font-size:11px;line-height:1.45}
+    .admin-credit-intro{grid-column:1/-1;display:grid;gap:0}.admin-credit-intro strong{color:var(--text);font-size:13px}
     .admin-credit-card label{display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:650}
     .admin-credit-card input,.admin-credit-card select{width:100%;min-width:0;min-height:38px;padding:0 10px;border:1px solid var(--glass-border);border-radius:10px;color:#eef1ff;background:rgba(9,15,27,.62);font:inherit}
     .admin-credit-card select option{color:#f1f4ff;background:#151c2d}
@@ -487,7 +487,7 @@
     .admin-action:disabled{opacity:.48;cursor:not-allowed;filter:none}
     .admin-worker-create{grid-template-columns:minmax(0,1fr) auto;align-items:center}.admin-worker-create .admin-credit-intro{grid-column:auto}
     .admin-worker-credentials{position:relative;margin:0 0 14px;padding:15px;border:1px solid rgba(108,230,220,.28);border-radius:14px;background:linear-gradient(130deg,rgba(108,230,220,.08),rgba(161,140,255,.08));color:var(--text)}
-    .admin-worker-credentials>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.admin-worker-credentials>header strong{font-size:13px}.admin-worker-credentials>header small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+    .admin-worker-credentials>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.admin-worker-credentials>header strong{font-size:13px}
     .admin-worker-credentials dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}.admin-worker-credentials dl>div{min-width:0;padding:10px;border:1px solid var(--glass-border);border-radius:10px;background:rgba(9,15,27,.45)}.admin-worker-credentials dt{margin-bottom:5px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}.admin-worker-credentials dd{margin:0;color:#eef1ff;font-family:ui-monospace,monospace;font-size:12px;overflow-wrap:anywhere}
     .admin-worker-credentials .admin-actions{margin-top:12px}
     .worker-order-card{display:grid;gap:12px}.worker-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.worker-order-heading strong{color:var(--text);font-size:14px}.worker-order-heading span{color:var(--muted);font-size:12px;text-align:right}.worker-order-link{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--aqua);font-size:12px;text-decoration:none}.worker-order-actions{display:flex;gap:8px;flex-wrap:wrap}.worker-order-actions button{min-height:36px;padding:0 12px}
@@ -919,7 +919,6 @@
     .balance-filters select,.balance-zero-filter{color:#eaf0ff;background:rgba(9,15,27,.62);border-color:var(--glass-border)}
     .balance-filters select option{color:#f1f4ff;background:#151c2d}
     .admin-section-heading h2{color:#f3f5ff}
-    .admin-section-heading p{color:#a5aec2}
     .admin-action.secondary{color:#dce3f5;background:rgba(255,255,255,.055);border-color:var(--glass-border)}
     .admin-action.secondary:hover,.admin-logout:hover,.copy-address:hover{background:rgba(161,140,255,.16);border-color:rgba(161,140,255,.34)}
     .growth-card.is-collapsed,.metric-card.is-collapsed{background:rgba(19,26,43,.78)}
@@ -960,7 +959,6 @@
       .admin-main .admin-tabs{margin:16px 0 4px}
       .admin-main .admin-section{margin:22px 0}
       .admin-main .admin-section-heading h2{font-size:18px}
-      .admin-main .admin-section-heading p{max-width:46ch;line-height:1.45}
       .admin-main .balance-filters{gap:8px;margin:0 0 12px}
       .admin-main .balance-filters>label{gap:7px;font-size:11px}
       .admin-main .balance-filters select{min-height:36px;padding:0 9px;font-size:12px}
@@ -1258,7 +1256,7 @@
     </div>
     <section id="admin-panel" class="admin-panel" hidden>
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>ADMIN CONSOLE</small></div></div><div class="admin-account"><span id="admin-email">aryan793gupta@gmail.com</span><button class="draft-pill refresh-button" id="refresh-admin" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="admin-logout" type="button">Sign out</button></div></header>
-      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>Admin panel</h1><p>Manage customer orders, balances, and payments.</p></div></header>
+      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">OPERATIONS</div><h1>Admin panel</h1></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Open orders</span><strong id="admin-order-count">0</strong></article><article class="overview-card"><span>Pending payments</span><strong id="admin-deposit-count">0</strong></article></div>
         <nav class="admin-tabs" aria-label="Admin sections">
           <button class="admin-tab" type="button" data-admin-view="orders" aria-pressed="true">Order</button>
@@ -1267,22 +1265,22 @@
           <button class="admin-tab" type="button" data-admin-view="workers" aria-pressed="false">Workers</button>
         </nav>
         <div class="admin-page" data-admin-page="orders">
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Awaiting approval</h2><p>Approve an order to start its delivery progress window, or reject it with a customer-visible reason.</p></div></div><div class="record-list" id="admin-orders"><div class="empty-state">No orders awaiting approval.</div></div></section>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>In progress</h2><p>Progress is estimated from the time the order was approved and its selected duration.</p></div></div><div class="record-list" id="admin-processing-orders"><div class="empty-state">No orders in progress.</div></div></section>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Fulfilled orders</h2><p>Completed order history.</p></div></div><div class="record-list" id="admin-completed-orders"><div class="empty-state">No fulfilled orders yet.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Awaiting approval</h2></div></div><div class="record-list" id="admin-orders"><div class="empty-state">No orders awaiting approval.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>In progress</h2></div></div><div class="record-list" id="admin-processing-orders"><div class="empty-state">No orders in progress.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Fulfilled orders</h2></div></div><div class="record-list" id="admin-completed-orders"><div class="empty-state">No fulfilled orders yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="accounts" hidden>
-          <section class="admin-section admin-accounts-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><form class="admin-credit-card" id="admin-credit-form"><div class="admin-credit-intro"><strong>Credit a bonus</strong><small>The amount is added to the selected wallet. The account holder will see a one-time congratulations banner the next time they open their account.</small></div><label for="admin-credit-account">Account<select id="admin-credit-account" required></select></label><label for="admin-credit-amount">Amount<input id="admin-credit-amount" type="number" min="0.001" step="0.001" inputmode="decimal" placeholder="0.000" required></label><label for="admin-credit-currency">Currency<select id="admin-credit-currency"><option value="USDT">USDT</option><option value="USDC">USDC</option></select></label><button class="admin-action" id="admin-credit-submit" type="submit">Credit bonus</button></form><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
+          <section class="admin-section admin-accounts-section"><div class="admin-section-heading"><div><h2>Accounts and balances</h2></div></div><div class="balance-filters"><label for="admin-balance-sort">Sort by balance<select id="admin-balance-sort" aria-label="Sort accounts by balance"><option value="desc">Descending · highest first</option><option value="asc">Ascending · lowest first</option></select></label><label class="balance-zero-filter"><input id="hide-zero-balances" type="checkbox"> Hide zero-balance accounts</label></div><form class="admin-credit-card" id="admin-credit-form"><div class="admin-credit-intro"><strong>Credit a bonus</strong></div><label for="admin-credit-account">Account<select id="admin-credit-account" required></select></label><label for="admin-credit-amount">Amount<input id="admin-credit-amount" type="number" min="0.001" step="0.001" inputmode="decimal" placeholder="0.000" required></label><label for="admin-credit-currency">Currency<select id="admin-credit-currency"><option value="USDT">USDT</option><option value="USDC">USDC</option></select></label><button class="admin-action" id="admin-credit-submit" type="submit">Credit bonus</button></form><div class="record-list" id="admin-balances"><div class="empty-state">No accounts yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="payments" hidden>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer externally; approved USDC requests include a 10% bonus, capped at 200 USDC.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved deposits</h2><p>Payment requests already verified and credited to customer wallets.</p></div></div><div class="record-list" id="admin-approved-deposits"><div class="empty-state">No approved deposits yet.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved deposits</h2></div></div><div class="record-list" id="admin-approved-deposits"><div class="empty-state">No approved deposits yet.</div></div></section>
         </div>
         <div class="admin-page" data-admin-page="workers" hidden>
-          <section class="admin-section"><div class="admin-section-heading"><div><h2>Worker accounts</h2><p>Create sign-in details for staff and track orders completed by each worker.</p></div></div>
-            <form class="admin-credit-card admin-worker-create" id="admin-worker-form"><div class="admin-credit-intro"><strong>Generate a worker login</strong><small>This creates a work email login ID (not an inbox) and a unique random password. Share the credentials directly; the password is shown only once.</small></div><button class="admin-action" id="admin-worker-submit" type="submit">Generate credentials</button></form>
-            <article class="admin-worker-credentials" id="admin-worker-credentials" aria-live="polite" hidden><header><div><strong>Worker login created</strong><small>Copy and share these credentials now.</small></div><button class="bonus-banner-dismiss" id="admin-worker-credentials-dismiss" type="button" aria-label="Hide generated credentials">×</button></header><dl><div><dt>Work email</dt><dd id="generated-worker-email"></dd></div><div><dt>Random password</dt><dd id="generated-worker-password"></dd></div></dl><div class="admin-actions"><button class="admin-copy-link" id="copy-worker-credentials" type="button">Copy credentials</button></div></article>
-            <form class="admin-credit-card admin-terminate-form" id="admin-terminate-user-form"><div class="admin-credit-intro"><strong>Terminate account access</strong><small>Terminates a customer or worker, signs out their active sessions, and revokes their API keys.</small></div><label for="admin-terminate-user">Account<select id="admin-terminate-user" required></select></label><button class="admin-action secondary" id="admin-terminate-submit" type="submit" disabled>Terminate account</button></form>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Worker accounts</h2></div></div>
+            <form class="admin-credit-card admin-worker-create" id="admin-worker-form"><div class="admin-credit-intro"><strong>Generate a worker login</strong></div><button class="admin-action" id="admin-worker-submit" type="submit">Generate credentials</button></form>
+            <article class="admin-worker-credentials" id="admin-worker-credentials" aria-live="polite" hidden><header><strong>Worker login created</strong><button class="bonus-banner-dismiss" id="admin-worker-credentials-dismiss" type="button" aria-label="Hide generated credentials">×</button></header><dl><div><dt>Work email</dt><dd id="generated-worker-email"></dd></div><div><dt>Random password</dt><dd id="generated-worker-password"></dd></div></dl><div class="admin-actions"><button class="admin-copy-link" id="copy-worker-credentials" type="button">Copy credentials</button></div></article>
+            <form class="admin-credit-card admin-terminate-form" id="admin-terminate-user-form"><div class="admin-credit-intro"><strong>Terminate account access</strong></div><label for="admin-terminate-user">Account<select id="admin-terminate-user" required></select></label><button class="admin-action secondary" id="admin-terminate-submit" type="submit" disabled>Terminate account</button></form>
             <div class="record-list" id="admin-workers"><div class="empty-state">No workers yet.</div></div>
           </section>
         </div>
@@ -1291,9 +1289,9 @@
     </section>
     <section id="worker-panel" class="admin-panel worker-panel" hidden>
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>WORKER PORTAL</small></div></div><div class="admin-account"><span id="worker-email"></span><button class="draft-pill refresh-button" id="refresh-worker" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="worker-logout" type="button">Sign out</button></div></header>
-      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1><p>Open an order link, complete the work, then mark it finished.</p></div></header>
+      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Orders to work</h2><p>Customer orders approved for fulfillment appear here.</p></div></div><div class="record-list" id="worker-orders"><div class="empty-state">No orders are available right now.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Orders to work</h2></div></div><div class="record-list" id="worker-orders"><div class="empty-state">No orders are available right now.</div></div></section>
       </div>
       <div class="dashboard-toast" id="worker-toast" role="status" hidden></div>
     </section>
