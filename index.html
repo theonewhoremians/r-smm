@@ -484,6 +484,7 @@
     .admin-credit-card input,.admin-credit-card select{width:100%;min-width:0;min-height:38px;padding:0 10px;border:1px solid var(--glass-border);border-radius:10px;color:#eef1ff;background:rgba(9,15,27,.62);font:inherit}
     .admin-credit-card select option{color:#f1f4ff;background:#151c2d}
     .admin-credit-card .admin-action{min-height:38px;white-space:nowrap}
+    .admin-action:disabled{opacity:.48;cursor:not-allowed;filter:none}
     .admin-worker-create{grid-template-columns:minmax(0,1fr) auto;align-items:center}.admin-worker-create .admin-credit-intro{grid-column:auto}
     .admin-worker-credentials{position:relative;margin:0 0 14px;padding:15px;border:1px solid rgba(108,230,220,.28);border-radius:14px;background:linear-gradient(130deg,rgba(108,230,220,.08),rgba(161,140,255,.08));color:var(--text)}
     .admin-worker-credentials>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.admin-worker-credentials>header strong{font-size:13px}.admin-worker-credentials>header small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
@@ -1281,6 +1282,7 @@
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Worker accounts</h2><p>Create sign-in details for staff and track orders completed by each worker.</p></div></div>
             <form class="admin-credit-card admin-worker-create" id="admin-worker-form"><div class="admin-credit-intro"><strong>Generate a worker login</strong><small>This creates a work email login ID (not an inbox) and a unique random password. Share the credentials directly; the password is shown only once.</small></div><button class="admin-action" id="admin-worker-submit" type="submit">Generate credentials</button></form>
             <article class="admin-worker-credentials" id="admin-worker-credentials" aria-live="polite" hidden><header><div><strong>Worker login created</strong><small>Copy and share these credentials now.</small></div><button class="bonus-banner-dismiss" id="admin-worker-credentials-dismiss" type="button" aria-label="Hide generated credentials">×</button></header><dl><div><dt>Work email</dt><dd id="generated-worker-email"></dd></div><div><dt>Random password</dt><dd id="generated-worker-password"></dd></div></dl><div class="admin-actions"><button class="admin-copy-link" id="copy-worker-credentials" type="button">Copy credentials</button></div></article>
+            <form class="admin-credit-card admin-terminate-form" id="admin-terminate-user-form"><div class="admin-credit-intro"><strong>Terminate account access</strong><small>Terminates a customer or worker, signs out their active sessions, and revokes their API keys.</small></div><label for="admin-terminate-user">Account<select id="admin-terminate-user" required></select></label><button class="admin-action secondary" id="admin-terminate-submit" type="submit" disabled>Terminate account</button></form>
             <div class="record-list" id="admin-workers"><div class="empty-state">No workers yet.</div></div>
           </section>
         </div>
@@ -1291,7 +1293,7 @@
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>WORKER PORTAL</small></div></div><div class="admin-account"><span id="worker-email"></span><button class="draft-pill refresh-button" id="refresh-worker" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="worker-logout" type="button">Sign out</button></div></header>
       <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1><p>Open an order link, complete the work, then mark it finished.</p></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Available orders</h2><p>Only approved orders appear here.</p></div></div><div class="record-list" id="worker-orders"><div class="empty-state">No orders are available right now.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Orders to work</h2><p>Customer orders approved for fulfillment appear here.</p></div></div><div class="record-list" id="worker-orders"><div class="empty-state">No orders are available right now.</div></div></section>
       </div>
       <div class="dashboard-toast" id="worker-toast" role="status" hidden></div>
     </section>
@@ -1565,7 +1567,11 @@
     async function requestJson(url, options = {}) {
       const response = await fetch(url, {...options, credentials:"same-origin", cache:"no-store"});
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Could not complete this request.");
+      if (!response.ok) {
+        const error = new Error(result.error || "Could not complete this request.");
+        error.status = response.status;
+        throw error;
+      }
       return result;
     }
     function showCustomerPage(page) {
@@ -1678,6 +1684,27 @@
       const selectedAccount = adminAccounts.find(account => account.email === accountSelector.value);
       if (selectedAccount) document.querySelector("#admin-credit-currency").value = selectedAccount.currency === "USDC" ? "USDC" : "USDT";
     }
+    function updateTerminateUserButton() {
+      const selector = document.querySelector("#admin-terminate-user");
+      const submit = document.querySelector("#admin-terminate-submit");
+      const target = adminUsers.find(user => user.email === selector.value);
+      const isTerminated = target && Number(target.disabled_at) > 0;
+      submit.disabled = !target || isTerminated;
+      submit.textContent = isTerminated ? "Already terminated" : "Terminate account";
+    }
+    let adminUsers = [];
+    function renderAdminUsers(users) {
+      adminUsers = users;
+      const selector = document.querySelector("#admin-terminate-user");
+      const selectedEmail = selector.value;
+      selector.innerHTML = adminUsers.length ? adminUsers.map(user =>
+        '<option value="' + escapeHtml(user.email) + '">' + escapeHtml(user.role === "worker" ? "Worker" : "Customer") + ' · ' + escapeHtml(user.name) + ' · ' + escapeHtml(user.email) + (Number(user.disabled_at) > 0 ? ' · Terminated' : ' · Active') + '</option>'
+      ).join("") : '<option value="">No customer or worker accounts</option>';
+      selector.disabled = !adminUsers.length;
+      if (adminUsers.some(user => user.email === selectedEmail)) selector.value = selectedEmail;
+      else if (adminUsers.length) selector.value = adminUsers[0].email;
+      updateTerminateUserButton();
+    }
     async function loadAdmin() {
       const requestVersion = accountViewVersion;
       try {
@@ -1687,9 +1714,10 @@
         document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
         adminAccounts = summary.accounts;
         renderAdminAccounts();
+        renderAdminUsers(summary.manageable_users);
         const workerList = document.querySelector("#admin-workers");
         workerList.innerHTML = summary.workers.length ? summary.workers.map(worker =>
-          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(worker.name) + '</strong><span>' + escapeHtml(worker.email) + '</span></div><strong>' + Number(worker.completed_count).toLocaleString() + ' completed</strong></div></article>'
+          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(worker.name) + '</strong><span>' + escapeHtml(worker.email) + '</span><span class="status-badge ' + (Number(worker.disabled_at) > 0 ? 'rejected' : 'credited') + '">' + (Number(worker.disabled_at) > 0 ? 'terminated' : 'active') + '</span></div><strong>' + Number(worker.completed_count).toLocaleString() + ' completed</strong></div></article>'
         ).join("") : '<div class="empty-state">No workers yet. Generate a login above to add a worker.</div>';
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
@@ -1740,7 +1768,11 @@
             '<div class="worker-order-actions"><button class="admin-action secondary" type="button" data-copy-worker-link="' + postUrl + '">Copy link</button><button class="admin-action" type="button" data-complete-worker-order="' + Number(order.id) + '">Mark completed</button></div></article>';
         }).join("") : '<div class="empty-state">No orders are available right now.</div>';
         return true;
-      } catch (error) { showToast(error.message || "Could not load the work queue."); return false; }
+      } catch (error) {
+        if (error.status === 401 || error.status === 403) { await signOut(); return false; }
+        showToast(error.message || "Could not load the work queue.");
+        return false;
+      }
     }
     async function completeWorkerOrder(orderId, button) {
       button.disabled = true;
@@ -2563,6 +2595,28 @@
         submit.textContent = "Generate credentials";
       }
     });
+    document.querySelector("#admin-terminate-user").addEventListener("change", updateTerminateUserButton);
+    document.querySelector("#admin-terminate-user-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const selector = document.querySelector("#admin-terminate-user");
+      const target = adminUsers.find(user => user.email === selector.value);
+      if (!target || Number(target.disabled_at) > 0) return;
+      if (!window.confirm("Terminate " + target.email + "? This signs them out and blocks future sign-ins.")) return;
+      const submit = document.querySelector("#admin-terminate-submit");
+      submit.disabled = true;
+      submit.textContent = "Terminating…";
+      try {
+        await requestJson("/api/admin/users/terminate", {
+          method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({email:target.email})
+        });
+        showToast("Account terminated; active sessions and API keys were revoked.");
+        await loadAdmin();
+      } catch (error) {
+        showToast(error.message || "Could not terminate this account.");
+      } finally {
+        updateTerminateUserButton();
+      }
+    });
     document.querySelector("#copy-worker-credentials").addEventListener("click", async event => {
       const button = event.currentTarget;
       const credentials = "Work email: " + document.querySelector("#generated-worker-email").textContent +
@@ -2721,7 +2775,7 @@
         const account = await response.json();
         if (!response.ok) throw new Error(account.error || "Could not refresh your account.");
         if (requestVersion !== accountViewVersion) return false;
-        if (!account.authenticated) throw new Error("Your session has expired. Please sign in again.");
+        if (!account.authenticated) { await signOut(); return false; }
         if (account.role === "admin") return await loadAdmin();
         queueBonusNotifications(account.bonus_notifications);
         updateWallet(account.currency, account.balance_micros);

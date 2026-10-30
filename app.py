@@ -166,7 +166,8 @@ def init_db():
                 email TEXT PRIMARY KEY, name TEXT NOT NULL, salt BYTEA NOT NULL,
                 password_hash BYTEA NOT NULL, failed_attempts INTEGER NOT NULL DEFAULT 0,
                 locked_until BIGINT NOT NULL DEFAULT 0, role TEXT NOT NULL DEFAULT 'customer',
-                currency TEXT NOT NULL DEFAULT 'USDT', balance_micros BIGINT NOT NULL DEFAULT 0
+                currency TEXT NOT NULL DEFAULT 'USDT', balance_micros BIGINT NOT NULL DEFAULT 0,
+                disabled_at BIGINT
             );
             CREATE TABLE IF NOT EXISTS sessions (
                 token_hash TEXT PRIMARY KEY, email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
@@ -232,6 +233,7 @@ def init_db():
             db.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS rejection_reason TEXT")
             db.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS approved_at BIGINT")
             db.execute("ALTER TABLE deposit_requests ADD COLUMN IF NOT EXISTS bonus_micros BIGINT NOT NULL DEFAULT 0")
+            db.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS disabled_at BIGINT")
             tx_constraint = db.execute("""
                 SELECT pg_get_constraintdef(oid) AS definition FROM pg_constraint
                 WHERE conrelid = 'wallet_transactions'::regclass AND conname = 'wallet_transactions_kind_check'
@@ -260,7 +262,8 @@ def init_db():
                 locked_until INTEGER NOT NULL DEFAULT 0,
                 role TEXT NOT NULL DEFAULT 'customer',
                 currency TEXT NOT NULL DEFAULT 'USDT',
-                balance_micros INTEGER NOT NULL DEFAULT 0
+                balance_micros INTEGER NOT NULL DEFAULT 0,
+                disabled_at INTEGER
             );
             CREATE TABLE IF NOT EXISTS sessions (
                 token_hash TEXT PRIMARY KEY,
@@ -350,6 +353,8 @@ def init_db():
                 db.execute("ALTER TABLE users ADD COLUMN currency TEXT NOT NULL DEFAULT 'USDT'")
             if "balance_micros" not in columns:
                 db.execute("ALTER TABLE users ADD COLUMN balance_micros INTEGER NOT NULL DEFAULT 0")
+            if "disabled_at" not in columns:
+                db.execute("ALTER TABLE users ADD COLUMN disabled_at INTEGER")
             order_columns = {row["name"] for row in db.execute("PRAGMA table_info(orders)")}
             if "settings_json" not in order_columns:
                 db.execute("ALTER TABLE orders ADD COLUMN settings_json TEXT NOT NULL DEFAULT '{}'")
@@ -558,7 +563,7 @@ class App(BaseHTTPRequestHandler):
             return db.execute("""
                 SELECT users.email, users.name, users.role, users.currency, users.balance_micros FROM sessions
                 JOIN users USING (email)
-                WHERE sessions.token_hash = ? AND sessions.expires > ?
+                WHERE sessions.token_hash = ? AND sessions.expires > ? AND users.disabled_at IS NULL
             """, (digest, int(time.time()))).fetchone()
 
     def renew_session(self):
@@ -655,6 +660,8 @@ class App(BaseHTTPRequestHandler):
                 self.credit_account_bonus(data)
             elif self.path == "/api/admin/workers":
                 self.create_worker(data)
+            elif self.path == "/api/admin/users/terminate":
+                self.terminate_user(data)
             elif re.fullmatch(r"/api/worker/orders/\d+/complete", self.path):
                 self.worker_complete_order(data)
             elif self.path == "/api/telegram/webhook":
@@ -732,6 +739,10 @@ class App(BaseHTTPRequestHandler):
                     self.respond(429, {"error": "Too many tries. This email is locked for 6 hours."})
                 else:
                     self.respond(401, {"error": f"That email and password don’t match. {3 - attempts} tries left."})
+                return
+            if user["disabled_at"] is not None:
+                db.commit()
+                self.respond(403, {"error": "This account has been terminated. Contact your administrator."})
                 return
             db.execute("UPDATE users SET failed_attempts = 0, locked_until = 0 WHERE email = ?", (email,))
             db.commit()
@@ -817,7 +828,7 @@ class App(BaseHTTPRequestHandler):
                 SELECT api_keys.id AS key_id, users.email, users.name, users.role,
                        users.currency, users.balance_micros
                 FROM api_keys JOIN users USING (email)
-                WHERE api_keys.token_hash = ? AND api_keys.revoked_at IS NULL
+                WHERE api_keys.token_hash = ? AND api_keys.revoked_at IS NULL AND users.disabled_at IS NULL
             """, (digest,)).fetchone()
             if not row or row["role"] != "customer":
                 return None, False
@@ -1123,6 +1134,34 @@ class App(BaseHTTPRequestHandler):
             return None
         return user
 
+    def terminate_user(self, data):
+        if not self.require_admin():
+            return
+        email = data.get("email")
+        if set(data) != {"email"} or not isinstance(email, str) or not EMAIL_RE.fullmatch(email):
+            self.respond(400, {"error": "Choose a valid customer or worker account."})
+            return
+        email = email.lower()
+        with connect() as db:
+            db.execute("BEGIN" if DATABASE_URL else "BEGIN IMMEDIATE")
+            target = db.execute(row_lock("SELECT role, disabled_at FROM users WHERE email = ?"), (email,)).fetchone()
+            if not target or target["role"] not in ("customer", "worker"):
+                db.rollback()
+                self.respond(404, {"error": "That customer or worker account could not be found."})
+                return
+            if target["disabled_at"] is not None:
+                db.rollback()
+                self.respond(409, {"error": "This account has already been terminated."})
+                return
+            terminated_at = int(time.time())
+            db.execute("UPDATE users SET disabled_at = ? WHERE email = ? AND disabled_at IS NULL",
+                       (terminated_at, email))
+            db.execute("DELETE FROM sessions WHERE email = ?", (email,))
+            db.execute("UPDATE api_keys SET revoked_at = ? WHERE email = ? AND revoked_at IS NULL",
+                       (terminated_at, email))
+            db.commit()
+        self.respond(200, {"ok": True, "email": email, "disabled_at": terminated_at})
+
     def create_worker(self, data):
         if not self.require_admin():
             return
@@ -1293,10 +1332,14 @@ class App(BaseHTTPRequestHandler):
                 SELECT email, name, role, currency, balance_micros
                 FROM users WHERE role != 'worker' ORDER BY role, email
             """).fetchall()
+            manageable_users = db.execute("""
+                SELECT email, name, role, disabled_at FROM users
+                WHERE role IN ('customer', 'worker') ORDER BY role, email
+            """).fetchall()
             workers = db.execute("""
-                SELECT u.email, u.name, COUNT(c.order_id) AS completed_count
+                SELECT u.email, u.name, u.disabled_at, COUNT(c.order_id) AS completed_count
                 FROM users u LEFT JOIN worker_order_completions c ON c.worker_email = u.email
-                WHERE u.role = 'worker' GROUP BY u.email, u.name ORDER BY u.email
+                WHERE u.role = 'worker' GROUP BY u.email, u.name, u.disabled_at ORDER BY u.email
             """).fetchall()
             balances = db.execute("SELECT email, currency, balance_micros FROM wallet_balances ORDER BY currency").fetchall()
         balances_by_email = {}
@@ -1310,6 +1353,7 @@ class App(BaseHTTPRequestHandler):
                            "completed_orders": [dict(row) for row in completed_orders],
                            "approved_deposits": [dict(row) for row in approved_deposits],
                            "workers": [dict(row) for row in workers],
+                           "manageable_users": [dict(row) for row in manageable_users],
                            "accounts": [{**dict(row), "wallets": balances_by_email.get(row["email"], [])}
                                         for row in accounts]})
 
