@@ -1127,8 +1127,8 @@ class App(BaseHTTPRequestHandler):
             return None
         return user
 
-    def require_worker(self):
-        user = self.session_user()
+    def require_worker(self, db=None):
+        user = self.session_user(db)
         if not user:
             self.respond(401, {"error": "Please sign in again."})
             return None
@@ -1166,15 +1166,15 @@ class App(BaseHTTPRequestHandler):
         self.respond(200, {"ok": True, "email": email, "disabled_at": terminated_at})
 
     def create_worker(self, data):
-        if not self.require_admin():
-            return
-        if data:
-            self.respond(400, {"error": "No additional worker details are required."})
-            return
-        password = secrets.token_urlsafe(18)
-        now = int(time.time())
         with connect() as db:
-            db.execute("BEGIN" if DATABASE_URL else "BEGIN IMMEDIATE")
+            if not self.require_admin(db):
+                return
+            if data:
+                self.respond(400, {"error": "No additional worker details are required."})
+                return
+            if not DATABASE_URL:
+                db.execute("BEGIN IMMEDIATE")
+            password = secrets.token_urlsafe(18)
             while True:
                 worker_id = secrets.token_hex(6)
                 email = f"worker-{worker_id}@{WORKER_EMAIL_DOMAIN}"
@@ -1191,10 +1191,10 @@ class App(BaseHTTPRequestHandler):
         self.respond(201, {"ok": True, "email": email, "password": password})
 
     def worker_summary(self):
-        worker = self.require_worker()
-        if not worker:
-            return
         with connect() as db:
+            worker = self.require_worker(db)
+            if not worker:
+                return
             orders = db.execute("""
                 SELECT o.id, o.post_url, u.name
                 FROM orders o JOIN users u ON u.email = o.email
@@ -1207,15 +1207,16 @@ class App(BaseHTTPRequestHandler):
         self.respond(200, {"orders": [dict(row) for row in orders], "completed_count": completed_count})
 
     def worker_complete_order(self, data):
-        worker = self.require_worker()
-        if not worker:
-            return
-        if data:
-            self.respond(400, {"error": "No additional order details are required."})
-            return
-        order_id = int(self.path.split("/")[4])
         with connect() as db:
-            db.execute("BEGIN" if DATABASE_URL else "BEGIN IMMEDIATE")
+            worker = self.require_worker(db)
+            if not worker:
+                return
+            if data:
+                self.respond(400, {"error": "No additional order details are required."})
+                return
+            if not DATABASE_URL:
+                db.execute("BEGIN IMMEDIATE")
+            order_id = int(self.path.split("/")[4])
             order = db.execute(row_lock("SELECT status FROM orders WHERE id = ?"), (order_id,)).fetchone()
             if not order:
                 db.rollback()

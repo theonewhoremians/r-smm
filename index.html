@@ -1781,11 +1781,13 @@
         await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/complete", {
           method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
         });
+        button.closest(".worker-order-card")?.remove();
+        const count = document.querySelector("#worker-completed-count");
+        count.textContent = (Number(count.textContent.replace(/,/g, "")) + 1).toLocaleString();
         showToast("Order #" + orderId + " marked completed.");
       } catch (error) {
         showToast(error.message || "Could not complete this order.");
       } finally {
-        await loadWorkerPortal();
         if (button.isConnected) {
           button.disabled = false;
           button.textContent = "Mark completed";
@@ -2595,7 +2597,7 @@
         document.querySelector("#generated-worker-password").textContent = credentials.password;
         document.querySelector("#admin-worker-credentials").hidden = false;
         showToast("Worker login created. Copy the password before hiding it.");
-        await loadAdmin();
+        loadAdmin();
       } catch (error) {
         showToast(error.message || "Could not create the worker login.");
       } finally {
