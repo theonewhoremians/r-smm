@@ -1213,20 +1213,13 @@ class App(BaseHTTPRequestHandler):
                 return
             pending_orders = db.execute("""
                 SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
-                       o.amount_micros, o.settings_json, u.name
+                       o.amount_micros, o.settings_json, o.status, u.name, c.claimed_at
                 FROM orders o JOIN users u ON u.email = o.email
                 LEFT JOIN worker_order_claims c ON c.order_id = o.id
-                WHERE o.status = 'pending' AND c.order_id IS NULL
-                ORDER BY o.created_at ASC, o.id ASC
-            """).fetchall()
-            in_progress_orders = db.execute("""
-                SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
-                       o.amount_micros, o.settings_json, o.approved_at, u.name, c.claimed_at
-                FROM orders o JOIN users u ON u.email = o.email
-                LEFT JOIN worker_order_claims c ON c.order_id = o.id
-                WHERE o.status = 'processing' AND (c.order_id IS NULL OR c.worker_email = ?)
-                ORDER BY o.approved_at ASC, o.id ASC
-            """, (worker["email"],)).fetchall()
+                WHERE (o.status = 'pending' AND c.order_id IS NULL)
+                   OR (o.status = 'processing' AND (c.order_id IS NULL OR c.worker_email = ?))
+                ORDER BY CASE WHEN c.worker_email = ? THEN 0 ELSE 1 END, o.created_at ASC, o.id ASC
+            """, (worker["email"], worker["email"])).fetchall()
             completed_orders = db.execute("""
                 SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
                        o.amount_micros, o.settings_json, u.name, c.completed_at
@@ -1238,7 +1231,6 @@ class App(BaseHTTPRequestHandler):
             """, (worker["email"],)).fetchall()
             completed_count = len(completed_orders)
         self.respond(200, {"pending_orders": [dict(row) for row in pending_orders],
-                           "in_progress_orders": [dict(row) for row in in_progress_orders],
                            "completed_orders": [dict(row) for row in completed_orders],
                            "completed_count": completed_count})
 
