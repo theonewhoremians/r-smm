@@ -1825,7 +1825,7 @@
         renderAdminUsers(summary.manageable_users);
         const workerList = document.querySelector("#admin-workers");
         workerList.innerHTML = summary.workers.length ? summary.workers.map(worker =>
-          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(worker.name) + '</strong><span>' + escapeHtml(worker.email) + '</span><span class="status-badge ' + (Number(worker.disabled_at) > 0 ? 'rejected' : 'credited') + '">' + (Number(worker.disabled_at) > 0 ? 'terminated' : 'active') + '</span><button class="admin-action secondary admin-user-rename" type="button" data-rename-admin-user="' + escapeHtml(worker.email) + '" data-admin-label="' + escapeHtml(worker.admin_label || '') + '" aria-label="Rename worker for ' + escapeHtml(worker.email) + '">Rename</button></div><strong>' + Number(worker.completed_count).toLocaleString() + ' completed</strong></div></article>'
+          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(worker.name) + '</strong><span>' + escapeHtml(worker.email) + '</span><span class="status-badge ' + (Number(worker.disabled_at) > 0 ? 'rejected' : 'credited') + '">' + (Number(worker.disabled_at) > 0 ? 'terminated' : 'active') + '</span><button class="admin-action secondary admin-user-rename" type="button" data-rename-admin-user="' + escapeHtml(worker.email) + '" data-admin-label="' + escapeHtml(worker.admin_label || '') + '" aria-label="Rename worker for ' + escapeHtml(worker.email) + '">Rename</button></div><strong>' + Number(worker.approved_count).toLocaleString() + ' approved</strong></div></article>'
         ).join("") : '<div class="empty-state">No workers yet. Generate a login above to add a worker.</div>';
         const workerCompletedOrders = summary.worker_completed_orders || [];
         document.querySelector("#admin-worker-completed-total").textContent = Number(summary.worker_completed_count || 0).toLocaleString();
@@ -1895,7 +1895,7 @@
       try {
         const summary = await requestJson("/api/worker/summary");
         if (requestVersion !== accountViewVersion || queueVersion !== workerQueueVersion) return false;
-        document.querySelector("#worker-completed-count").textContent = Number(summary.completed_count).toLocaleString();
+        document.querySelector("#worker-completed-count").textContent = Number(summary.approved_count).toLocaleString();
         document.querySelector("#worker-pending-count").textContent = summary.pending_orders.length.toLocaleString();
         document.querySelector("#worker-completed-section-count").textContent = summary.completed_orders.length.toLocaleString();
         const pending = document.querySelector("#worker-pending-orders");

@@ -1240,10 +1240,10 @@ class App(BaseHTTPRequestHandler):
                 WHERE c.worker_email = ? AND o.status IN ('processing', 'completed')
                 ORDER BY c.claimed_at DESC, o.id DESC
             """, (worker["email"],)).fetchall()
-            completed_count = len(completed_orders)
+            approved_count = len(completed_orders)
         self.respond(200, {"pending_orders": [dict(row) for row in pending_orders],
                            "completed_orders": [dict(row) for row in completed_orders],
-                           "completed_count": completed_count})
+                           "approved_count": approved_count})
 
     def worker_approve_order(self, data):
         with connect() as db:
@@ -1454,6 +1454,10 @@ class App(BaseHTTPRequestHandler):
                 SELECT email, name, disabled_at FROM users
                 WHERE role = 'worker' ORDER BY email
             """).fetchall()
+            worker_approvals = db.execute("""
+                SELECT worker_email, COUNT(*) AS approved_count
+                FROM worker_order_claims GROUP BY worker_email
+            """).fetchall()
             admin_labels = db.execute("""
                 SELECT user_email, label FROM admin_user_labels WHERE admin_email = ?
             """, (admin["email"],)).fetchall()
@@ -1475,9 +1479,7 @@ class App(BaseHTTPRequestHandler):
                     item[name_field] = label
                 result.append(item)
             return result
-        completed_counts = {}
-        for order in worker_completed_orders:
-            completed_counts[order["worker_email"]] = completed_counts.get(order["worker_email"], 0) + 1
+        approved_counts = {row["worker_email"]: row["approved_count"] for row in worker_approvals}
         worker_completed_orders = admin_labeled(worker_completed_orders, "worker_email", "worker_name")
         for order in worker_completed_orders:
             customer_label = labels_by_email.get(order.get("customer_email"), "")
@@ -1491,7 +1493,7 @@ class App(BaseHTTPRequestHandler):
                            "worker_completed_orders": [dict(row) for row in worker_completed_orders],
                            "worker_completed_count": len(worker_completed_orders),
                            "approved_deposits": admin_labeled(approved_deposits),
-                           "workers": [{**item, "completed_count": completed_counts.get(item["email"], 0)}
+                           "workers": [{**item, "approved_count": approved_counts.get(item["email"], 0)}
                                        for item in admin_labeled(workers)],
                            "manageable_users": admin_labeled(manageable_users),
                            "accounts": [{**item, "wallets": balances_by_email.get(item["email"], [])}
