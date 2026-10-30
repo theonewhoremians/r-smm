@@ -490,6 +490,12 @@
     .admin-worker-credentials>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.admin-worker-credentials>header strong{font-size:13px}
     .admin-worker-credentials dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}.admin-worker-credentials dl>div{min-width:0;padding:10px;border:1px solid var(--glass-border);border-radius:10px;background:rgba(9,15,27,.45)}.admin-worker-credentials dt{margin-bottom:5px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}.admin-worker-credentials dd{margin:0;color:#eef1ff;font-family:ui-monospace,monospace;font-size:12px;overflow-wrap:anywhere}
     .admin-worker-credentials .admin-actions{margin-top:12px}
+    .worker-order-tabs{display:flex;gap:8px;margin:0 4px 14px;padding:5px;border:1px solid var(--glass-border);border-radius:14px;background:rgba(12,18,32,.62)}
+    .worker-order-tab{display:flex;flex:1;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:0;border-radius:10px;background:transparent;color:#b6c0d5;font:inherit;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer}
+    .worker-order-tab[aria-selected="true"]{background:linear-gradient(115deg,#aa93ff,#79e0dc);color:#101624}
+    .worker-order-tab-count{display:grid;min-width:22px;height:22px;place-items:center;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.13);font-size:11px}
+    .worker-order-tab[aria-selected="true"] .worker-order-tab-count{background:rgba(12,18,32,.16)}
+    .worker-order-section[hidden]{display:none}
     .worker-order-card{display:grid;gap:12px}.worker-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.worker-order-heading strong{color:var(--text);font-size:14px}.worker-order-heading span{color:var(--muted);font-size:12px;text-align:right}.worker-order-link{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--aqua);font-size:12px;text-decoration:none}.worker-order-actions{display:flex;gap:8px;flex-wrap:wrap}.worker-order-actions button{min-height:36px;padding:0 12px}
     .balance-zero-filter{min-height:38px;padding:0 12px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8}
     .balance-zero-filter input{flex:none;width:16px;height:16px;margin:0;padding:0;border:1px solid var(--glass-border);border-radius:4px;background:transparent;box-shadow:none;accent-color:var(--aqua)}
@@ -919,6 +925,7 @@
     .balance-filters select,.balance-zero-filter{color:#eaf0ff;background:rgba(9,15,27,.62);border-color:var(--glass-border)}
     .balance-filters select option{color:#f1f4ff;background:#151c2d}
     .admin-section-heading h2{color:#f3f5ff}
+    .worker-order-section>.record-list{margin-top:0}
     .admin-action.secondary{color:#dce3f5;background:rgba(255,255,255,.055);border-color:var(--glass-border)}
     .admin-action.secondary:hover,.admin-logout:hover,.copy-address:hover{background:rgba(161,140,255,.16);border-color:rgba(161,140,255,.34)}
     .growth-card.is-collapsed,.metric-card.is-collapsed{background:rgba(19,26,43,.78)}
@@ -964,6 +971,9 @@
       .admin-main .balance-filters select{min-height:36px;padding:0 9px;font-size:12px}
       .admin-main .balance-zero-filter{min-height:36px;padding:0 10px;white-space:nowrap}
       .admin-main .record-card{padding:13px 14px;border-radius:14px}
+      .worker-order-tabs{gap:5px;margin:0 0 12px;padding:4px}
+      .worker-order-tab{gap:5px;min-height:38px;padding:0 7px;font-size:11px}
+      .worker-order-tab-count{min-width:19px;height:19px;padding:0 5px;font-size:10px}
       .admin-credit-card{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px}.admin-credit-intro{grid-column:1/-1}.admin-credit-card label:first-of-type{grid-column:1/-1}.admin-credit-card .admin-action{width:100%}.admin-worker-create .admin-credit-intro{grid-column:1/-1}.admin-worker-credentials dl{grid-template-columns:1fr}.worker-order-heading{align-items:flex-start;flex-direction:column;gap:5px}.worker-order-heading span{text-align:left}.worker-order-actions>*{flex:1}
     }
     .session-restore{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0,rgba(104,91,198,.17),transparent 48%),linear-gradient(145deg,#090d18,#0d1221 55%,#0a1120);color:#f4f6ff}
@@ -1291,9 +1301,14 @@
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>WORKER PORTAL</small></div></div><div class="admin-account"><span id="worker-email"></span><button class="draft-pill refresh-button" id="refresh-worker" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="worker-logout" type="button">Sign out</button></div></header>
       <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending orders</h2></div></div><div class="record-list" id="worker-pending-orders"><div class="empty-state">No pending orders.</div></div></section>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved orders</h2></div></div><div class="record-list" id="worker-approved-orders"><div class="empty-state">No approved orders.</div></div></section>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Completed orders</h2></div></div><div class="record-list" id="worker-completed-orders"><div class="empty-state">No completed orders yet.</div></div></section>
+        <nav class="worker-order-tabs" role="tablist" aria-label="Worker order status">
+          <button class="worker-order-tab" id="worker-tab-pending" type="button" role="tab" aria-selected="false" aria-controls="worker-section-pending" data-worker-view="pending">Pending <span class="worker-order-tab-count" id="worker-pending-count">0</span></button>
+          <button class="worker-order-tab" id="worker-tab-approved" type="button" role="tab" aria-selected="true" aria-controls="worker-section-approved" data-worker-view="approved">Approved <span class="worker-order-tab-count" id="worker-approved-count">0</span></button>
+          <button class="worker-order-tab" id="worker-tab-completed" type="button" role="tab" aria-selected="false" aria-controls="worker-section-completed" data-worker-view="completed">Completed <span class="worker-order-tab-count" id="worker-completed-section-count">0</span></button>
+        </nav>
+        <section class="admin-section worker-order-section" id="worker-section-pending" role="tabpanel" aria-labelledby="worker-tab-pending" data-worker-section="pending" hidden><div class="record-list" id="worker-pending-orders"><div class="empty-state">No pending orders.</div></div></section>
+        <section class="admin-section worker-order-section" id="worker-section-approved" role="tabpanel" aria-labelledby="worker-tab-approved" data-worker-section="approved"><div class="record-list" id="worker-approved-orders"><div class="empty-state">No approved orders.</div></div></section>
+        <section class="admin-section worker-order-section" id="worker-section-completed" role="tabpanel" aria-labelledby="worker-tab-completed" data-worker-section="completed" hidden><div class="record-list" id="worker-completed-orders"><div class="empty-state">No completed orders yet.</div></div></section>
       </div>
       <div class="dashboard-toast" id="worker-toast" role="status" hidden></div>
     </section>
@@ -1413,6 +1428,7 @@
       }
       if (isWorker) {
         workerQueueVersion++;
+        setWorkerOrderView("approved");
         document.querySelector("#worker-email").textContent = email;
         loadWorkerPortal();
         return;
@@ -1761,9 +1777,11 @@
       const orderId = Number(order.id);
       const postUrl = escapeHtml(order.post_url);
       const action = state === "pending"
-        ? '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve order</button>'
+        ? '<span class="status-badge pending">awaiting admin approval</span>'
         : state === "approved"
-          ? '<button class="admin-action" type="button" data-complete-worker-order="' + orderId + '">Mark completed</button>'
+          ? order.claimed_at
+            ? '<button class="admin-action" type="button" data-complete-worker-order="' + orderId + '">Mark completed</button>'
+            : '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve &amp; take order</button>'
           : '<span class="status-badge completed">completed · ' + formatDate(order.completed_at) + '</span>';
       return '<article class="record-card worker-order-card" data-worker-order-id="' + orderId + '"><div class="worker-order-heading"><strong>Order #' + orderId + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
         '<a class="worker-order-link" href="' + postUrl + '" target="_blank" rel="noopener">' + postUrl + '</a>' +
@@ -1775,6 +1793,16 @@
     function clearWorkerListEmpty(list) {
       list.querySelector(".empty-state")?.remove();
     }
+    function setWorkerOrderView(view) {
+      document.querySelectorAll("[data-worker-view]").forEach(button => {
+        const selected = button.dataset.workerView === view;
+        button.setAttribute("aria-selected", String(selected));
+        button.tabIndex = selected ? 0 : -1;
+      });
+      document.querySelectorAll("[data-worker-section]").forEach(section => {
+        section.hidden = section.dataset.workerSection !== view;
+      });
+    }
     async function loadWorkerPortal() {
       if (workerPortalLoading) return false;
       workerPortalLoading = true;
@@ -1784,6 +1812,9 @@
         const summary = await requestJson("/api/worker/summary");
         if (requestVersion !== accountViewVersion || queueVersion !== workerQueueVersion) return false;
         document.querySelector("#worker-completed-count").textContent = Number(summary.completed_count).toLocaleString();
+        document.querySelector("#worker-pending-count").textContent = summary.pending_orders.length.toLocaleString();
+        document.querySelector("#worker-approved-count").textContent = summary.approved_orders.length.toLocaleString();
+        document.querySelector("#worker-completed-section-count").textContent = summary.completed_orders.length.toLocaleString();
         const pending = document.querySelector("#worker-pending-orders");
         const approved = document.querySelector("#worker-approved-orders");
         const completed = document.querySelector("#worker-completed-orders");
@@ -1824,12 +1855,13 @@
       } catch (error) {
         showToast(error.message || "Could not approve this order.");
         if (error.status === 409) {
+          workerQueueVersion++;
           button.closest(".worker-order-card")?.remove();
-          setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
+          setWorkerListEmpty(document.querySelector("#worker-approved-orders"), "No approved orders.");
           loadWorkerPortal();
         } else {
           button.disabled = false;
-          button.textContent = "Approve order";
+          button.textContent = "Approve & take order";
         }
       }
     }
@@ -2739,6 +2771,7 @@
       if (completeButton) await completeWorkerOrder(completeButton.dataset.completeWorkerOrder, completeButton);
     });
     document.querySelector("#refresh-worker").addEventListener("click", event => runRefresh(event.currentTarget, loadWorkerPortal));
+    document.querySelectorAll("[data-worker-view]").forEach(button => button.addEventListener("click", () => setWorkerOrderView(button.dataset.workerView)));
     document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
       document.querySelectorAll("[data-admin-view]").forEach(tab => {
         const active = tab === button;
@@ -2944,6 +2977,9 @@
       document.querySelector("#worker-approved-orders").innerHTML = '<div class="empty-state">No approved orders.</div>';
       document.querySelector("#worker-completed-orders").innerHTML = '<div class="empty-state">No completed orders yet.</div>';
       document.querySelector("#worker-completed-count").textContent = "0";
+      document.querySelector("#worker-pending-count").textContent = "0";
+      document.querySelector("#worker-approved-count").textContent = "0";
+      document.querySelector("#worker-completed-section-count").textContent = "0";
       document.querySelector("#generated-worker-email").textContent = "";
       document.querySelector("#generated-worker-password").textContent = "";
       document.querySelector("#admin-worker-credentials").hidden = true;

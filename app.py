@@ -1215,15 +1215,15 @@ class App(BaseHTTPRequestHandler):
                 SELECT o.id, o.post_url, u.name
                 FROM orders o JOIN users u ON u.email = o.email
                 LEFT JOIN worker_order_claims c ON c.order_id = o.id
-                WHERE o.status = 'processing' AND c.order_id IS NULL
-                ORDER BY o.approved_at ASC, o.id ASC
+                WHERE o.status = 'pending' AND c.order_id IS NULL
+                ORDER BY o.created_at ASC, o.id ASC
             """).fetchall()
             approved_orders = db.execute("""
                 SELECT o.id, o.post_url, u.name, c.claimed_at
                 FROM orders o JOIN users u ON u.email = o.email
-                JOIN worker_order_claims c ON c.order_id = o.id
-                WHERE o.status = 'processing' AND c.worker_email = ?
-                ORDER BY c.claimed_at ASC, o.id ASC
+                LEFT JOIN worker_order_claims c ON c.order_id = o.id
+                WHERE o.status = 'processing' AND (c.order_id IS NULL OR c.worker_email = ?)
+                ORDER BY o.approved_at ASC, o.id ASC
             """, (worker["email"],)).fetchall()
             completed_orders = db.execute("""
                 SELECT o.id, o.post_url, u.name, c.completed_at
