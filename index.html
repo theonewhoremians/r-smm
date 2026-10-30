@@ -484,6 +484,12 @@
     .admin-credit-card input,.admin-credit-card select{width:100%;min-width:0;min-height:38px;padding:0 10px;border:1px solid var(--glass-border);border-radius:10px;color:#eef1ff;background:rgba(9,15,27,.62);font:inherit}
     .admin-credit-card select option{color:#f1f4ff;background:#151c2d}
     .admin-credit-card .admin-action{min-height:38px;white-space:nowrap}
+    .admin-worker-create{grid-template-columns:minmax(0,1fr) auto;align-items:center}.admin-worker-create .admin-credit-intro{grid-column:auto}
+    .admin-worker-credentials{position:relative;margin:0 0 14px;padding:15px;border:1px solid rgba(108,230,220,.28);border-radius:14px;background:linear-gradient(130deg,rgba(108,230,220,.08),rgba(161,140,255,.08));color:var(--text)}
+    .admin-worker-credentials>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.admin-worker-credentials>header strong{font-size:13px}.admin-worker-credentials>header small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+    .admin-worker-credentials dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}.admin-worker-credentials dl>div{min-width:0;padding:10px;border:1px solid var(--glass-border);border-radius:10px;background:rgba(9,15,27,.45)}.admin-worker-credentials dt{margin-bottom:5px;color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}.admin-worker-credentials dd{margin:0;color:#eef1ff;font-family:ui-monospace,monospace;font-size:12px;overflow-wrap:anywhere}
+    .admin-worker-credentials .admin-actions{margin-top:12px}
+    .worker-order-card{display:grid;gap:12px}.worker-order-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.worker-order-heading strong{color:var(--text);font-size:14px}.worker-order-heading span{color:var(--muted);font-size:12px;text-align:right}.worker-order-link{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--aqua);font-size:12px;text-decoration:none}.worker-order-actions{display:flex;gap:8px;flex-wrap:wrap}.worker-order-actions button{min-height:36px;padding:0 12px}
     .balance-zero-filter{min-height:38px;padding:0 12px;border:1px solid #ded5c6;border-radius:10px;background:#fffdf8}
     .balance-zero-filter input{flex:none;width:16px;height:16px;margin:0;padding:0;border:1px solid var(--glass-border);border-radius:4px;background:transparent;box-shadow:none;accent-color:var(--aqua)}
     .admin-actions{display:flex;gap:8px;margin-top:14px}
@@ -959,7 +965,7 @@
       .admin-main .balance-filters select{min-height:36px;padding:0 9px;font-size:12px}
       .admin-main .balance-zero-filter{min-height:36px;padding:0 10px;white-space:nowrap}
       .admin-main .record-card{padding:13px 14px;border-radius:14px}
-      .admin-credit-card{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px}.admin-credit-intro{grid-column:1/-1}.admin-credit-card label:first-of-type{grid-column:1/-1}.admin-credit-card .admin-action{width:100%}
+      .admin-credit-card{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px}.admin-credit-intro{grid-column:1/-1}.admin-credit-card label:first-of-type{grid-column:1/-1}.admin-credit-card .admin-action{width:100%}.admin-worker-create .admin-credit-intro{grid-column:1/-1}.admin-worker-credentials dl{grid-template-columns:1fr}.worker-order-heading{align-items:flex-start;flex-direction:column;gap:5px}.worker-order-heading span{text-align:left}.worker-order-actions>*{flex:1}
     }
     .session-restore{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0,rgba(104,91,198,.17),transparent 48%),linear-gradient(145deg,#090d18,#0d1221 55%,#0a1120);color:#f4f6ff}
     .session-restore[hidden]{display:none}
@@ -1257,6 +1263,7 @@
           <button class="admin-tab" type="button" data-admin-view="orders" aria-pressed="true">Order</button>
           <button class="admin-tab" type="button" data-admin-view="accounts" aria-pressed="false">Account and balances</button>
           <button class="admin-tab" type="button" data-admin-view="payments" aria-pressed="false">Payment</button>
+          <button class="admin-tab" type="button" data-admin-view="workers" aria-pressed="false">Workers</button>
         </nav>
         <div class="admin-page" data-admin-page="orders">
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Awaiting approval</h2><p>Approve an order to start its delivery progress window, or reject it with a customer-visible reason.</p></div></div><div class="record-list" id="admin-orders"><div class="empty-state">No orders awaiting approval.</div></div></section>
@@ -1270,8 +1277,23 @@
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending payments</h2><p>Verify each transfer externally; approved USDC requests include a 10% bonus, capped at 200 USDC.</p></div></div><div class="record-list" id="admin-deposits"><div class="empty-state">No pending payments.</div></div></section>
           <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved deposits</h2><p>Payment requests already verified and credited to customer wallets.</p></div></div><div class="record-list" id="admin-approved-deposits"><div class="empty-state">No approved deposits yet.</div></div></section>
         </div>
+        <div class="admin-page" data-admin-page="workers" hidden>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Worker accounts</h2><p>Create sign-in details for staff and track orders completed by each worker.</p></div></div>
+            <form class="admin-credit-card admin-worker-create" id="admin-worker-form"><div class="admin-credit-intro"><strong>Generate a worker login</strong><small>This creates a work email login ID (not an inbox) and a unique random password. Share the credentials directly; the password is shown only once.</small></div><button class="admin-action" id="admin-worker-submit" type="submit">Generate credentials</button></form>
+            <article class="admin-worker-credentials" id="admin-worker-credentials" aria-live="polite" hidden><header><div><strong>Worker login created</strong><small>Copy and share these credentials now.</small></div><button class="bonus-banner-dismiss" id="admin-worker-credentials-dismiss" type="button" aria-label="Hide generated credentials">×</button></header><dl><div><dt>Work email</dt><dd id="generated-worker-email"></dd></div><div><dt>Random password</dt><dd id="generated-worker-password"></dd></div></dl><div class="admin-actions"><button class="admin-copy-link" id="copy-worker-credentials" type="button">Copy credentials</button></div></article>
+            <div class="record-list" id="admin-workers"><div class="empty-state">No workers yet.</div></div>
+          </section>
+        </div>
       </div>
       <div class="dashboard-toast" id="admin-toast" role="status" hidden></div>
+    </section>
+    <section id="worker-panel" class="admin-panel worker-panel" hidden>
+      <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>WORKER PORTAL</small></div></div><div class="admin-account"><span id="worker-email"></span><button class="draft-pill refresh-button" id="refresh-worker" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="worker-logout" type="button">Sign out</button></div></header>
+      <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1><p>Open an order link, complete the work, then mark it finished.</p></div></header>
+        <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Available orders</h2><p>Only approved orders appear here.</p></div></div><div class="record-list" id="worker-orders"><div class="empty-state">No orders are available right now.</div></div></section>
+      </div>
+      <div class="dashboard-toast" id="worker-toast" role="status" hidden></div>
     </section>
   </main>
   <script>
@@ -1376,11 +1398,18 @@
       document.querySelector("#auth-screen").hidden = true;
       document.querySelector("#workspace").hidden = false;
       const isAdmin = role === "admin";
-      document.querySelector("#customer-shell").hidden = isAdmin;
+      const isWorker = role === "worker";
+      document.querySelector("#customer-shell").hidden = isAdmin || isWorker;
       document.querySelector("#admin-panel").hidden = !isAdmin;
+      document.querySelector("#worker-panel").hidden = !isWorker;
       if (isAdmin) {
         document.querySelector("#admin-email").textContent = email;
         loadAdmin();
+        return;
+      }
+      if (isWorker) {
+        document.querySelector("#worker-email").textContent = email;
+        loadWorkerPortal();
         return;
       }
       const displayName = name || "Your account";
@@ -1518,6 +1547,21 @@
         '<div class="order-progress-track" role="progressbar" aria-label="Estimated order completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '"><span style="width:' + percent + '%"></span></div>' +
         '<small>' + escapeHtml(note) + '</small></div>';
     }
+    async function copyTextToClipboard(text) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const field = document.createElement("textarea");
+      field.value = text;
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Clipboard unavailable");
+    }
     async function requestJson(url, options = {}) {
       const response = await fetch(url, {...options, credentials:"same-origin", cache:"no-store"});
       const result = await response.json();
@@ -1643,6 +1687,10 @@
         document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
         adminAccounts = summary.accounts;
         renderAdminAccounts();
+        const workerList = document.querySelector("#admin-workers");
+        workerList.innerHTML = summary.workers.length ? summary.workers.map(worker =>
+          '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(worker.name) + '</strong><span>' + escapeHtml(worker.email) + '</span></div><strong>' + Number(worker.completed_count).toLocaleString() + ' completed</strong></div></article>'
+        ).join("") : '<div class="empty-state">No workers yet. Generate a login above to add a worker.</div>';
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
@@ -1677,6 +1725,40 @@
         depositList.querySelectorAll("[data-reject-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.rejectDeposit, "reject")));
         return true;
       } catch (error) { showToast(error.message); return false; }
+    }
+    async function loadWorkerPortal() {
+      const requestVersion = accountViewVersion;
+      try {
+        const summary = await requestJson("/api/worker/summary");
+        if (requestVersion !== accountViewVersion) return false;
+        document.querySelector("#worker-completed-count").textContent = Number(summary.completed_count).toLocaleString();
+        const orders = document.querySelector("#worker-orders");
+        orders.innerHTML = summary.orders.length ? summary.orders.map(order => {
+          const postUrl = escapeHtml(order.post_url);
+          return '<article class="record-card worker-order-card"><div class="worker-order-heading"><strong>Order #' + Number(order.id) + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
+            '<a class="worker-order-link" href="' + postUrl + '" target="_blank" rel="noopener">' + postUrl + '</a>' +
+            '<div class="worker-order-actions"><button class="admin-action secondary" type="button" data-copy-worker-link="' + postUrl + '">Copy link</button><button class="admin-action" type="button" data-complete-worker-order="' + Number(order.id) + '">Mark completed</button></div></article>';
+        }).join("") : '<div class="empty-state">No orders are available right now.</div>';
+        return true;
+      } catch (error) { showToast(error.message || "Could not load the work queue."); return false; }
+    }
+    async function completeWorkerOrder(orderId, button) {
+      button.disabled = true;
+      button.textContent = "Updating…";
+      try {
+        await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/complete", {
+          method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
+        });
+        showToast("Order #" + orderId + " marked completed.");
+      } catch (error) {
+        showToast(error.message || "Could not complete this order.");
+      } finally {
+        await loadWorkerPortal();
+        if (button.isConnected) {
+          button.disabled = false;
+          button.textContent = "Mark completed";
+        }
+      }
     }
     async function runRefresh(button, refresh) {
       if (button.disabled) return;
@@ -1845,7 +1927,9 @@
       });
     }
     function showToast(message) {
-      const toast = document.querySelector(document.querySelector("#admin-panel").hidden ? "#dashboard-toast" : "#admin-toast");
+      const toastId = !document.querySelector("#admin-panel").hidden ? "#admin-toast"
+        : !document.querySelector("#worker-panel").hidden ? "#worker-toast" : "#dashboard-toast";
+      const toast = document.querySelector(toastId);
       toast.textContent = message;
       toast.hidden = false;
       clearTimeout(toastTimer);
@@ -2420,18 +2504,10 @@
       const button = event.target.closest("[data-copy-order-link]");
       if (!button) return;
       try {
-        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(button.dataset.copyOrderLink);
-        else throw new Error("Clipboard unavailable");
+        await copyTextToClipboard(button.dataset.copyOrderLink);
       } catch (_) {
-        const field = document.createElement("textarea");
-        field.value = button.dataset.copyOrderLink;
-        field.style.position = "fixed";
-        field.style.opacity = "0";
-        document.body.appendChild(field);
-        field.select();
-        const copied = document.execCommand("copy");
-        field.remove();
-        if (!copied) { showToast("Could not copy the post link. Please try again."); return; }
+        showToast("Could not copy the post link. Please try again.");
+        return;
       }
       button.textContent = "Copied";
       showToast("Order post link copied.");
@@ -2466,6 +2542,58 @@
         submit.textContent = "Credit bonus";
       }
     });
+    document.querySelector("#admin-worker-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const submit = document.querySelector("#admin-worker-submit");
+      submit.disabled = true;
+      submit.textContent = "Generating…";
+      try {
+        const credentials = await requestJson("/api/admin/workers", {
+          method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
+        });
+        document.querySelector("#generated-worker-email").textContent = credentials.email;
+        document.querySelector("#generated-worker-password").textContent = credentials.password;
+        document.querySelector("#admin-worker-credentials").hidden = false;
+        showToast("Worker login created. Copy the password before hiding it.");
+        await loadAdmin();
+      } catch (error) {
+        showToast(error.message || "Could not create the worker login.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Generate credentials";
+      }
+    });
+    document.querySelector("#copy-worker-credentials").addEventListener("click", async event => {
+      const button = event.currentTarget;
+      const credentials = "Work email: " + document.querySelector("#generated-worker-email").textContent +
+        "\nPassword: " + document.querySelector("#generated-worker-password").textContent;
+      try {
+        await copyTextToClipboard(credentials);
+        button.textContent = "Copied";
+        showToast("Worker credentials copied.");
+        setTimeout(() => { button.textContent = "Copy credentials"; }, 1400);
+      } catch (_) { showToast("Could not copy the credentials. Please try again."); }
+    });
+    document.querySelector("#admin-worker-credentials-dismiss").addEventListener("click", () => {
+      document.querySelector("#generated-worker-email").textContent = "";
+      document.querySelector("#generated-worker-password").textContent = "";
+      document.querySelector("#admin-worker-credentials").hidden = true;
+    });
+    document.querySelector("#worker-panel").addEventListener("click", async event => {
+      const copyButton = event.target.closest("[data-copy-worker-link]");
+      if (copyButton) {
+        try {
+          await copyTextToClipboard(copyButton.dataset.copyWorkerLink);
+          copyButton.textContent = "Copied";
+          showToast("Order link copied.");
+          setTimeout(() => { copyButton.textContent = "Copy link"; }, 1400);
+        } catch (_) { showToast("Could not copy the order link. Please try again."); }
+        return;
+      }
+      const completeButton = event.target.closest("[data-complete-worker-order]");
+      if (completeButton) await completeWorkerOrder(completeButton.dataset.completeWorkerOrder, completeButton);
+    });
+    document.querySelector("#refresh-worker").addEventListener("click", event => runRefresh(event.currentTarget, loadWorkerPortal));
     document.querySelectorAll("[data-admin-view]").forEach(button => button.addEventListener("click", () => {
       document.querySelectorAll("[data-admin-view]").forEach(tab => {
         const active = tab === button;
@@ -2604,7 +2732,10 @@
       }
     }
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) refreshWallet();
+      if (!document.hidden) {
+        if (!document.querySelector("#worker-panel").hidden) loadWorkerPortal();
+        else refreshWallet();
+      }
     });
     form.addEventListener("submit", async event => {
       event.preventDefault();
@@ -2639,8 +2770,12 @@
       document.querySelector("#session-restore").hidden = true;
       document.querySelector("#workspace").hidden = true;
       document.querySelector("#admin-panel").hidden = true;
+      document.querySelector("#worker-panel").hidden = true;
       document.querySelector("#customer-shell").hidden = false;
       document.querySelector("#auth-screen").hidden = false;
+      document.querySelector("#bonus-banner").hidden = true;
+      clearTimeout(bonusBannerTimer);
+      bonusNotificationQueue = [];
       form.reset();
       updateWallet("USDT", 0);
       document.querySelector("#overview-orders").textContent = "0";
@@ -2654,17 +2789,24 @@
       document.querySelector("#admin-order-count").textContent = "0";
       document.querySelector("#admin-deposit-count").textContent = "0";
       document.querySelector("#admin-balances").innerHTML = '<div class="empty-state">No accounts yet.</div>';
+      document.querySelector("#admin-workers").innerHTML = '<div class="empty-state">No workers yet.</div>';
       document.querySelector("#admin-orders").innerHTML = '<div class="empty-state">No orders awaiting approval.</div>';
       document.querySelector("#admin-processing-orders").innerHTML = '<div class="empty-state">No orders in progress.</div>';
       document.querySelector("#admin-completed-orders").innerHTML = '<div class="empty-state">No fulfilled orders yet.</div>';
       document.querySelector("#admin-deposits").innerHTML = '<div class="empty-state">No pending payments.</div>';
       document.querySelector("#admin-approved-deposits").innerHTML = '<div class="empty-state">No approved deposits yet.</div>';
+      document.querySelector("#worker-orders").innerHTML = '<div class="empty-state">No orders are available right now.</div>';
+      document.querySelector("#worker-completed-count").textContent = "0";
+      document.querySelector("#generated-worker-email").textContent = "";
+      document.querySelector("#generated-worker-password").textContent = "";
+      document.querySelector("#admin-worker-credentials").hidden = true;
       const submit = document.querySelector("#submit");
       submit.disabled = false;
       setMode("login");
     }
     document.querySelector("#logout").addEventListener("click", signOut);
     document.querySelector("#admin-logout").addEventListener("click", signOut);
+    document.querySelector("#worker-logout").addEventListener("click", signOut);
     runTrajectorySimulation(false, true);
     fetch("/api/me", {credentials:"same-origin", cache:"no-store"}).then(response => {
       if (!response.ok) throw new Error("Could not restore session.");
