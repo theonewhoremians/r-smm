@@ -1368,6 +1368,12 @@
     let orderSubmitting = false;
     let servicePressTimer = 0;
     let adminAccounts = [];
+    let adminOrderSummary = null;
+    let adminSummaryLoading = false;
+    let adminSummaryRefreshQueued = false;
+    let adminOrderMutationVersion = 0;
+    let adminOrderActionsInFlight = 0;
+    const adminOrderActionIds = new Map();
     let pressedServiceButton = null;
     let suppressPreviewClick = "";
     let activeServiceDialog = null;
@@ -1753,11 +1759,65 @@
       else if (adminUsers.length) selector.value = adminUsers[0].email;
       updateTerminateUserButton();
     }
+    function adminOrderCard(order, state) {
+      const saving = adminOrderActionIds.has(String(order.id));
+      const savingLabel = adminOrderActionIds.get(String(order.id)) === "approve" ? "Approving…" : "Completing…";
+      const actions = state === "pending"
+        ? '<div class="admin-actions"><button class="admin-action" type="button" data-approve-order="' + order.id + '"' + (saving ? ' disabled' : '') + '>' + (saving ? 'Approving…' : 'Approve &amp; start') + '</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '"' + (saving ? ' disabled' : '') + '>Reject &amp; refund</button></div>'
+        : state === "processing"
+          ? '<div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '"' + (saving ? ' disabled' : '') + '>' + (saving ? savingLabel : 'Mark complete') + '</button></div>' : "";
+      const status = state === "processing" ? '<span class="status-badge processing">in progress</span>'
+        : state === "completed" ? ' · <span class="status-badge completed">' + (saving ? savingLabel : 'completed') + '</span>' : "";
+      const date = state === "processing" ? 'Approved ' + formatDate(order.approved_at)
+        : formatDate(order.created_at);
+      return '<article class="record-card" data-admin-order-id="' + order.id + '"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span>' + (state === "processing" ? status : '') + '</div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
+        '<p>' + escapeHtml(order.platform) + ' · ' + date + (state === "completed" ? status : '') + '</p>' + orderSettingsHtml(order.settings_json) +
+        (state === "processing" ? orderProgressHtml(order) : "") + adminOrderLinkHtml(order) + actions + '</article>';
+    }
+    function renderAdminOrders() {
+      if (!adminOrderSummary) return;
+      const groups = [
+        ["#admin-orders", adminOrderSummary.pending_orders, "No orders awaiting approval.", "pending"],
+        ["#admin-processing-orders", adminOrderSummary.processing_orders, "No orders in progress.", "processing"],
+        ["#admin-completed-orders", adminOrderSummary.completed_orders, "No fulfilled orders yet.", "completed"]
+      ];
+      for (const [selector, orders, empty, state] of groups) {
+        document.querySelector(selector).innerHTML = orders.length ? orders.map(order => adminOrderCard(order, state)).join("") : '<div class="empty-state">' + empty + '</div>';
+      }
+      document.querySelector("#admin-order-count").textContent = adminOrderSummary.pending_orders.length + adminOrderSummary.processing_orders.length;
+    }
+    function moveAdminOrder(orderId, target, timestamp) {
+      if (!adminOrderSummary) return;
+      const source = target === "processing" ? adminOrderSummary.pending_orders : adminOrderSummary.processing_orders;
+      const index = source.findIndex(order => String(order.id) === String(orderId));
+      if (index < 0) return;
+      const [order] = source.splice(index, 1);
+      order.status = target;
+      if (target === "processing") {
+        order.approved_at = timestamp;
+        adminOrderSummary.processing_orders.unshift(order);
+      } else {
+        order.completed_at = timestamp;
+        adminOrderSummary.completed_orders.unshift(order);
+      }
+      adminOrderMutationVersion++;
+      renderAdminOrders();
+    }
     async function loadAdmin() {
+      if (adminOrderActionsInFlight) { adminSummaryRefreshQueued = true; return false; }
+      if (adminSummaryLoading) { adminSummaryRefreshQueued = true; return false; }
+      adminSummaryLoading = true;
+      adminSummaryRefreshQueued = false;
       const requestVersion = accountViewVersion;
+      const mutationVersion = adminOrderMutationVersion;
       try {
         const summary = await requestJson("/api/admin/summary");
         if (requestVersion !== accountViewVersion) return false;
+        if (mutationVersion !== adminOrderMutationVersion || adminOrderActionsInFlight) {
+          adminSummaryRefreshQueued = true;
+          return false;
+        }
+        adminOrderSummary = summary;
         document.querySelector("#admin-order-count").textContent = summary.pending_orders.length + summary.processing_orders.length;
         document.querySelector("#admin-deposit-count").textContent = summary.pending_deposits.length;
         adminAccounts = summary.accounts;
@@ -1773,20 +1833,7 @@
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + Number(order.id) + '</strong><span>Completed by ' + escapeHtml(order.worker_name) + ' · ' + escapeHtml(order.worker_email) + '</span><span>Placed by ' + escapeHtml(order.customer_name) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
           '<p>' + escapeHtml(order.platform) + (Number(order.completed_at) ? ' · Completed ' + formatDate(order.completed_at) : ' · Completed') + '</p>' + orderSettingsHtml(order.settings_json) + adminOrderLinkHtml(order) + '</article>'
         ).join("") : '<div class="empty-state">No worker-completed orders yet.</div>';
-        const orderList = document.querySelector("#admin-orders");
-        orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
-          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + '</p>' + orderSettingsHtml(order.settings_json) + adminOrderLinkHtml(order) + '<div class="admin-actions"><button class="admin-action" type="button" data-approve-order="' + order.id + '">Approve &amp; start</button><button class="admin-action secondary" type="button" data-reject-order="' + order.id + '">Reject &amp; refund</button></div></article>'
-        ).join("") : '<div class="empty-state">No orders awaiting approval.</div>';
-        const processingList = document.querySelector("#admin-processing-orders");
-        processingList.innerHTML = summary.processing_orders.length ? summary.processing_orders.map(order =>
-          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span><span class="status-badge processing">in progress</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
-          '<p>' + escapeHtml(order.platform) + ' · Approved ' + formatDate(order.approved_at) + '</p>' + orderSettingsHtml(order.settings_json) + orderProgressHtml(order) + adminOrderLinkHtml(order) + '<div class="admin-actions"><button class="admin-action" type="button" data-complete-order="' + order.id + '">Mark complete</button></div></article>'
-        ).join("") : '<div class="empty-state">No orders in progress.</div>';
-        const completedList = document.querySelector("#admin-completed-orders");
-        completedList.innerHTML = summary.completed_orders.length ? summary.completed_orders.map(order =>
-          '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div><p>' + escapeHtml(order.platform) + ' · ' + formatDate(order.created_at) + ' · <span class="status-badge completed">completed</span></p>' + orderSettingsHtml(order.settings_json) + adminOrderLinkHtml(order) + '</article>'
-        ).join("") : '<div class="empty-state">No fulfilled orders yet.</div>';
+        renderAdminOrders();
         const depositList = document.querySelector("#admin-deposits");
         depositList.innerHTML = summary.pending_deposits.length ? summary.pending_deposits.map(item =>
           '<article class="record-card"><div class="record-top"><div><strong>' + formatDepositAmount(item.amount_micros) + ' ' + escapeHtml(item.currency) + ' · ' + escapeHtml(item.network) + ' · ' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.email) + '</span></div><span class="status-badge pending">pending</span></div>' +
@@ -1799,14 +1846,18 @@
           (Number(item.bonus_micros) ? '<p>USDC bonus credited: +' + formatPrice(item.bonus_micros) + ' USDC · total credit: ' + formatPrice(item.amount_micros + item.bonus_micros) + ' USDC</p>' : '') +
           '<p>Approved ' + formatDate(item.reviewed_at || item.created_at) + ' · Transfer reference: <code>' + escapeHtml(item.reference) + '</code></p></article>'
         ).join("") : '<div class="empty-state">No approved deposits yet.</div>';
-        orderList.querySelectorAll("[data-complete-order]").forEach(button => button.addEventListener("click", () => completeOrder(button.dataset.completeOrder)));
-        orderList.querySelectorAll("[data-approve-order]").forEach(button => button.addEventListener("click", () => approveOrder(button.dataset.approveOrder)));
-        orderList.querySelectorAll("[data-reject-order]").forEach(button => button.addEventListener("click", () => rejectOrder(button.dataset.rejectOrder)));
-        processingList.querySelectorAll("[data-complete-order]").forEach(button => button.addEventListener("click", () => completeOrder(button.dataset.completeOrder)));
+        document.querySelectorAll("[data-reject-order]").forEach(button => button.addEventListener("click", () => rejectOrder(button.dataset.rejectOrder)));
         depositList.querySelectorAll("[data-credit-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.creditDeposit, "credit")));
         depositList.querySelectorAll("[data-reject-deposit]").forEach(button => button.addEventListener("click", () => reviewDeposit(button.dataset.rejectDeposit, "reject")));
         return true;
       } catch (error) { showToast(error.message); return false; }
+      finally {
+        adminSummaryLoading = false;
+        if (adminSummaryRefreshQueued) {
+          adminSummaryRefreshQueued = false;
+          window.setTimeout(() => { void loadAdmin(); }, 0);
+        }
+      }
     }
     function workerOrderCard(order, state) {
       const orderId = Number(order.id);
@@ -1928,18 +1979,40 @@
       return results.every(Boolean);
     }
     async function completeOrder(orderId) {
+      if (adminOrderActionIds.has(String(orderId))) return;
+      adminOrderActionsInFlight++;
+      adminOrderActionIds.set(String(orderId), "complete");
+      moveAdminOrder(orderId, "completed", Math.floor(Date.now() / 1000));
       try {
         await requestJson("/api/admin/orders/" + encodeURIComponent(orderId) + "/complete", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
         showToast("Order marked complete.");
-        loadAdmin();
-      } catch (error) { showToast(error.message); }
+      } catch (error) { showToast(error.message || "Could not complete this order."); }
+      finally {
+        adminOrderActionsInFlight--;
+        adminOrderActionIds.delete(String(orderId));
+        await loadAdmin();
+      }
     }
     async function approveOrder(orderId) {
+      if (adminOrderActionIds.has(String(orderId))) return;
+      adminOrderActionsInFlight++;
+      adminOrderActionIds.set(String(orderId), "approve");
+      moveAdminOrder(orderId, "processing", Math.floor(Date.now() / 1000));
       try {
-        await requestJson("/api/admin/orders/" + encodeURIComponent(orderId) + "/approve", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+        const result = await requestJson("/api/admin/orders/" + encodeURIComponent(orderId) + "/approve", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+        const order = adminOrderSummary?.processing_orders.find(item => String(item.id) === String(orderId));
+        if (order && result.approved_at) {
+          order.approved_at = result.approved_at;
+          renderAdminOrders();
+        }
         showToast("Order approved. Its progress timer has started.");
-        loadAdmin();
-      } catch (error) { showToast(error.message); }
+      } catch (error) { showToast(error.message || "Could not approve this order."); }
+      finally {
+        adminOrderActionsInFlight--;
+        adminOrderActionIds.delete(String(orderId));
+        renderAdminOrders();
+        await loadAdmin();
+      }
     }
     async function rejectOrder(orderId) {
       const reason = window.prompt("Enter the reason the customer will see if they open this rejected order:");
@@ -2642,9 +2715,13 @@
     window.setInterval(() => {
       if (!document.hidden && !document.querySelector("#worker-panel").hidden) loadWorkerPortal();
     }, 1000);
+    window.setInterval(() => {
+      if (!document.hidden && !document.querySelector("#admin-panel").hidden) loadAdmin();
+    }, 3000);
     document.addEventListener("visibilitychange", () => {
       refreshVisibleCustomerOrders();
       if (!document.hidden && !document.querySelector("#worker-panel").hidden) loadWorkerPortal();
+      if (!document.hidden && !document.querySelector("#admin-panel").hidden) loadAdmin();
     });
     document.querySelector("#refresh-wallet").addEventListener("click", event => runRefresh(event.currentTarget, async () => {
       const results = await Promise.all([refreshWallet(true), loadOverview(true), loadCustomerWallet()]);
@@ -2655,6 +2732,16 @@
       const renameButton = event.target.closest("[data-rename-admin-user]");
       if (renameButton) {
         await renameAdminUser(renameButton.dataset.renameAdminUser, renameButton);
+        return;
+      }
+      const approveButton = event.target.closest("[data-approve-order]");
+      if (approveButton) {
+        await approveOrder(approveButton.dataset.approveOrder);
+        return;
+      }
+      const completeButton = event.target.closest("[data-complete-order]");
+      if (completeButton) {
+        await completeOrder(completeButton.dataset.completeOrder);
         return;
       }
       const button = event.target.closest("[data-copy-order-link]");
