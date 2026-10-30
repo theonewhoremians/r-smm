@@ -2565,8 +2565,16 @@
             amount, currency:document.querySelector("#admin-credit-currency").value})
         });
         document.querySelector("#admin-credit-amount").value = "";
+        const account = adminAccounts.find(item => item.email === result.email);
+        if (account) {
+          account.wallets = Array.isArray(account.wallets) ? account.wallets : [];
+          const wallet = account.wallets.find(item => item.currency === result.currency);
+          if (wallet) wallet.balance_micros = result.balance_micros;
+          else account.wallets.push({currency:result.currency, balance_micros:result.balance_micros});
+          if (account.currency === result.currency) account.balance_micros = result.balance_micros;
+          renderAdminAccounts();
+        }
         showToast("Bonus of " + formatPrice(result.amount_micros) + " " + result.currency + " credited to " + result.email + ".");
-        await loadAdmin();
       } catch (error) {
         showToast(error.message || "Could not credit the bonus.");
       } finally {

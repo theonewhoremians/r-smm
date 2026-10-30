@@ -1268,17 +1268,18 @@ class App(BaseHTTPRequestHandler):
                 db.rollback()
                 self.respond(404, {"error": "That account could not be found."})
                 return
-            db.execute("INSERT INTO wallet_balances (email, currency, balance_micros) VALUES (?, ?, 0) "
-                       "ON CONFLICT (email, currency) DO NOTHING", (email, currency))
-            wallet = db.execute(row_lock("SELECT balance_micros FROM wallet_balances WHERE email = ? AND currency = ?"),
-                                (email, currency)).fetchone()
-            balance_micros = wallet["balance_micros"] + amount_micros
-            if balance_micros > 9_000_000_000_000_000:
+            wallet = db.execute("""
+                INSERT INTO wallet_balances (email, currency, balance_micros) VALUES (?, ?, ?)
+                ON CONFLICT (email, currency) DO UPDATE
+                SET balance_micros = wallet_balances.balance_micros + excluded.balance_micros
+                WHERE wallet_balances.balance_micros <= 9000000000000000 - excluded.balance_micros
+                RETURNING balance_micros
+            """, (email, currency, amount_micros)).fetchone()
+            if not wallet:
                 db.rollback()
                 self.respond(400, {"error": "The resulting wallet balance is outside the supported range."})
                 return
-            db.execute("UPDATE wallet_balances SET balance_micros = ? WHERE email = ? AND currency = ?",
-                       (balance_micros, email, currency))
+            balance_micros = wallet["balance_micros"]
             if account["currency"] == currency:
                 db.execute("UPDATE users SET balance_micros = ? WHERE email = ?", (balance_micros, email))
             reference = "admin-bonus:" + secrets.token_hex(16)
