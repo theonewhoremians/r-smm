@@ -15,6 +15,7 @@
     { "source": "/api/deposits", "destination": "/api/handler?route=deposits" },
     { "source": "/api/telegram/webhook", "destination": "/api/handler?route=telegram/webhook" },
     { "source": "/api/admin/summary", "destination": "/api/handler?route=admin/summary" },
+    { "source": "/api/admin/accounts/bonus", "destination": "/api/handler?route=admin/accounts/bonus" },
     { "source": "/api/admin/orders/:id/approve", "destination": "/api/handler?route=admin/orders/:id/approve" },
     { "source": "/api/admin/orders/:id/complete", "destination": "/api/handler?route=admin/orders/:id/complete" },
     { "source": "/api/admin/orders/:id/reject", "destination": "/api/handler?route=admin/orders/:id/reject" },
