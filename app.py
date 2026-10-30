@@ -552,19 +552,22 @@ class App(BaseHTTPRequestHandler):
             raise ValueError("Request is too large.")
         return json.loads(self.rfile.read(length) or b"{}")
 
-    def session_user(self):
+    def session_user(self, db=None):
         cookies = self.headers.get("Cookie", "")
         token = next((part.split("=", 1)[1] for part in cookies.split("; ")
                       if part.startswith("session=")), None)
         if not token:
             return None
         digest = hashlib.sha256(token.encode()).hexdigest()
-        with connect() as db:
-            return db.execute("""
-                SELECT users.email, users.name, users.role, users.currency, users.balance_micros FROM sessions
-                JOIN users USING (email)
-                WHERE sessions.token_hash = ? AND sessions.expires > ? AND users.disabled_at IS NULL
-            """, (digest, int(time.time()))).fetchone()
+        query = """
+            SELECT users.email, users.name, users.role, users.currency, users.balance_micros FROM sessions
+            JOIN users USING (email)
+            WHERE sessions.token_hash = ? AND sessions.expires > ? AND users.disabled_at IS NULL
+        """
+        if db is not None:
+            return db.execute(query, (digest, int(time.time()))).fetchone()
+        with connect() as connection:
+            return connection.execute(query, (digest, int(time.time()))).fetchone()
 
     def renew_session(self):
         cookies = self.headers.get("Cookie", "")
@@ -1114,8 +1117,8 @@ class App(BaseHTTPRequestHandler):
                            "amount_micros": amount_micros, "bonus_micros": bonus_micros,
                            "reference": reference, "status": "pending"})
 
-    def require_admin(self):
-        user = self.session_user()
+    def require_admin(self, db=None):
+        user = self.session_user(db)
         if not user:
             self.respond(401, {"error": "Please sign in again."})
             return None
@@ -1245,24 +1248,25 @@ class App(BaseHTTPRequestHandler):
         return [{"currency": row["currency"], "amount_micros": row["amount_micros"]} for row in rows]
 
     def credit_account_bonus(self, data):
-        if not self.require_admin():
-            return
-        email = data.get("email")
-        currency = data.get("currency")
-        amount = data.get("amount")
-        if (set(data) != {"email", "currency", "amount"} or not isinstance(email, str)
-                or not EMAIL_RE.fullmatch(email) or currency not in ("USDT", "USDC")
-                or not isinstance(amount, str) or not re.fullmatch(r"\d+(?:\.\d{1,3})?", amount)):
-            self.respond(400, {"error": "Enter a valid account, currency, and bonus amount."})
-            return
-        amount_micros = int(Decimal(amount) * 1_000_000)
-        if not 0 < amount_micros <= 9_000_000_000_000_000:
-            self.respond(400, {"error": "The bonus amount is outside the supported range."})
-            return
-        email = email.lower()
-        now = int(time.time())
         with connect() as db:
-            db.execute("BEGIN" if DATABASE_URL else "BEGIN IMMEDIATE")
+            if not self.require_admin(db):
+                return
+            email = data.get("email")
+            currency = data.get("currency")
+            amount = data.get("amount")
+            if (set(data) != {"email", "currency", "amount"} or not isinstance(email, str)
+                    or not EMAIL_RE.fullmatch(email) or currency not in ("USDT", "USDC")
+                    or not isinstance(amount, str) or not re.fullmatch(r"\d+(?:\.\d{1,3})?", amount)):
+                self.respond(400, {"error": "Enter a valid account, currency, and bonus amount."})
+                return
+            amount_micros = int(Decimal(amount) * 1_000_000)
+            if not 0 < amount_micros <= 9_000_000_000_000_000:
+                self.respond(400, {"error": "The bonus amount is outside the supported range."})
+                return
+            if not DATABASE_URL:
+                db.execute("BEGIN IMMEDIATE")
+            email = email.lower()
+            now = int(time.time())
             account = db.execute(row_lock("SELECT email, currency FROM users WHERE email = ?"), (email,)).fetchone()
             if not account:
                 db.rollback()
