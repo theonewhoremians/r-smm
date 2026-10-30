@@ -16,9 +16,13 @@
     { "source": "/api/telegram/webhook", "destination": "/api/handler?route=telegram/webhook" },
     { "source": "/api/admin/summary", "destination": "/api/handler?route=admin/summary" },
     { "source": "/api/admin/accounts/bonus", "destination": "/api/handler?route=admin/accounts/bonus" },
+    { "source": "/api/admin/workers", "destination": "/api/handler?route=admin/workers" },
+    { "source": "/api/admin/users/terminate", "destination": "/api/handler?route=admin/users/terminate" },
     { "source": "/api/admin/orders/:id/approve", "destination": "/api/handler?route=admin/orders/:id/approve" },
     { "source": "/api/admin/orders/:id/complete", "destination": "/api/handler?route=admin/orders/:id/complete" },
     { "source": "/api/admin/orders/:id/reject", "destination": "/api/handler?route=admin/orders/:id/reject" },
-    { "source": "/api/admin/deposits/:id/:action", "destination": "/api/handler?route=admin/deposits/:id/:action" }
+    { "source": "/api/admin/deposits/:id/:action", "destination": "/api/handler?route=admin/deposits/:id/:action" },
+    { "source": "/api/worker/summary", "destination": "/api/handler?route=worker/summary" },
+    { "source": "/api/worker/orders/:id/complete", "destination": "/api/handler?route=worker/orders/:id/complete" }
   ]
 }
