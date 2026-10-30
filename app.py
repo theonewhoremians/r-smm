@@ -1176,8 +1176,6 @@ class App(BaseHTTPRequestHandler):
             db.execute("DELETE FROM sessions WHERE email = ?", (email,))
             db.execute("UPDATE api_keys SET revoked_at = ? WHERE email = ? AND revoked_at IS NULL",
                        (terminated_at, email))
-            if target["role"] == "worker":
-                db.execute("DELETE FROM worker_order_claims WHERE worker_email = ?", (email,))
             db.commit()
         self.respond(200, {"ok": True, "email": email, "disabled_at": terminated_at})
 
@@ -1382,10 +1380,32 @@ class App(BaseHTTPRequestHandler):
                 SELECT email, name, role, disabled_at FROM users
                 WHERE role IN ('customer', 'worker') ORDER BY role, email
             """).fetchall()
+            worker_completed_orders = db.execute("""
+                SELECT o.id, o.created_at, o.platform, o.post_url, o.views, o.currency,
+                       o.amount_micros, o.settings_json, customer.name AS customer_name,
+                       worker.email AS worker_email, worker.name AS worker_name, wc.completed_at
+                FROM orders o
+                JOIN worker_order_claims claim ON claim.order_id = o.id
+                JOIN users worker ON worker.email = claim.worker_email
+                JOIN users customer ON customer.email = o.email
+                LEFT JOIN worker_order_completions wc
+                  ON wc.order_id = o.id AND wc.worker_email = claim.worker_email
+                WHERE o.status = 'completed'
+                UNION ALL
+                SELECT o.id, o.created_at, o.platform, o.post_url, o.views, o.currency,
+                       o.amount_micros, o.settings_json, customer.name AS customer_name,
+                       worker.email AS worker_email, worker.name AS worker_name, wc.completed_at
+                FROM worker_order_completions wc
+                JOIN orders o ON o.id = wc.order_id
+                JOIN users worker ON worker.email = wc.worker_email
+                JOIN users customer ON customer.email = o.email
+                WHERE o.status = 'completed'
+                  AND NOT EXISTS (SELECT 1 FROM worker_order_claims claim WHERE claim.order_id = o.id)
+                ORDER BY completed_at DESC, id DESC
+            """).fetchall()
             workers = db.execute("""
-                SELECT u.email, u.name, u.disabled_at, COUNT(c.order_id) AS completed_count
-                FROM users u LEFT JOIN worker_order_completions c ON c.worker_email = u.email
-                WHERE u.role = 'worker' GROUP BY u.email, u.name, u.disabled_at ORDER BY u.email
+                SELECT email, name, disabled_at FROM users
+                WHERE role = 'worker' ORDER BY email
             """).fetchall()
             balances = db.execute("SELECT email, currency, balance_micros FROM wallet_balances ORDER BY currency").fetchall()
         balances_by_email = {}
@@ -1393,12 +1413,19 @@ class App(BaseHTTPRequestHandler):
             balances_by_email.setdefault(balance["email"], []).append({
                 "currency": balance["currency"], "balance_micros": balance["balance_micros"]
             })
+        worker_completed_orders = [dict(row) for row in worker_completed_orders]
+        completed_counts = {}
+        for order in worker_completed_orders:
+            completed_counts[order["worker_email"]] = completed_counts.get(order["worker_email"], 0) + 1
         self.respond(200, {"pending_orders": [dict(row) for row in orders],
                            "processing_orders": [dict(row) for row in processing_orders],
                            "pending_deposits": [dict(row) for row in deposits],
                            "completed_orders": [dict(row) for row in completed_orders],
+                           "worker_completed_orders": [dict(row) for row in worker_completed_orders],
+                           "worker_completed_count": len(worker_completed_orders),
                            "approved_deposits": [dict(row) for row in approved_deposits],
-                           "workers": [dict(row) for row in workers],
+                           "workers": [{**dict(row), "completed_count": completed_counts.get(row["email"], 0)}
+                                       for row in workers],
                            "manageable_users": [dict(row) for row in manageable_users],
                            "accounts": [{**dict(row), "wallets": balances_by_email.get(row["email"], [])}
                                         for row in accounts]})
@@ -1426,16 +1453,31 @@ class App(BaseHTTPRequestHandler):
         if not self.require_admin():
             return
         order_id = int(self.path.split("/")[4])
+        completed_at = int(time.time())
         with connect() as db:
-            changed = db.execute("UPDATE orders SET status = 'completed' WHERE id = ? AND status IN ('pending', 'processing')",
-                                 (order_id,)).rowcount
-            exists = db.execute("SELECT 1 FROM orders WHERE id = ?", (order_id,)).fetchone()
-        if not exists:
-            self.respond(404, {"error": "Order not found."})
-        elif not changed:
-            self.respond(409, {"error": "This order is already complete."})
-        else:
-            self.respond(200, {"ok": True, "order_id": order_id, "status": "completed"})
+            if not DATABASE_URL:
+                db.execute("BEGIN IMMEDIATE")
+            order = db.execute(row_lock("SELECT status FROM orders WHERE id = ?"), (order_id,)).fetchone()
+            if not order:
+                db.rollback()
+                self.respond(404, {"error": "Order not found."})
+                return
+            if order["status"] not in ("pending", "processing"):
+                db.rollback()
+                self.respond(409, {"error": "This order is already complete."})
+                return
+            db.execute("UPDATE orders SET status = 'completed' WHERE id = ? AND status IN ('pending', 'processing')",
+                       (order_id,))
+            claim = db.execute(row_lock("SELECT worker_email FROM worker_order_claims WHERE order_id = ?"),
+                               (order_id,)).fetchone()
+            if claim:
+                db.execute("""
+                    INSERT INTO worker_order_completions (order_id, worker_email, completed_at)
+                    VALUES (?, ?, ?) ON CONFLICT (order_id) DO NOTHING
+                """, (order_id, claim["worker_email"], completed_at))
+            db.commit()
+        self.respond(200, {"ok": True, "order_id": order_id, "status": "completed",
+                           "completed_at": completed_at})
 
     def reject_order(self, data):
         if not self.require_admin():

@@ -1293,6 +1293,10 @@
             <form class="admin-credit-card admin-terminate-form" id="admin-terminate-user-form"><div class="admin-credit-intro"><strong>Terminate account access</strong></div><label for="admin-terminate-user">Account<select id="admin-terminate-user" required></select></label><button class="admin-action secondary" id="admin-terminate-submit" type="submit" disabled>Terminate account</button></form>
             <div class="record-list" id="admin-workers"><div class="empty-state">No workers yet.</div></div>
           </section>
+          <section class="admin-section"><div class="admin-section-heading"><div><h2>Orders completed by workers</h2></div></div>
+            <div class="overview-grid"><article class="overview-card"><span>Total completed by workers</span><strong id="admin-worker-completed-total">0</strong></article></div>
+            <div class="record-list" id="admin-worker-completed-orders"><div class="empty-state">No worker-completed orders yet.</div></div>
+          </section>
         </div>
       </div>
       <div class="dashboard-toast" id="admin-toast" role="status" hidden></div>
@@ -1736,6 +1740,12 @@
         workerList.innerHTML = summary.workers.length ? summary.workers.map(worker =>
           '<article class="record-card"><div class="record-top"><div><strong>' + escapeHtml(worker.name) + '</strong><span>' + escapeHtml(worker.email) + '</span><span class="status-badge ' + (Number(worker.disabled_at) > 0 ? 'rejected' : 'credited') + '">' + (Number(worker.disabled_at) > 0 ? 'terminated' : 'active') + '</span></div><strong>' + Number(worker.completed_count).toLocaleString() + ' completed</strong></div></article>'
         ).join("") : '<div class="empty-state">No workers yet. Generate a login above to add a worker.</div>';
+        const workerCompletedOrders = summary.worker_completed_orders || [];
+        document.querySelector("#admin-worker-completed-total").textContent = Number(summary.worker_completed_count || 0).toLocaleString();
+        document.querySelector("#admin-worker-completed-orders").innerHTML = workerCompletedOrders.length ? workerCompletedOrders.map(order =>
+          '<article class="record-card"><div class="record-top"><div><strong>Order #' + Number(order.id) + '</strong><span>Completed by ' + escapeHtml(order.worker_name) + ' · ' + escapeHtml(order.worker_email) + '</span><span>Placed by ' + escapeHtml(order.customer_name) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
+          '<p>' + escapeHtml(order.platform) + (Number(order.completed_at) ? ' · Completed ' + formatDate(order.completed_at) : ' · Completed') + '</p>' + orderSettingsHtml(order.settings_json) + adminOrderLinkHtml(order) + '</article>'
+        ).join("") : '<div class="empty-state">No worker-completed orders yet.</div>';
         const orderList = document.querySelector("#admin-orders");
         orderList.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order =>
           '<article class="record-card"><div class="record-top"><div><strong>Order #' + order.id + ' · ' + escapeHtml(order.name) + '</strong><span>' + escapeHtml(order.email) + '</span></div><strong>' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</strong></div>' +
@@ -2938,6 +2948,8 @@
       document.querySelector("#admin-deposit-count").textContent = "0";
       document.querySelector("#admin-balances").innerHTML = '<div class="empty-state">No accounts yet.</div>';
       document.querySelector("#admin-workers").innerHTML = '<div class="empty-state">No workers yet.</div>';
+      document.querySelector("#admin-worker-completed-orders").innerHTML = '<div class="empty-state">No worker-completed orders yet.</div>';
+      document.querySelector("#admin-worker-completed-total").textContent = "0";
       document.querySelector("#admin-orders").innerHTML = '<div class="empty-state">No orders awaiting approval.</div>';
       document.querySelector("#admin-processing-orders").innerHTML = '<div class="empty-state">No orders in progress.</div>';
       document.querySelector("#admin-completed-orders").innerHTML = '<div class="empty-state">No fulfilled orders yet.</div>';
