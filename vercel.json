@@ -16,6 +16,7 @@
     { "source": "/api/telegram/webhook", "destination": "/api/handler?route=telegram/webhook" },
     { "source": "/api/admin/summary", "destination": "/api/handler?route=admin/summary" },
     { "source": "/api/admin/accounts/bonus", "destination": "/api/handler?route=admin/accounts/bonus" },
+    { "source": "/api/admin/accounts/label", "destination": "/api/handler?route=admin/accounts/label" },
     { "source": "/api/admin/workers", "destination": "/api/handler?route=admin/workers" },
     { "source": "/api/admin/users/terminate", "destination": "/api/handler?route=admin/users/terminate" },
     { "source": "/api/admin/orders/:id/approve", "destination": "/api/handler?route=admin/orders/:id/approve" },

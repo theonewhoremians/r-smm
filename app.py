@@ -169,6 +169,12 @@ def init_db():
                 currency TEXT NOT NULL DEFAULT 'USDT', balance_micros BIGINT NOT NULL DEFAULT 0,
                 disabled_at BIGINT
             );
+            CREATE TABLE IF NOT EXISTS admin_user_labels (
+                admin_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+                user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+                label TEXT NOT NULL, updated_at BIGINT NOT NULL,
+                PRIMARY KEY (admin_email, user_email)
+            );
             CREATE TABLE IF NOT EXISTS sessions (
                 token_hash TEXT PRIMARY KEY, email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
                 expires BIGINT NOT NULL
@@ -269,6 +275,12 @@ def init_db():
                 currency TEXT NOT NULL DEFAULT 'USDT',
                 balance_micros INTEGER NOT NULL DEFAULT 0,
                 disabled_at INTEGER
+            );
+            CREATE TABLE IF NOT EXISTS admin_user_labels (
+                admin_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+                user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+                label TEXT NOT NULL, updated_at INTEGER NOT NULL,
+                PRIMARY KEY (admin_email, user_email)
             );
             CREATE TABLE IF NOT EXISTS sessions (
                 token_hash TEXT PRIMARY KEY,
@@ -673,6 +685,8 @@ class App(BaseHTTPRequestHandler):
                 self.review_deposit(data)
             elif self.path == "/api/admin/accounts/bonus":
                 self.credit_account_bonus(data)
+            elif self.path == "/api/admin/accounts/label":
+                self.set_admin_user_label(data)
             elif self.path == "/api/admin/workers":
                 self.create_worker(data)
             elif self.path == "/api/admin/users/terminate":
@@ -1334,8 +1348,39 @@ class App(BaseHTTPRequestHandler):
         self.respond(201, {"ok": True, "email": email, "currency": currency,
                            "amount_micros": amount_micros, "balance_micros": balance_micros})
 
+    def set_admin_user_label(self, data):
+        with connect() as db:
+            admin = self.require_admin(db)
+            if not admin:
+                return
+            email = data.get("email")
+            label = data.get("label")
+            if (set(data) != {"email", "label"} or not isinstance(email, str)
+                    or not EMAIL_RE.fullmatch(email.strip()) or not isinstance(label, str)
+                    or len(label.strip()) > 60):
+                self.respond(400, {"error": "Enter a display name of up to 60 characters."})
+                return
+            email = email.strip().lower()
+            label = label.strip()
+            target = db.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
+            if not target:
+                self.respond(404, {"error": "That account could not be found."})
+                return
+            if label:
+                db.execute("""
+                    INSERT INTO admin_user_labels (admin_email, user_email, label, updated_at)
+                    VALUES (?, ?, ?, ?) ON CONFLICT (admin_email, user_email)
+                    DO UPDATE SET label = excluded.label, updated_at = excluded.updated_at
+                """, (admin["email"], email, label, int(time.time())))
+            else:
+                db.execute("DELETE FROM admin_user_labels WHERE admin_email = ? AND user_email = ?",
+                           (admin["email"], email))
+            db.commit()
+        self.respond(200, {"ok": True, "email": email, "label": label, "name": target["name"]})
+
     def admin_summary(self):
-        if not self.require_admin():
+        admin = self.require_admin()
+        if not admin:
             return
         with connect() as db:
             orders = db.execute("""
@@ -1383,6 +1428,7 @@ class App(BaseHTTPRequestHandler):
             worker_completed_orders = db.execute("""
                 SELECT o.id, o.created_at, o.platform, o.post_url, o.views, o.currency,
                        o.amount_micros, o.settings_json, customer.name AS customer_name,
+                       customer.email AS customer_email,
                        worker.email AS worker_email, worker.name AS worker_name, wc.completed_at
                 FROM orders o
                 JOIN worker_order_claims claim ON claim.order_id = o.id
@@ -1394,6 +1440,7 @@ class App(BaseHTTPRequestHandler):
                 UNION ALL
                 SELECT o.id, o.created_at, o.platform, o.post_url, o.views, o.currency,
                        o.amount_micros, o.settings_json, customer.name AS customer_name,
+                       customer.email AS customer_email,
                        worker.email AS worker_email, worker.name AS worker_name, wc.completed_at
                 FROM worker_order_completions wc
                 JOIN orders o ON o.id = wc.order_id
@@ -1407,6 +1454,9 @@ class App(BaseHTTPRequestHandler):
                 SELECT email, name, disabled_at FROM users
                 WHERE role = 'worker' ORDER BY email
             """).fetchall()
+            admin_labels = db.execute("""
+                SELECT user_email, label FROM admin_user_labels WHERE admin_email = ?
+            """, (admin["email"],)).fetchall()
             balances = db.execute("SELECT email, currency, balance_micros FROM wallet_balances ORDER BY currency").fetchall()
         balances_by_email = {}
         for balance in balances:
@@ -1414,21 +1464,38 @@ class App(BaseHTTPRequestHandler):
                 "currency": balance["currency"], "balance_micros": balance["balance_micros"]
             })
         worker_completed_orders = [dict(row) for row in worker_completed_orders]
+        labels_by_email = {row["user_email"]: row["label"] for row in admin_labels}
+        def admin_labeled(rows, email_field="email", name_field="name"):
+            result = []
+            for row in rows:
+                item = dict(row)
+                label = labels_by_email.get(item.get(email_field), "")
+                item["admin_label"] = label
+                if label:
+                    item[name_field] = label
+                result.append(item)
+            return result
         completed_counts = {}
         for order in worker_completed_orders:
             completed_counts[order["worker_email"]] = completed_counts.get(order["worker_email"], 0) + 1
-        self.respond(200, {"pending_orders": [dict(row) for row in orders],
-                           "processing_orders": [dict(row) for row in processing_orders],
-                           "pending_deposits": [dict(row) for row in deposits],
-                           "completed_orders": [dict(row) for row in completed_orders],
+        worker_completed_orders = admin_labeled(worker_completed_orders, "worker_email", "worker_name")
+        for order in worker_completed_orders:
+            customer_label = labels_by_email.get(order.get("customer_email"), "")
+            if customer_label:
+                order["customer_name"] = customer_label
+            order.pop("customer_email", None)
+        self.respond(200, {"pending_orders": admin_labeled(orders),
+                           "processing_orders": admin_labeled(processing_orders),
+                           "pending_deposits": admin_labeled(deposits),
+                           "completed_orders": admin_labeled(completed_orders),
                            "worker_completed_orders": [dict(row) for row in worker_completed_orders],
                            "worker_completed_count": len(worker_completed_orders),
-                           "approved_deposits": [dict(row) for row in approved_deposits],
-                           "workers": [{**dict(row), "completed_count": completed_counts.get(row["email"], 0)}
-                                       for row in workers],
-                           "manageable_users": [dict(row) for row in manageable_users],
-                           "accounts": [{**dict(row), "wallets": balances_by_email.get(row["email"], [])}
-                                        for row in accounts]})
+                           "approved_deposits": admin_labeled(approved_deposits),
+                           "workers": [{**item, "completed_count": completed_counts.get(item["email"], 0)}
+                                       for item in admin_labeled(workers)],
+                           "manageable_users": admin_labeled(manageable_users),
+                           "accounts": [{**item, "wallets": balances_by_email.get(item["email"], [])}
+                                        for item in admin_labeled(accounts)]})
 
     def approve_order(self, data):
         if not self.require_admin():
