@@ -1213,21 +1213,20 @@ class App(BaseHTTPRequestHandler):
                 return
             pending_orders = db.execute("""
                 SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
-                       o.amount_micros, o.settings_json, o.status, u.name, c.claimed_at
+                       o.amount_micros, o.settings_json, o.status, u.name
                 FROM orders o JOIN users u ON u.email = o.email
                 LEFT JOIN worker_order_claims c ON c.order_id = o.id
-                WHERE (o.status = 'pending' AND c.order_id IS NULL)
-                   OR (o.status = 'processing' AND (c.order_id IS NULL OR c.worker_email = ?))
-                ORDER BY CASE WHEN c.worker_email = ? THEN 0 ELSE 1 END, o.created_at ASC, o.id ASC
-            """, (worker["email"], worker["email"])).fetchall()
+                WHERE o.status = 'pending' AND c.order_id IS NULL
+                ORDER BY o.created_at ASC, o.id ASC
+            """).fetchall()
             completed_orders = db.execute("""
                 SELECT o.id, o.post_url, o.created_at, o.platform, o.views, o.currency,
-                       o.amount_micros, o.settings_json, u.name, c.completed_at
-                FROM worker_order_completions c
+                       o.amount_micros, o.settings_json, u.name, c.claimed_at
+                FROM worker_order_claims c
                 JOIN orders o ON o.id = c.order_id
                 JOIN users u ON u.email = o.email
-                WHERE c.worker_email = ?
-                ORDER BY c.completed_at DESC, o.id DESC
+                WHERE c.worker_email = ? AND o.status IN ('processing', 'completed')
+                ORDER BY c.claimed_at DESC, o.id DESC
             """, (worker["email"],)).fetchall()
             completed_count = len(completed_orders)
         self.respond(200, {"pending_orders": [dict(row) for row in pending_orders],
@@ -1246,7 +1245,7 @@ class App(BaseHTTPRequestHandler):
                 db.execute("BEGIN IMMEDIATE")
             order_id = int(self.path.split("/")[4])
             order = db.execute(row_lock("SELECT status FROM orders WHERE id = ?"), (order_id,)).fetchone()
-            if not order or order["status"] not in ("pending", "processing"):
+            if not order or order["status"] != "pending":
                 db.rollback()
                 self.respond(409, {"error": "This order is no longer available to approve."})
                 return
@@ -1272,33 +1271,7 @@ class App(BaseHTTPRequestHandler):
             worker = self.require_worker(db)
             if not worker:
                 return
-            if data:
-                self.respond(400, {"error": "No additional order details are required."})
-                return
-            if not DATABASE_URL:
-                db.execute("BEGIN IMMEDIATE")
-            order_id = int(self.path.split("/")[4])
-            order = db.execute(row_lock("SELECT status FROM orders WHERE id = ?"), (order_id,)).fetchone()
-            if not order:
-                db.rollback()
-                self.respond(404, {"error": "Order not found."})
-                return
-            if order["status"] != "processing":
-                db.rollback()
-                self.respond(409, {"error": "This order is no longer available to complete."})
-                return
-            claim = db.execute(row_lock("SELECT worker_email FROM worker_order_claims WHERE order_id = ?"),
-                               (order_id,)).fetchone()
-            if not claim or claim["worker_email"] != worker["email"]:
-                db.rollback()
-                self.respond(409, {"error": "Approve this order before marking it completed."})
-                return
-            completed_at = int(time.time())
-            db.execute("UPDATE orders SET status = 'completed' WHERE id = ? AND status = 'processing'", (order_id,))
-            db.execute("INSERT INTO worker_order_completions (order_id, worker_email, completed_at) VALUES (?, ?, ?)",
-                       (order_id, worker["email"], completed_at))
-            db.commit()
-        self.respond(200, {"ok": True, "order_id": order_id, "completed_at": completed_at})
+        self.respond(403, {"error": "Only an admin can mark an order as completed."})
 
     def claim_bonus_notifications(self, email):
         with connect() as db:

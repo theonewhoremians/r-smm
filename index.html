@@ -1300,7 +1300,7 @@
     <section id="worker-panel" class="admin-panel worker-panel" hidden>
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>WORKER PORTAL</small></div></div><div class="admin-account"><span id="worker-email"></span><button class="draft-pill refresh-button" id="refresh-worker" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="worker-logout" type="button">Sign out</button></div></header>
       <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1></div></header>
-        <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
+        <div class="overview-grid"><article class="overview-card"><span>Orders approved by you</span><strong id="worker-completed-count">0</strong></article></div>
         <nav class="worker-order-tabs" role="tablist" aria-label="Worker order status">
           <button class="worker-order-tab" id="worker-tab-pending" type="button" role="tab" aria-selected="true" aria-controls="worker-section-pending" data-worker-view="pending">Pending <span class="worker-order-tab-count" id="worker-pending-count">0</span></button>
           <button class="worker-order-tab" id="worker-tab-completed" type="button" role="tab" aria-selected="false" aria-controls="worker-section-completed" data-worker-view="completed">Completed <span class="worker-order-tab-count" id="worker-completed-section-count">0</span></button>
@@ -1775,12 +1775,8 @@
       const orderId = Number(order.id);
       const postUrl = escapeHtml(order.post_url);
       const action = state === "pending"
-        ? order.claimed_at
-          ? '<button class="admin-action" type="button" data-complete-worker-order="' + orderId + '">Mark completed</button>'
-          : order.status === "processing"
-            ? '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Take order</button>'
-            : '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve &amp; take order</button>'
-        : '<span class="status-badge completed">completed · ' + formatDate(order.completed_at) + '</span>';
+        ? '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve order</button>'
+        : '<span class="status-badge completed">completed · ' + formatDate(order.claimed_at) + '</span>';
       const orderMeta = '<p class="worker-order-meta">' + escapeHtml(order.platform) + ' · ' + Number(order.views).toLocaleString() + ' base views · ' + orderDurationHours(order.settings_json).toLocaleString() + 'h duration · ' + formatDate(order.created_at) + ' · ' + formatPrice(order.amount_micros) + ' ' + escapeHtml(order.currency) + '</p>';
       return '<article class="record-card worker-order-card" data-worker-order-id="' + orderId + '"><div class="worker-order-heading"><strong>Order #' + orderId + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
         orderMeta + orderSettingsHtml(order.settings_json) +
@@ -1832,21 +1828,31 @@
       button.disabled = true;
       button.textContent = originalLabel === "Take order" ? "Taking…" : "Approving…";
       try {
-        await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/approve", {
+        const result = await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/approve", {
           method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
         });
         workerQueueVersion++;
         const card = button.closest(".worker-order-card");
         if (card) {
-          button.removeAttribute("data-approve-worker-order");
-          button.setAttribute("data-complete-worker-order", String(orderId));
-          button.textContent = "Mark completed";
-          button.disabled = false;
-          document.querySelector("#worker-pending-orders").prepend(card);
+          const badge = document.createElement("span");
+          badge.className = "status-badge completed";
+          badge.textContent = "completed · " + formatDate(result.claimed_at || Math.floor(Date.now() / 1000));
+          button.replaceWith(badge);
+          card.remove();
+          const completed = document.querySelector("#worker-completed-orders");
+          clearWorkerListEmpty(completed);
+          completed.prepend(card);
+          const pendingCount = document.querySelector("#worker-pending-count");
+          pendingCount.textContent = Math.max(0, Number(pendingCount.textContent.replace(/,/g, "")) - 1).toLocaleString();
+          const completedTabCount = document.querySelector("#worker-completed-section-count");
+          completedTabCount.textContent = (Number(completedTabCount.textContent.replace(/,/g, "")) + 1).toLocaleString();
+          const approvedCount = document.querySelector("#worker-completed-count");
+          approvedCount.textContent = (Number(approvedCount.textContent.replace(/,/g, "")) + 1).toLocaleString();
+          setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
         } else {
           loadWorkerPortal();
         }
-        showToast("Order #" + orderId + " assigned to you.");
+        showToast("Order #" + orderId + " approved and moved to Completed.");
       } catch (error) {
         showToast(error.message || "Could not approve this order.");
         if (error.status === 409) {
@@ -1859,40 +1865,6 @@
         } else {
           button.disabled = false;
           button.textContent = originalLabel;
-        }
-      }
-    }
-    async function completeWorkerOrder(orderId, button) {
-      button.disabled = true;
-      button.textContent = "Updating…";
-      try {
-        const result = await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/complete", {
-          method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
-        });
-        workerQueueVersion++;
-        const card = button.closest(".worker-order-card");
-        if (card) {
-          const badge = document.createElement("span");
-          badge.className = "status-badge completed";
-          badge.textContent = "completed · " + formatDate(result.completed_at);
-          button.replaceWith(badge);
-          card.remove();
-          const completed = document.querySelector("#worker-completed-orders");
-          clearWorkerListEmpty(completed);
-          completed.prepend(card);
-          document.querySelector("#worker-pending-count").textContent = Math.max(0, Number(document.querySelector("#worker-pending-count").textContent) - 1).toLocaleString();
-          document.querySelector("#worker-completed-section-count").textContent = (Number(document.querySelector("#worker-completed-section-count").textContent) + 1).toLocaleString();
-          setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
-        }
-        const count = document.querySelector("#worker-completed-count");
-        count.textContent = (Number(count.textContent.replace(/,/g, "")) + 1).toLocaleString();
-        showToast("Order #" + orderId + " marked completed.");
-      } catch (error) {
-        showToast(error.message || "Could not complete this order.");
-      } finally {
-        if (button.isConnected) {
-          button.disabled = false;
-          button.textContent = "Mark completed";
         }
       }
     }
@@ -2632,8 +2604,11 @@
     window.setInterval(refreshVisibleCustomerOrders, 30000);
     window.setInterval(() => {
       if (!document.hidden && !document.querySelector("#worker-panel").hidden) loadWorkerPortal();
-    }, 5000);
-    document.addEventListener("visibilitychange", refreshVisibleCustomerOrders);
+    }, 1000);
+    document.addEventListener("visibilitychange", () => {
+      refreshVisibleCustomerOrders();
+      if (!document.hidden && !document.querySelector("#worker-panel").hidden) loadWorkerPortal();
+    });
     document.querySelector("#refresh-wallet").addEventListener("click", event => runRefresh(event.currentTarget, async () => {
       const results = await Promise.all([refreshWallet(true), loadOverview(true), loadCustomerWallet()]);
       return results.every(Boolean);
@@ -2764,8 +2739,6 @@
         } catch (_) { showToast("Could not copy the order link. Please try again."); }
         return;
       }
-      const completeButton = event.target.closest("[data-complete-worker-order]");
-      if (completeButton) await completeWorkerOrder(completeButton.dataset.completeWorkerOrder, completeButton);
     });
     document.querySelector("#refresh-worker").addEventListener("click", event => runRefresh(event.currentTarget, loadWorkerPortal));
     document.querySelectorAll("[data-worker-view]").forEach(button => button.addEventListener("click", () => setWorkerOrderView(button.dataset.workerView)));
