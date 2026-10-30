@@ -23,6 +23,7 @@
     { "source": "/api/admin/orders/:id/reject", "destination": "/api/handler?route=admin/orders/:id/reject" },
     { "source": "/api/admin/deposits/:id/:action", "destination": "/api/handler?route=admin/deposits/:id/:action" },
     { "source": "/api/worker/summary", "destination": "/api/handler?route=worker/summary" },
+    { "source": "/api/worker/orders/:id/approve", "destination": "/api/handler?route=worker/orders/:id/approve" },
     { "source": "/api/worker/orders/:id/complete", "destination": "/api/handler?route=worker/orders/:id/complete" }
   ]
 }

@@ -1291,7 +1291,9 @@
       <header class="admin-topbar"><div class="side-brand"><div class="logo-badge" aria-hidden="true"><span>R</span></div><div class="side-brand-copy"><strong>R-SMM</strong><small>WORKER PORTAL</small></div></div><div class="admin-account"><span id="worker-email"></span><button class="draft-pill refresh-button" id="refresh-worker" type="button">↻ &nbsp; Refresh</button><button class="logout-button admin-logout" id="worker-logout" type="button">Sign out</button></div></header>
       <div class="admin-main"><header class="page-heading"><div><div class="eyebrow">WORK QUEUE</div><h1>Work orders</h1></div></header>
         <div class="overview-grid"><article class="overview-card"><span>Orders completed by you</span><strong id="worker-completed-count">0</strong></article></div>
-        <section class="admin-section"><div class="admin-section-heading"><div><h2>Orders to work</h2></div></div><div class="record-list" id="worker-orders"><div class="empty-state">No orders are available right now.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Pending orders</h2></div></div><div class="record-list" id="worker-pending-orders"><div class="empty-state">No pending orders.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Approved orders</h2></div></div><div class="record-list" id="worker-approved-orders"><div class="empty-state">No approved orders.</div></div></section>
+        <section class="admin-section"><div class="admin-section-heading"><div><h2>Completed orders</h2></div></div><div class="record-list" id="worker-completed-orders"><div class="empty-state">No completed orders yet.</div></div></section>
       </div>
       <div class="dashboard-toast" id="worker-toast" role="status" hidden></div>
     </section>
@@ -1341,7 +1343,7 @@
     let walletRequestVersion = 0;
     let accountViewVersion = 0;
     let workerPortalLoading = false;
-    const completedWorkerOrderIds = new Set();
+    let workerQueueVersion = 0;
     let walletCurrency = "USDT";
     let walletBalanceMicros = 0;
     let walletCurrencyChanging = false;
@@ -1410,7 +1412,7 @@
         return;
       }
       if (isWorker) {
-        completedWorkerOrderIds.clear();
+        workerQueueVersion++;
         document.querySelector("#worker-email").textContent = email;
         loadWorkerPortal();
         return;
@@ -1755,22 +1757,39 @@
         return true;
       } catch (error) { showToast(error.message); return false; }
     }
+    function workerOrderCard(order, state) {
+      const orderId = Number(order.id);
+      const postUrl = escapeHtml(order.post_url);
+      const action = state === "pending"
+        ? '<button class="admin-action" type="button" data-approve-worker-order="' + orderId + '">Approve order</button>'
+        : state === "approved"
+          ? '<button class="admin-action" type="button" data-complete-worker-order="' + orderId + '">Mark completed</button>'
+          : '<span class="status-badge completed">completed · ' + formatDate(order.completed_at) + '</span>';
+      return '<article class="record-card worker-order-card" data-worker-order-id="' + orderId + '"><div class="worker-order-heading"><strong>Order #' + orderId + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
+        '<a class="worker-order-link" href="' + postUrl + '" target="_blank" rel="noopener">' + postUrl + '</a>' +
+        '<div class="worker-order-actions"><button class="admin-action secondary" type="button" data-copy-worker-link="' + postUrl + '">Copy link</button>' + action + '</div></article>';
+    }
+    function setWorkerListEmpty(list, message) {
+      if (!list.querySelector(".worker-order-card")) list.innerHTML = '<div class="empty-state">' + message + '</div>';
+    }
+    function clearWorkerListEmpty(list) {
+      list.querySelector(".empty-state")?.remove();
+    }
     async function loadWorkerPortal() {
       if (workerPortalLoading) return false;
       workerPortalLoading = true;
       const requestVersion = accountViewVersion;
+      const queueVersion = workerQueueVersion;
       try {
         const summary = await requestJson("/api/worker/summary");
-        if (requestVersion !== accountViewVersion) return false;
+        if (requestVersion !== accountViewVersion || queueVersion !== workerQueueVersion) return false;
         document.querySelector("#worker-completed-count").textContent = Number(summary.completed_count).toLocaleString();
-        const orders = document.querySelector("#worker-orders");
-        const availableOrders = summary.orders.filter(order => !completedWorkerOrderIds.has(Number(order.id)));
-        orders.innerHTML = availableOrders.length ? availableOrders.map(order => {
-          const postUrl = escapeHtml(order.post_url);
-          return '<article class="record-card worker-order-card"><div class="worker-order-heading"><strong>Order #' + Number(order.id) + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
-            '<a class="worker-order-link" href="' + postUrl + '" target="_blank" rel="noopener">' + postUrl + '</a>' +
-            '<div class="worker-order-actions"><button class="admin-action secondary" type="button" data-copy-worker-link="' + postUrl + '">Copy link</button><button class="admin-action" type="button" data-complete-worker-order="' + Number(order.id) + '">Mark completed</button></div></article>';
-        }).join("") : '<div class="empty-state">No orders are available right now.</div>';
+        const pending = document.querySelector("#worker-pending-orders");
+        const approved = document.querySelector("#worker-approved-orders");
+        const completed = document.querySelector("#worker-completed-orders");
+        pending.innerHTML = summary.pending_orders.length ? summary.pending_orders.map(order => workerOrderCard(order, "pending")).join("") : '<div class="empty-state">No pending orders.</div>';
+        approved.innerHTML = summary.approved_orders.length ? summary.approved_orders.map(order => workerOrderCard(order, "approved")).join("") : '<div class="empty-state">No approved orders.</div>';
+        completed.innerHTML = summary.completed_orders.length ? summary.completed_orders.map(order => workerOrderCard(order, "completed")).join("") : '<div class="empty-state">No completed orders yet.</div>';
         return true;
       } catch (error) {
         if (error.status === 401 || error.status === 403) { await signOut(); return false; }
@@ -1780,15 +1799,62 @@
         workerPortalLoading = false;
       }
     }
+    async function approveWorkerOrder(orderId, button) {
+      button.disabled = true;
+      button.textContent = "Approving…";
+      try {
+        await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/approve", {
+          method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
+        });
+        workerQueueVersion++;
+        const card = button.closest(".worker-order-card");
+        if (card) {
+          button.removeAttribute("data-approve-worker-order");
+          button.setAttribute("data-complete-worker-order", String(orderId));
+          button.textContent = "Mark completed";
+          button.disabled = false;
+          const approved = document.querySelector("#worker-approved-orders");
+          clearWorkerListEmpty(approved);
+          approved.prepend(card);
+          setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
+        } else {
+          loadWorkerPortal();
+        }
+        showToast("Order #" + orderId + " approved and assigned to you.");
+      } catch (error) {
+        showToast(error.message || "Could not approve this order.");
+        if (error.status === 409) {
+          button.closest(".worker-order-card")?.remove();
+          setWorkerListEmpty(document.querySelector("#worker-pending-orders"), "No pending orders.");
+          loadWorkerPortal();
+        } else {
+          button.disabled = false;
+          button.textContent = "Approve order";
+        }
+      }
+    }
     async function completeWorkerOrder(orderId, button) {
       button.disabled = true;
       button.textContent = "Updating…";
       try {
-        await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/complete", {
+        const result = await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/complete", {
           method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
         });
-        completedWorkerOrderIds.add(Number(orderId));
-        button.closest(".worker-order-card")?.remove();
+        workerQueueVersion++;
+        const card = button.closest(".worker-order-card");
+        if (card) {
+          const order = {
+            id:Number(orderId),
+            name:card.querySelector(".worker-order-heading span").textContent.replace(/^Placed by\s*/, ""),
+            post_url:card.querySelector(".worker-order-link").href,
+            completed_at:result.completed_at
+          };
+          card.remove();
+          const completed = document.querySelector("#worker-completed-orders");
+          clearWorkerListEmpty(completed);
+          completed.insertAdjacentHTML("afterbegin", workerOrderCard(order, "completed"));
+          setWorkerListEmpty(document.querySelector("#worker-approved-orders"), "No approved orders.");
+        }
         const count = document.querySelector("#worker-completed-count");
         count.textContent = (Number(count.textContent.replace(/,/g, "")) + 1).toLocaleString();
         showToast("Order #" + orderId + " marked completed.");
@@ -2654,6 +2720,11 @@
       document.querySelector("#admin-worker-credentials").hidden = true;
     });
     document.querySelector("#worker-panel").addEventListener("click", async event => {
+      const approveButton = event.target.closest("[data-approve-worker-order]");
+      if (approveButton) {
+        await approveWorkerOrder(approveButton.dataset.approveWorkerOrder, approveButton);
+        return;
+      }
       const copyButton = event.target.closest("[data-copy-worker-link]");
       if (copyButton) {
         try {
@@ -2869,7 +2940,9 @@
       document.querySelector("#admin-completed-orders").innerHTML = '<div class="empty-state">No fulfilled orders yet.</div>';
       document.querySelector("#admin-deposits").innerHTML = '<div class="empty-state">No pending payments.</div>';
       document.querySelector("#admin-approved-deposits").innerHTML = '<div class="empty-state">No approved deposits yet.</div>';
-      document.querySelector("#worker-orders").innerHTML = '<div class="empty-state">No orders are available right now.</div>';
+      document.querySelector("#worker-pending-orders").innerHTML = '<div class="empty-state">No pending orders.</div>';
+      document.querySelector("#worker-approved-orders").innerHTML = '<div class="empty-state">No approved orders.</div>';
+      document.querySelector("#worker-completed-orders").innerHTML = '<div class="empty-state">No completed orders yet.</div>';
       document.querySelector("#worker-completed-count").textContent = "0";
       document.querySelector("#generated-worker-email").textContent = "";
       document.querySelector("#generated-worker-password").textContent = "";
