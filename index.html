@@ -1342,6 +1342,8 @@
     let bonusNotificationQueue = [];
     let walletRequestVersion = 0;
     let accountViewVersion = 0;
+    let workerPortalLoading = false;
+    const completedWorkerOrderIds = new Set();
     let walletCurrency = "USDT";
     let walletBalanceMicros = 0;
     let walletCurrencyChanging = false;
@@ -1410,6 +1412,7 @@
         return;
       }
       if (isWorker) {
+        completedWorkerOrderIds.clear();
         document.querySelector("#worker-email").textContent = email;
         loadWorkerPortal();
         return;
@@ -1755,13 +1758,16 @@
       } catch (error) { showToast(error.message); return false; }
     }
     async function loadWorkerPortal() {
+      if (workerPortalLoading) return false;
+      workerPortalLoading = true;
       const requestVersion = accountViewVersion;
       try {
         const summary = await requestJson("/api/worker/summary");
         if (requestVersion !== accountViewVersion) return false;
         document.querySelector("#worker-completed-count").textContent = Number(summary.completed_count).toLocaleString();
         const orders = document.querySelector("#worker-orders");
-        orders.innerHTML = summary.orders.length ? summary.orders.map(order => {
+        const availableOrders = summary.orders.filter(order => !completedWorkerOrderIds.has(Number(order.id)));
+        orders.innerHTML = availableOrders.length ? availableOrders.map(order => {
           const postUrl = escapeHtml(order.post_url);
           return '<article class="record-card worker-order-card"><div class="worker-order-heading"><strong>Order #' + Number(order.id) + '</strong><span>Placed by ' + escapeHtml(order.name) + '</span></div>' +
             '<a class="worker-order-link" href="' + postUrl + '" target="_blank" rel="noopener">' + postUrl + '</a>' +
@@ -1772,6 +1778,8 @@
         if (error.status === 401 || error.status === 403) { await signOut(); return false; }
         showToast(error.message || "Could not load the work queue.");
         return false;
+      } finally {
+        workerPortalLoading = false;
       }
     }
     async function completeWorkerOrder(orderId, button) {
@@ -1781,6 +1789,7 @@
         await requestJson("/api/worker/orders/" + encodeURIComponent(orderId) + "/complete", {
           method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"
         });
+        completedWorkerOrderIds.add(Number(orderId));
         button.closest(".worker-order-card")?.remove();
         const count = document.querySelector("#worker-completed-count");
         count.textContent = (Number(count.textContent.replace(/,/g, "")) + 1).toLocaleString();
@@ -2528,6 +2537,9 @@
       if (!document.hidden && !document.querySelector("#workspace").hidden && !customerShell.hidden && !ordersPage.hidden) loadCustomerOrders();
     }
     window.setInterval(refreshVisibleCustomerOrders, 30000);
+    window.setInterval(() => {
+      if (!document.hidden && !document.querySelector("#worker-panel").hidden) loadWorkerPortal();
+    }, 5000);
     document.addEventListener("visibilitychange", refreshVisibleCustomerOrders);
     document.querySelector("#refresh-wallet").addEventListener("click", event => runRefresh(event.currentTarget, async () => {
       const results = await Promise.all([refreshWallet(true), loadOverview(true), loadCustomerWallet()]);
