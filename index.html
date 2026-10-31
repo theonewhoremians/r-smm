@@ -1330,7 +1330,7 @@
     const engagementMetrics = metrics.filter(metric => !metric.base);
     const engagementRates = {};
     const engagementAmounts = Object.fromEntries(engagementMetrics.map(metric => [metric.key, metric.amount]));
-    const tiktokRateMicros = {views:330, likes:132, comments:220, saves:132, shares:165, reposts:55};
+    const tiktokRateMicros = {views:347, likes:139, comments:231, saves:139, shares:174, reposts:58};
     const serviceDeliverySettings = Object.fromEntries(metrics.map(metric => [metric.key, {interval_minutes:0, delivery_time_hours:0}]));
     const selectedServices = Object.fromEntries(metrics.map(metric => [metric.key, !metric.base]));
     engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
