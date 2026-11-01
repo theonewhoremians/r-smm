@@ -202,6 +202,7 @@
     .preview-metric strong{font-size:14px;color:#252a32}
     .preview-metric small{font-size:11px;color:#727985}
     .preview-metric.muted{opacity:.48}
+    .preview-metric:disabled{opacity:.34;cursor:not-allowed;transform:none}
     .preview-metric.selected{border-color:#9c8358;background:linear-gradient(145deg,#fffdf7,#f0e9dc);box-shadow:0 0 0 2px #9c835822}
     .preview-metric:hover{transform:translateY(-2px);border-color:#9c8358}
     .preview-metric:focus-visible{outline:2px solid #9c8358;outline-offset:3px}
@@ -1330,7 +1331,7 @@
     const engagementMetrics = metrics.filter(metric => !metric.base);
     const engagementRates = {};
     const engagementAmounts = Object.fromEntries(engagementMetrics.map(metric => [metric.key, metric.amount]));
-    const tiktokRateMicros = {views:382, likes:153, comments:255, saves:153, shares:192, reposts:64};
+    const tiktokRateMicros = {views:413, likes:169, comments:255, saves:169, shares:231, reposts:64};
     const serviceDeliverySettings = Object.fromEntries(metrics.map(metric => [metric.key, {interval_minutes:0, delivery_time_hours:0}]));
     const selectedServices = Object.fromEntries(metrics.map(metric => [metric.key, !metric.base]));
     engagementMetrics.forEach(metric => { engagementRates[metric.key] = metric.amount / metrics[0].amount * 100; });
@@ -2041,7 +2042,7 @@
       return Math.max(metric.min, Math.min(metric.max, Math.round(views * engagementRates[key] / 100)));
     }
     function metricEnabled(key) {
-      return selectedServices[key] === true;
+      return selectedServices[key] === true && !(key === "reposts" && selectedPlatform() === "tiktok");
     }
     function selectedPlatform() {
       return document.querySelector(".platform-button.selected")?.dataset.platform || "instagram";
@@ -2082,7 +2083,8 @@
         const delivery = serviceDeliverySettings[metric.key];
         const hasDelivery = delivery.interval_minutes > 0 || delivery.delivery_time_hours > 0;
         const status = (enabled ? "Selected" : "Not selected") + (hasDelivery ? " · Timing set" : "");
-        return '<button class="preview-metric' + (enabled ? " selected" : " muted") + '" type="button" data-preview-metric="' + metric.key + '" aria-pressed="' + enabled + '" aria-label="' + metric.name + ' service, ' + (enabled ? "selected" : "not selected") + '"><span class="preview-metric-icon">' + metric.symbol +
+        const unavailable = metric.key === "reposts" && platform === "tiktok";
+        return '<button class="preview-metric' + (enabled ? " selected" : " muted") + '" type="button" data-preview-metric="' + metric.key + '"' + (unavailable ? ' disabled aria-disabled="true"' : '') + ' aria-pressed="' + enabled + '" aria-label="' + metric.name + ' service, ' + (unavailable ? "unavailable on TikTok" : enabled ? "selected" : "not selected") + '"><span class="preview-metric-icon">' + metric.symbol +
           '</span><span class="preview-metric-name">' + metric.name + '</span><strong>' + metricQuantity(metric.key).toLocaleString() + '</strong><small>' + status + '</small></button>';
       }).join("");
       quantityInput.disabled = !metricEnabled("views");
@@ -2527,9 +2529,14 @@
         option.classList.toggle("selected", selected);
         option.setAttribute("aria-pressed", String(selected));
       });
+      if (button.dataset.platform === "tiktok") {
+        selectedServices.reposts = false;
+        if (activeSeries === "reposts") activeSeries = metrics.find(metric => metricEnabled(metric.key))?.key || "views";
+        if (activeServiceDialog === "reposts") document.querySelector("#service-delivery-dialog").close();
+      }
       const label = button.dataset.platform === "instagram" ? "instagram.com" : "tiktok.com";
       document.querySelector("#post-link").placeholder = "https://www." + label + "/...";
-      renderSummary();
+      renderCurve(true);
     }));
     document.querySelectorAll(".quantity-preset").forEach(button => button.addEventListener("click", () => { setQuantity(button.dataset.quantity); runTrajectorySimulation(false, true); }));
     document.querySelector("#custom-quantity").addEventListener("input", event => previewQuantity(event.currentTarget.value));

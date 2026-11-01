@@ -30,11 +30,11 @@ ORDER_RATE_MICROS = {
     "reposts": 2080,
 }
 TIKTOK_RATE_MICROS = {
-    "views": 382,
-    "likes": 153,
+    "views": 413,
+    "likes": 169,
     "comments": 255,
-    "saves": 153,
-    "shares": 192,
+    "saves": 169,
+    "shares": 231,
     "reposts": 64,
 }
 ADMIN_EMAIL = "aryan793gupta@gmail.com"
@@ -449,7 +449,7 @@ def password_hash(password, salt):
     return hashlib.pbkdf2_hmac("sha256", password.encode(), salt, PASSWORD_ROUNDS)
 
 
-def valid_order_settings(settings, views):
+def valid_order_settings(settings, views, platform):
     if not isinstance(settings, dict) or len(json.dumps(settings)) > 8000:
         return False
     items = settings.get("metrics")
@@ -488,6 +488,8 @@ def valid_order_settings(settings, views):
             return False
         if kind == "views" and quantity != views:
             return False
+        if platform == "tiktok" and kind == "reposts" and item["enabled"]:
+            return False
         seen.add(kind)
     curve_types = set(curves)
     if (seen != set(METRIC_LIMITS) or not any(item["enabled"] for item in items)
@@ -522,6 +524,7 @@ def deposit_bonus_micros(currency, amount_micros):
 
 def api_order_payload(data):
     if (set(data) - {"platform", "post_url", "base_views", "services"}
+            or data.get("platform") not in ("instagram", "tiktok")
             or isinstance(data.get("base_views"), bool)
             or not isinstance(data.get("base_views"), int)
             or not 100 <= data["base_views"] <= 10000000
@@ -535,6 +538,8 @@ def api_order_payload(data):
             raise ValueError("Each service must include a supported type and quantity.")
         kind = service.get("type")
         quantity = service.get("quantity")
+        if data["platform"] == "tiktok" and kind == "reposts":
+            raise ValueError("Reposts are not available for TikTok.")
         if (kind not in METRIC_LIMITS or kind in selected or isinstance(quantity, bool)
                 or not isinstance(quantity, int)
                 or not METRIC_LIMITS[kind][0] <= quantity <= METRIC_LIMITS[kind][1]):
@@ -945,7 +950,7 @@ class App(BaseHTTPRequestHandler):
             self.respond(400, {"error": "Use a valid post link for the selected platform."})
             return
         settings = data.get("settings", {})
-        if not valid_order_settings(settings, views):
+        if not valid_order_settings(settings, views, platform):
             self.respond(400, {"error": "Review the engagement quantities and growth curve, then try again."})
             return
         amount = order_amount_micros(settings, platform)
