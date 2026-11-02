@@ -31,7 +31,7 @@ ORDER_RATE_MICROS = {
 }
 TIKTOK_RATE_MICROS = {
     "views": 502,
-    "likes": 206,
+    "likes": 227,
     "comments": 311,
     "saves": 206,
     "shares": 282,
