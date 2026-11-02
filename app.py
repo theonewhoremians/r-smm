@@ -30,11 +30,11 @@ ORDER_RATE_MICROS = {
     "reposts": 2080,
 }
 TIKTOK_RATE_MICROS = {
-    "views": 456,
-    "likes": 187,
-    "comments": 282,
-    "saves": 187,
-    "shares": 256,
+    "views": 502,
+    "likes": 206,
+    "comments": 311,
+    "saves": 206,
+    "shares": 282,
     "reposts": 64,
 }
 ADMIN_EMAIL = "aryan793gupta@gmail.com"
