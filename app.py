@@ -1052,7 +1052,7 @@ class App(BaseHTTPRequestHandler):
             rows = db.execute("""
                 SELECT id, created_at, platform, post_url, views, currency, amount_micros,
                        status, rejection_reason, settings_json, approved_at
-                FROM orders WHERE email = ? ORDER BY id DESC LIMIT 100
+                FROM orders WHERE email = ? ORDER BY id DESC LIMIT 250
             """, (user["email"],)).fetchall()
         self.respond(200, {"orders": [dict(row) for row in rows]})
 
