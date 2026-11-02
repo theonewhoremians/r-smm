@@ -33,8 +33,8 @@ TIKTOK_RATE_MICROS = {
     "views": 502,
     "likes": 227,
     "comments": 311,
-    "saves": 206,
-    "shares": 282,
+    "saves": 227,
+    "shares": 311,
     "reposts": 64,
 }
 ADMIN_EMAIL = "aryan793gupta@gmail.com"
