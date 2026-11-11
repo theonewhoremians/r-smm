@@ -31,11 +31,11 @@ ORDER_RATE_MICROS = {
 }
 TIKTOK_RATE_MICROS = {
     "views": 502,
-    "likes": 568,
-    "comments": 311,
-    "saves": 227,
-    "shares": 311,
-    "reposts": 64,
+    "likes": 625,
+    "comments": 342,
+    "saves": 250,
+    "shares": 342,
+    "reposts": 70,
 }
 ADMIN_EMAIL = "aryan793gupta@gmail.com"
 WORKER_EMAIL_DOMAIN = "r-smm.vercel.app"
